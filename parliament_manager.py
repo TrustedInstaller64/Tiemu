@@ -1,6 +1,7 @@
 # parliament_manager.py
 import numpy as np
-from constants import PATH_NAMES
+from native_backend import get_native
+from constants import PATH_NAMES, PATH_RELATIONSHIP_MATRIX
 
 import logging 
 logger = logging.getLogger("OmphalosLogger") 
@@ -16,11 +17,23 @@ class ParliamentManager:
         if not population:
             return
 
-        total_votes = np.zeros(len(PATH_NAMES))
-        for entity in population:
-            vote_proposal = entity.generate_vote_proposal()
-            vote_weight = entity.get_vote_weight() * entity.score
-            total_votes += vote_proposal * vote_weight
+        native = get_native()
+        if native is None:
+            total_votes = np.zeros(len(PATH_NAMES))
+            for entity in population:
+                vote_proposal = entity.generate_vote_proposal()
+                vote_weight = entity.get_vote_weight() * entity.score
+                total_votes += vote_proposal * vote_weight
+        else:
+            relationship_scores = {"SYNERGY": 0.5, "MENTORSHIP": 0.2,
+                                   "REPULSION": -0.7, "CLASH": -1.0}
+            logits = np.array([[relationship_scores.get(rel, 0.0) for rel in row]
+                               for row in PATH_RELATIONSHIP_MATRIX], dtype=np.float64)
+            np.fill_diagonal(logits, 1.0)
+            total_votes = native.vote_totals(
+                np.array([p.dominant_path_idx for p in population], dtype=np.int64),
+                np.array([p.get_vote_weight() * p.score for p in population], dtype=np.float64),
+                logits)
 
         if np.sum(total_votes) == 0:
             # 如果没有有效投票，平均分配

@@ -1,4 +1,5 @@
 import numpy as np
+from native_backend import get_native
 from constants import PATH_NAMES, PATH_RELATIONSHIP_MATRIX, path_idx, VOTE_WEIGHTS, TITAN_NAMES
 import math
 from models import TitanToPathModel
@@ -55,8 +56,14 @@ class Pathstrider:
         if not np.all(np.isfinite(self.titan_affinities)):
             self.titan_affinities = np.ones(len(self.titan_affinities))
 
-        self._path_affinities = None 
-        
+        self._path_affinities = None
+        native = get_native()
+        if native is not None:
+            self.activity, self.stability, _, self.score = native.concepts(
+                self.path_affinities, zeitgeist_multiplier, path_distribution, self.is_titan_boss)
+            self.heroic_tendency = self.activity
+            return
+
         self.activity = np.linalg.norm(self.path_affinities[:6]) * 10
         self.stability = np.linalg.norm(self.path_affinities[6:]) * 10
         
@@ -112,6 +119,11 @@ class Pathstrider:
 
     def internal_purification(self, purity_factor):
         if purity_factor <= 0 or len(self.titan_affinities) < 2: return
+        native = get_native()
+        if native is not None:
+            self.titan_affinities = native.purify(self.titan_affinities, purity_factor)
+            self._path_affinities = None
+            return
         dominant_idx = np.argmax(self.titan_affinities)
         dominant_value = self.titan_affinities[dominant_idx]
         reduction_amount = dominant_value * purity_factor

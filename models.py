@@ -1,4 +1,5 @@
 import numpy as np
+from native_backend import get_native
 import torch
 import torch.nn as nn
 from constants import TITAN_NAMES, PATH_NAMES, path_idx
@@ -37,6 +38,9 @@ class TitanToPathModel:
         self.path_to_titan_feedback_matrix[path_idx_local["巡猎"], titan_idx["天空"]] = 0.1
 
     def get_path_affinities(self, titan_affinities):
+        native = get_native()
+        if native is not None:
+            return native.path_affinities(titan_affinities, self.titan_to_path_matrix)
         raw_affinities = np.dot(titan_affinities, self.titan_to_path_matrix)
         non_negative_affinities = np.maximum(0, raw_affinities)
         total_affinity = np.sum(non_negative_affinities)

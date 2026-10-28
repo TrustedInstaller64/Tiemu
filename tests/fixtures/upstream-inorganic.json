@@ -1,0 +1,16 @@
+{
+  "baseline_commit": "691c6e0023a83513ad3cd386cfee2198317104d3",
+  "generations": 17,
+  "legacy": {
+    "avg_activity": 3.1835069823962554,
+    "avg_stability": 2.9514371882879384
+  },
+  "phase": "inorganic",
+  "rng": {
+    "numpy": "12428f6532ead5b659890689c51ea4ff6977e2a718b4d7f7d3eb4d8af9c1f608",
+    "python": "bbd3ff4396d550a3814b1f8ab51e3c9b07014a4a02ce7289c16d3f7050ae6845",
+    "torch": "1f0e5fc8fc9f9879d2165ff3a6fbe3bff20cc59f7b1f6c273fccdb8d588ef5be"
+  },
+  "seed": 731,
+  "torch_threads": 1
+}

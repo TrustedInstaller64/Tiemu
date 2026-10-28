@@ -4,11 +4,24 @@ from datetime import datetime
 config = {
     # 大模型
     "llm": {
-        "gpu_max_count": 10, # 最大GPU核心数量 (0表示不启用)
+        "n_gpu_layers": -1, # llama.cpp GPU 卸载层数；CPU 模式固定为0
+        "backend": "auto", # auto / mlx / llama_cpp / disabled
+        "device": "auto", # auto / cpu / cuda / metal
+        "mlx_model_path": "models/Qwen3-0.6B-MLX",
+        "gguf_model_path": None,
+        "temperature": 0.7,
         "enable_llm": True, # 是否启用大模型
         "kaoselanna_llm_enabled": True, # 白厄的自我意识
         "model_name": "Qwen3-0.6B-Q8_0.gguf", # 模型名称
         "enable_thinking": False # 仅DeepSeek，QwQ等需要启用（不推荐）启用深度思考
+    },
+    "runtime": {
+        "compute_backend": "auto", # auto / cpp / python
+        "torch_device": "cpu",    # 当前单样本小网络优先 CPU；可选 auto/cuda/mps
+        "torch_threads": 1,
+        "seed": None,
+        "interactive": None,      # None: 仅在真实终端启用
+        "output_dir": "runs",
     },
     # 日志
     "log": {

@@ -1,150 +1,137 @@
-# main.py
-
-import os
-import sys
-import traceback
-import colorama
-from simulation import AeonEvolution
+"""Cross-platform CLI. Importing this module does not open files or start threads."""
+import argparse
 import logging
+from pathlib import Path
+import signal
+import sys
 from config import config
-from datetime import datetime
-import argparse 
-from pyclog import ClogFileHandler, constants # 导入 pyclog
-import re # 导入 re 模块
 
-colorama.init(autoreset=True) # 确保在sys.stdout重定向前初始化colorama
+logger = logging.getLogger('OmphalosLogger')
 
-# 创建一个 logger 实例
-logger = logging.getLogger("OmphalosLogger")
-logger.setLevel(logging.INFO)
+def positive_int(value):
+    number = int(value)
+    if number < 1:
+        raise argparse.ArgumentTypeError('必须是大于 0 的整数')
+    return number
 
-if config['log']['enable']:
-    # 使用 ClogFileHandler 替换 FileHandler
-    clog_handler = ClogFileHandler(config['log']['file_name'], compression_code=constants.COMPRESSION_GZIP)
-    file_formatter = logging.Formatter('%(message)s')
-    clog_handler.setFormatter(file_formatter)
-    logger.addHandler(clog_handler)
+def build_parser():
+    parser = argparse.ArgumentParser(description='Tiemu 翁法罗斯演化模拟')
+    parser.add_argument('--disable-llm', action='store_true', help='无需安装或加载 LLM 即可运行')
+    parser.add_argument('--load-save', help='保留旧参数；JSON 快照目前不支持恢复运行')
+    parser.add_argument('--fast-forward', action='store_true', help='减少控制台日志及展示等待')
+    parser.add_argument('--no-interactive', action='store_true', help='不读取键盘，适用于 Docker/后台任务')
+    parser.add_argument('--backend', choices=['auto', 'python', 'cpp'], default=config.get('runtime', {}).get('compute_backend', 'auto'))
+    parser.add_argument('--device', choices=['auto', 'cpu', 'cuda', 'mps'], default=config.get('runtime', {}).get('torch_device', 'auto'))
+    parser.add_argument('--torch-threads', type=positive_int, default=config.get('runtime', {}).get('torch_threads', 1), help='PyTorch CPU 运算线程数；当前小网络默认 1')
+    parser.add_argument('--llm-backend', choices=['auto', 'mlx', 'llama_cpp', 'disabled'], default=config['llm'].get('backend', 'auto'))
+    parser.add_argument('--llm-device', choices=['auto', 'cpu', 'cuda', 'metal'], default=config['llm'].get('device', 'auto'))
+    parser.add_argument('--gguf-model', help='本地 GGUF 模型路径')
+    parser.add_argument('--mlx-model', help='本地 MLX 模型目录')
+    parser.add_argument('--seed', type=int, default=config.get('runtime', {}).get('seed'))
+    parser.add_argument('--output-dir', default=config.get('runtime', {}).get('output_dir', 'runs'), help='快照、模型和日志输出目录')
+    parser.add_argument('--smoke-test', action='store_true', help='缩短各阶段并使用 24 个实体做完整启动验证')
+    return parser
 
-# 终端输出仍然使用 StreamHandler
-class CustomConsoleFormatter(logging.Formatter):
-    def format(self, record):
-        # 获取完整的格式化日志行
-        log_line = super().format(record)
-        
-        # 查找消息部分的起始位置
-        # 格式字符串是 '[%(asctime)s][%(levelname)s] %(message)s'
-        # 我们需要找到 ']' 之后的第一个空格，作为消息的起始
-        match = re.match(r'\[.*?\]\[.*?\]\s*', log_line)
-        if match:
-            prefix_length = match.end()
-        else:
-            prefix_length = 0 # 如果没有匹配到，则不缩进
+def configure_logging(output_dir, fast_forward):
+    logger.setLevel(logging.INFO)
+    for handler in list(logger.handlers):
+        handler.close()
+        logger.removeHandler(handler)
+    console = logging.StreamHandler(sys.stdout)
+    console.setFormatter(logging.Formatter('[%(levelname)s] %(message)s'))
+    console.setLevel(logging.WARNING if fast_forward else logging.INFO)
+    logger.addHandler(console)
+    if config['log']['enable']:
+        from pyclog import ClogFileHandler, constants
+        file_handler = ClogFileHandler(str(output_dir/config['log']['file_name']), compression_code=constants.COMPRESSION_GZIP)
+        file_handler.setFormatter(logging.Formatter('%(message)s'))
+        logger.addHandler(file_handler)
 
-        # 将日志行按换行符分割
-        lines = log_line.splitlines()
-        
-        # 对除第一行以外的每一行添加缩进
-        if len(lines) > 1:
-            indented_lines = [lines[0]]
-            for line in lines[1:]:
-                indented_lines.append(' ' * prefix_length + line)
-            return '\n'.join(indented_lines)
-        else:
-            return log_line
+def run_simple(args):
+    import torch
+    from native_backend import configure_backend
+    from device_utils import seed_everything, resolve_torch_device
+    from simulation import AeonEvolution
 
-# 终端输出仍然使用 StreamHandler
-console_handler = logging.StreamHandler(sys.stdout)
-console_formatter = CustomConsoleFormatter('[%(asctime)s][%(levelname)s] %(message)s')
-console_handler.setFormatter(console_formatter)
-logger.addHandler(console_handler)
-
-# 移除 LoggerWriter 和 sys.stdout/sys.stderr 重定向
-# if config['log']['enable']:
-#     sys.stdout = LoggerWriter(logger.info)
-#     sys.stderr = LoggerWriter(logger.error)
-
-def run_simple(load_save_path=None):
-    """ 以简单的控制台模式运行模拟 """
-    
-    sim = None
-    try:
-        sim = AeonEvolution(
-            # --- LLM ---
-            bard_frequency=config['simulation']['bard_frequency'],         
-            laertes_frequency=config['simulation']['laertes_frequency'],      
-            kaoselanna_llm_enabled=config['llm']['kaoselanna_llm_enabled'],
-
-            fast_forward=args.fast_forward if 'args' in locals() and hasattr(args, 'fast_forward') else False,
-            # --- 其他模拟参数 ---
-            num_initial_entities=config['simulation']['num_initial_entities'], 
-            golden_one_cap=config['simulation']['golden_one_cap'], 
-            population_soft_cap=config['simulation']['population_soft_cap'],
-            population_hard_cap=config['simulation']['population_hard_cap'], 
-            growth_factor=config['simulation']['growth_factor'], 
-            mutation_rate=config['simulation']['mutation_rate'],
-            culling_strength=config['simulation']['culling_strength'], 
-            encounter_similarity=config['simulation']['encounter_similarity'], 
-            purity_factor=config['simulation']['purity_factor'],
-            initial_rl_lr=config['simulation']['initial_rl_lr'], 
-            golden_one_reversion_prob=config['simulation']['golden_one_reversion_prob'],
-            elite_selection_percentile=config['simulation']['elite_selection_percentile'], 
-            aeonic_event_prob=config['simulation']['aeonic_event_prob'],
-            initial_max_affinity_norm=config['simulation']['initial_max_affinity_norm'], 
-            target_avg_score=config['simulation']['target_avg_score'],
-            norm_adjustment_strength=config['simulation']['norm_adjustment_strength']
-        )
-        if load_save_path:
-            sim.load_simulation_state(load_save_path)
-
-        logger.info("=== 翁法罗斯 v10.4 (Dev) 启动 ===")
-        sim.start(
-            num_generations=config['simulation_phases']['TOTAL_SIMULATION_END']
-        )
-
-    except KeyboardInterrupt:
-        logger.info("\n\n模拟被用户中断。正在退出...")
-        
-
-    except Exception:
-        traceback.print_exc()
-
-    finally:
-        if sim and hasattr(sim, 'policy_saver'):
-            logger.info("\n正在尝试保存策略模型...")
-            sim.policy_saver.save_policy_models()
-            logger.info("\n正在尝试保存clog...")
-            logging.shutdown()
-        
-        print("\n模拟已结束。按任意键退出。")
-        if os.name == 'nt':
-            os.system('pause')
-        sys.exit(0) 
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="翁法罗斯")
-    parser.add_argument('--disable-llm', action='store_true', 
-                        help='彻底禁用LLM参与演算，无需安装llama_cpp。')
-    parser.add_argument('--load-save', type=str, default=None,
-                        help='从指定的存档文件加载并开始模拟。')
-    parser.add_argument('--fast-forward', action='store_true',
-                        help='快速演化模式，仅显示进度条和周期性报告。')
-    global args; args = parser.parse_args() # 定义为全局变量以便run_simple访问
- 
-    # 根据参数更配
-    if args.disable_llm:
+    output_dir = Path(args.output_dir).expanduser().resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    configure_logging(output_dir, args.fast_forward)
+    runtime = config.setdefault('runtime', {})
+    runtime.update(torch_device=args.device, interactive=False if args.no_interactive else None,
+                   output_dir=str(output_dir), seed=args.seed, torch_threads=args.torch_threads)
+    torch.set_num_threads(args.torch_threads)
+    config['llm'].update(backend=args.llm_backend, device=args.llm_device, seed=args.seed)
+    if args.disable_llm or args.llm_backend == 'disabled':
         config['llm']['enable_llm'] = False
-        logger.info("\033[93m命令行参数 --disable-llm 已启用，LLM功能已彻底禁用。\033[0m")
-    
-    if args.fast_forward:
-        # 找到控制台处理器并抑制其输出，以实现快速模式
-        found_handler = False
-        for handler in logger.handlers:
-            if isinstance(handler, logging.StreamHandler) and handler.stream == sys.stdout:
-                logger.info("\033[93m快速演化模式已启用。控制台输出将受到抑制。\033[0m")
-                handler.setLevel(logging.CRITICAL + 1) # 将等级设为极高，使其忽略所有常规日志
-                found_handler = True
-        if not found_handler:
-             logger.warning("警告：无法找到控制台日志处理器，--fast-forward可能无法完全生效。")
+    if args.gguf_model:
+        config['llm']['gguf_model_path'] = str(Path(args.gguf_model).expanduser().resolve())
+    if args.mlx_model:
+        config['llm']['mlx_model_path'] = str(Path(args.mlx_model).expanduser().resolve())
+    if args.smoke_test:
+        config['simulation_phases'].update(INORGANIC_PHASE_END=2, ORGANIC_PHASE_END=4,
+                                           HUMAN_PHASE_END=8, TOTAL_SIMULATION_END=10)
+        config['simulation'].update(num_initial_entities=24, population_soft_cap=24, population_hard_cap=48)
 
-    run_simple()
+    sim = None
+    exit_code = 0
+    pending_signal = None
+    previous_handlers = {}
+    def stop_handler(signum, frame):
+        nonlocal pending_signal
+        pending_signal = signum
+        if sim is not None:
+            sim.debugger.request_stop(signum)
+
+    try:
+        for name in ('SIGINT', 'SIGTERM', 'SIGBREAK'):
+            number = getattr(signal, name, None)
+            if number is not None:
+                previous_handlers[number] = signal.signal(number, stop_handler)
+        native = configure_backend(args.backend)
+        device = resolve_torch_device(args.device)
+        if args.seed is not None:
+            seed_everything(args.seed)
+        logger.warning('计算后端: %s | 小网络设备: %s | 输出: %s', 'C++' if native is not None else 'Python', device, output_dir)
+        kwargs = {k: v for k, v in config['simulation'].items() if k != 'elites_to_keep_in_cycle'}
+        sim = AeonEvolution(**kwargs, kaoselanna_llm_enabled=config['llm']['kaoselanna_llm_enabled'],
+                            fast_forward=args.fast_forward)
+        if pending_signal is not None:
+            sim.debugger.request_stop(pending_signal)
+        sim.start(num_generations=config['simulation_phases']['TOTAL_SIMULATION_END'])
+        if sim.debugger.stop_signal is not None:
+            exit_code = 128 + sim.debugger.stop_signal
+    except KeyboardInterrupt:
+        exit_code = 130
+    except Exception:
+        logger.exception('模拟运行失败')
+        exit_code = 1
+    finally:
+        if sim is not None:
+            try:
+                if not sim.save_simulation_state(str(output_dir/'world.json')):
+                    exit_code = 1
+                sim.policy_saver.save_policy_models()
+            except Exception:
+                logger.exception('退出时保存失败')
+                exit_code = 1
+            finally:
+                sim.debugger.close()
+        for number, previous in previous_handlers.items():
+            signal.signal(number, previous)
+        logging.shutdown()
+    return exit_code
+
+def main(argv=None):
+    # Windows redirected output otherwise inherits a legacy code page that may
+    # not encode entity names. Keep logs/pipes UTF-8 on every platform.
+    for stream in (sys.stdout, sys.stderr):
+        if not stream.isatty() and hasattr(stream, 'reconfigure'):
+            stream.reconfigure(encoding='utf-8', errors='backslashreplace')
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if args.load_save:
+        parser.error('JSON 快照不含模型、优化器、随机数和阶段内部状态，当前不能恢复运行；已停止，未创建或覆盖输出文件。')
+    return run_simple(args)
+
+if __name__ == '__main__':
+    raise SystemExit(main())

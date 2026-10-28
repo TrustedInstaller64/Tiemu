@@ -1,4 +1,6 @@
 import numpy as np
+from contextlib import contextmanager
+from native_backend import get_native
 import random
 from collections import Counter
 
@@ -27,6 +29,10 @@ class PopulationManager:
         self.max_affinity_norm = max_affinity_norm
         self.min_norm = min_norm
         self.max_norm = max_norm
+        self._tracked_population = None
+        self._path_histogram = None
+        self._tracked_indices = {}
+        self._dirty_paths = set()
         self.cosmic_tide_vector = np.zeros(len(TITAN_NAMES)) 
 
     def generate_unique_name(self):
@@ -55,6 +61,14 @@ class PopulationManager:
 
     def normalize_affinities(self, entity_or_blueprint):
         target = entity_or_blueprint.titan_affinities if isinstance(entity_or_blueprint, Pathstrider) else entity_or_blueprint
+        native = get_native()
+        if native is not None:
+            result = native.normalize(target, self.max_affinity_norm)
+            if isinstance(entity_or_blueprint, Pathstrider):
+                entity_or_blueprint.titan_affinities = result
+            else:
+                entity_or_blueprint[:] = result
+            return None
         norm = np.linalg.norm(target)
         
         if not np.isfinite(norm) or norm == 0 or norm > self.max_affinity_norm:
@@ -65,9 +79,41 @@ class PopulationManager:
                 entity_or_blueprint[:] = normalized_target
         return None 
 
+    @contextmanager
+    def track_distribution(self, population):
+        """Cache only within one encounter loop; retain original lazy path evaluation."""
+        if get_native() is None:
+            yield
+            return
+        self._tracked_population = population
+        self._path_histogram = None
+        self._tracked_indices = {entity: i for i, entity in enumerate(population)}
+        self._dirty_paths = set()
+        try:
+            yield
+        finally:
+            self._tracked_population = None
+            self._path_histogram = None
+            self._tracked_indices = {}
+            self._dirty_paths.clear()
+
+    def mark_paths_dirty(self, *entities):
+        if self._tracked_population is not None:
+            self._dirty_paths.update(p for p in entities if p in self._tracked_indices)
+
     def get_global_path_distribution(self, population: list):
         if not population:
             return np.ones(len(PATH_NAMES)) / len(PATH_NAMES)
+        if population is self._tracked_population:
+            native = get_native()
+            if self._path_histogram is None:
+                indices = np.array([p.dominant_path_idx for p in population], dtype=np.int64)
+                self._path_histogram = native.PathHistogram(indices, len(PATH_NAMES))
+            else:
+                for p in sorted(self._dirty_paths, key=self._tracked_indices.__getitem__):
+                    self._path_histogram.update(self._tracked_indices[p], int(p.dominant_path_idx))
+            self._dirty_paths.clear()
+            return self._path_histogram.distribution()
         path_counts = np.zeros(len(PATH_NAMES))
         for p in population:
             path_counts[p.dominant_path_idx] += 1

@@ -1,4 +1,6 @@
 import numpy as np
+from native_backend import get_native
+from device_utils import resolve_torch_device
 import torch.nn as nn
 import math
 import random
@@ -91,13 +93,14 @@ class AeonEvolution:
         
         # --- 强化学习与模型 ---
         # hgn_input_size = len(TITAN_NAMES) * 2 + len(PATH_NAMES) * 2 # 旧的
+        self.device = resolve_torch_device(config.get("runtime", {}).get("torch_device", "auto"))
         hgn_input_size = len(TITAN_NAMES) * 2 + len(PATH_NAMES) * 2 + 1 # 新的，+1是因为增加了停滞水平
-        self.guide_network = HybridGuideNetwork(hgn_input_size, 128, len(TITAN_NAMES))
+        self.guide_network = HybridGuideNetwork(hgn_input_size, 128, len(TITAN_NAMES)).to(self.device)
         self.guide_optimizer = optim.Adam(self.guide_network.parameters(), lr=initial_rl_lr)
         
         ac_input_size = len(TITAN_NAMES) * 2
-        self.action_policy_network = ActionPolicyNetwork(input_size=ac_input_size, hidden_size=32)
-        self.value_network = ValueNetwork(input_size=ac_input_size, hidden_size=32)
+        self.action_policy_network = ActionPolicyNetwork(input_size=ac_input_size, hidden_size=32).to(self.device)
+        self.value_network = ValueNetwork(input_size=ac_input_size, hidden_size=32).to(self.device)
         self.action_optimizer = optim.Adam(self.action_policy_network.parameters(), lr=initial_rl_lr * 0.5)
         self.value_optimizer = optim.Adam(self.value_network.parameters(), lr=initial_rl_lr)
         self.value_loss_criterion = nn.MSELoss()
@@ -121,7 +124,6 @@ class AeonEvolution:
         self.titan_bosses = []
 
         # --- 管理器实例化 ---
-        self.debugger = Debugger(self)
         self.display_manager = DisplayManager()
         
         self.population_manager = PopulationManager(
@@ -175,12 +177,34 @@ class AeonEvolution:
         self.policy_saver = PolicySaver(
             guide_network=self.guide_network,
             action_policy_network=self.action_policy_network,
-            value_network=self.value_network
+            value_network=self.value_network,
+            output_dir=config.get("runtime", {}).get("output_dir", ".")
         )
         self.reincarnator_name = None
+        self.debugger = Debugger(self, interactive=config.get("runtime", {}).get("interactive"))
+
+    def _control_checkpoint(self):
+        if getattr(self, '_step_pending', False):
+            self.debugger.paused = True
+            self._step_pending = False
+        self.debugger.poll()
+        if self.debugger.paused and not self.debugger.stop_requested:
+            levels = [(handler, handler.level) for handler in logger.handlers]
+            try:
+                for handler, level in levels:
+                    handler.setLevel(min(level, logging.INFO))
+                logger.info("模拟已暂停。输入 'help' 获取命令列表。")
+                self.debugger.handle_commands()
+            finally:
+                for handler, level in levels:
+                    handler.setLevel(level)
+        if self.debugger.last_command == 'next':
+            self._step_pending = True
+            self.debugger.last_command = ''
+        return not self.debugger.stop_requested
 
     def _trigger_llm_narrators(self):
-        if not self.llm_interface or not self.llm_interface.llm:
+        if not self.llm_interface or not self.llm_interface.available:
             return
 
         # --- 吟游诗人 ---
@@ -350,8 +374,8 @@ class AeonEvolution:
             self.cosmic_zeitgeist,
             np.array([stagnation_level]) # 新增输入
         ])
-        state = torch.from_numpy(state_np).float()
-        target = torch.from_numpy(elite_avg_affinities).float()
+        state = torch.from_numpy(state_np).float().to(self.device)
+        target = torch.from_numpy(elite_avg_affinities).float().to(self.device)
 
         self.guide_network.train()
         self.guide_optimizer.zero_grad()
@@ -368,7 +392,7 @@ class AeonEvolution:
         if self.generation % 10 == 0:
             logger.info(f"\033[94m引导网络学习中... 损失: {total_loss.item():.4f}, 奖励(分/多): {score_reward:.2f}/{diversity_reward:.2f}\033[0m")
         
-        new_base_affinities = predicted_blueprint.detach().numpy()
+        new_base_affinities = predicted_blueprint.detach().cpu().numpy()
         self.base_titan_affinities = self.base_titan_affinities * 0.7 + new_base_affinities * 0.3
 
     def _run_one_generation(self):
@@ -388,24 +412,32 @@ class AeonEvolution:
         # 交互
         culled_this_gen = set()
         num_encounters = min(int(2 * len(self.population)), 5000)
-        for _ in range(num_encounters):
-            valid_population = [p for p in self.population if p not in culled_this_gen]
-            if len(valid_population) < 2: break
+        with self.population_manager.track_distribution(self.population):
+            for _ in range(num_encounters):
+                if get_native() is None:
+                    valid_population = [p for p in self.population if p not in culled_this_gen]
+                else:
+                    if self.interaction_handler._native_opponents.alive_count < 2:
+                        break
+                    valid_population = self.population
+                if len(valid_population) < 2: break
             
-            entity1, entity2 = self.interaction_handler.select_opponents(valid_population, self.reincarnator)
-            if not entity1 or not entity2: continue
+                entity1, entity2 = self.interaction_handler.select_opponents(valid_population, self.reincarnator)
+                if not entity1 or not entity2: continue
             
-            if entity1 not in culled_this_gen and entity2 not in culled_this_gen:
-                multiplier1 = self.parliament_manager.get_zeitgeist_multiplier(entity1.path_affinities)
-                culled_entity = self.interaction_handler.entity_interaction(
-                    entity1, entity2, self.population, self.reincarnator, self.population_manager.get_global_path_distribution(self.population), self.cosmic_zeitgeist, multiplier1
-                )
-                if culled_entity:
-                    culled_this_gen.add(culled_entity)
+                if entity1 not in culled_this_gen and entity2 not in culled_this_gen:
+                    multiplier1 = self.parliament_manager.get_zeitgeist_multiplier(entity1.path_affinities)
+                    culled_entity = self.interaction_handler.entity_interaction(
+                        entity1, entity2, self.population, self.reincarnator, self.population_manager.get_global_path_distribution(self.population), self.cosmic_zeitgeist, multiplier1
+                    )
+                    if culled_entity:
+                        culled_this_gen.add(culled_entity)
+                        self.interaction_handler.discard_opponent(culled_entity)
                 
-                # 无论是否淘汰，参与者状态都可能改变
-                entities_to_update.add(entity1)
-                entities_to_update.add(entity2)
+                    # 无论是否淘汰，参与者状态都可能改变
+                    entities_to_update.add(entity1)
+                    entities_to_update.add(entity2)
+                    self.population_manager.mark_paths_dirty(entity1, entity2)
         
         # 翁法罗斯事件 
         self._check_for_aeonic_events(culled_this_gen, entities_to_update)
@@ -525,13 +557,25 @@ class AeonEvolution:
         grid_size = 10
         inorganic_pop = [{'id': i*grid_size+j, 'activity': random.uniform(1,5), 'stability': random.uniform(1,5), 'score': 0} for i in range(grid_size) for j in range(grid_size)]
         
+        native = get_native()
+        activity = np.array([cell['activity'] for cell in inorganic_pop], dtype=np.float64)
+        stability = np.array([cell['stability'] for cell in inorganic_pop], dtype=np.float64)
         for gen in range(num_generations + 1):
+            self.generation = gen
+            if not self._control_checkpoint():
+                return None
             self.display_manager.update_and_display_progress('inorganic', gen, num_generations)
             if gen % 100 == 0: 
                  self.display_manager.update_and_display_progress('inorganic', gen, num_generations)
             
             if gen == num_generations: break
 
+            if native is not None:
+                # Keep Python random.uniform order: activity, stability, next cell.
+                noise = np.fromiter((random.uniform(-0.1, 0.1) for _ in range(2 * grid_size * grid_size)),
+                                    dtype=np.float64).reshape(-1, 2)
+                activity, stability = native.inorganic_step(activity, stability, noise, grid_size)
+                continue
             new_pop = list(inorganic_pop)
 
             for i in range(grid_size):
@@ -574,8 +618,8 @@ class AeonEvolution:
         logger.warning("!!! 其“活性”数据溢出，呈现出混沌和毁灭的混合倾向。                  ")
         logger.warning("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\033[0m")
         
-        final_activities = [cell['activity'] for cell in inorganic_pop]
-        final_stabilities = [cell['stability'] for cell in inorganic_pop]
+        final_activities = activity if native is not None else [cell['activity'] for cell in inorganic_pop]
+        final_stabilities = stability if native is not None else [cell['stability'] for cell in inorganic_pop]
         
         avg_activity = np.mean(final_activities)
         avg_stability = np.mean(final_stabilities)
@@ -604,28 +648,32 @@ class AeonEvolution:
                 return torch.relu(self.layer(x))
 
         # 实例化模型、损失函数和优化器
-        organic_model = OrganicProtoNet()
+        organic_model = OrganicProtoNet().to(self.device)
         optimizer = optim.SGD(organic_model.parameters(), lr=0.01)
         loss_fn = nn.MSELoss()  # 使用均方误差损失函数
 
         logger.info("初始模型训练中...")
         for i in range(101):
-            dummy_input = torch.randn(1, 10) 
-            dummy_target = torch.randn(1, 10)
+            if not self._control_checkpoint():
+                return None
+            dummy_input = torch.randn(1, 10).to(self.device)
+            dummy_target = torch.randn(1, 10).to(self.device)
             optimizer.zero_grad()
             output = organic_model(dummy_input)
             loss = loss_fn(output, dummy_target)
             loss.backward()
             optimizer.step()
-            sys.stdout.write(f"\r模型训练中... {i}% (Loss: {loss.item():.4f})")
-            sys.stdout.flush()
-            time.sleep(0.02)
+            if not self.fast_forward and sys.stdout.isatty():
+                sys.stdout.write(f"\r模型训练中... {i}% (Loss: {loss.item():.4f})")
+                sys.stdout.flush()
+                time.sleep(0.02)
             
         logger.info("\n初始模型训练完成。")
 
         logger.info("...开始模拟初始有机体交互...")
         for gen in range(start_gen, end_gen + 1):
             self.generation = gen
+            if not self._control_checkpoint(): return None
             self.display_manager.update_and_display_progress('organic', gen, end_gen)
             
             if gen % 10000 == 0:
@@ -636,8 +684,6 @@ class AeonEvolution:
                 self.population.sort(key=lambda p: p.score)
                 self.population.pop(0)
 
-            if self.debugger.paused: return 
-        
         logger.info("\n\n\033[92m>>> 有机孕育阶段完成! 概念原型机已固化。 <<<\033[0m")
         self.policy_saver.save_organic_model(organic_model) # 保存模型
         
@@ -648,17 +694,18 @@ class AeonEvolution:
         INORGANIC_PHASE_END = config['simulation_phases']['INORGANIC_PHASE_END']
         ORGANIC_PHASE_END = config['simulation_phases']['ORGANIC_PHASE_END']
         HUMAN_PHASE_END = config['simulation_phases']['HUMAN_PHASE_END']
-        TOTAL_SIMULATION_END = config['simulation_phases']['TOTAL_SIMULATION_END']
+        TOTAL_SIMULATION_END = min(num_generations, config['simulation_phases']['TOTAL_SIMULATION_END'])
 
         self.total_generations = num_generations
-        was_paused = False
 
         # --- 运行早期阶段 ---
         inorganic_legacy = self._run_inorganic_phase(num_generations=INORGANIC_PHASE_END)
+        if inorganic_legacy is None: return
         self._create_initial_population(create_reincarnator=False) 
 
         self.generation = INORGANIC_PHASE_END + 1
         organic_legacy_model = self._run_organic_phase(self.generation, ORGANIC_PHASE_END)
+        if organic_legacy_model is None: return
         
         # --- 初始化系统 ---
         self.legacy_manager.initialize(inorganic_legacy, organic_legacy_model)
@@ -667,27 +714,8 @@ class AeonEvolution:
         self.generation = ORGANIC_PHASE_END + 1
 
         while self.generation <= TOTAL_SIMULATION_END:
-            # --- Debugger 钩子 ---
-            if self.debugger.paused:
-                if not was_paused:
-                    sys.stdout.write("\r" + " " * 80 + "\r")
-                    # 在快速模式下，需要临时恢复日志等级以显示调试信息
-                    if self.fast_forward:
-                        for handler in logger.handlers:
-                            if isinstance(handler, logging.StreamHandler):
-                                handler.setLevel(logging.INFO)
-                    logger.info("\n\n=== 模拟已暂停。输入 'help' 获取命令列表。 ===")
-                    was_paused = True
-                self.debugger.handle_commands()
-                continue
-            if was_paused:
-                logger.info("\n=== 模拟已恢复 ===")
-                was_paused = False
-                # 恢复后，再次抑制日志
-                if self.fast_forward:
-                    for handler in logger.handlers:
-                        if isinstance(handler, logging.StreamHandler):
-                            handler.setLevel(logging.CRITICAL + 1)
+            if not self._control_checkpoint():
+                return
  
             # 每5000代在快速模式下打印报告
             if self.fast_forward and self.generation > 0 and self.generation % 5000 == 0:
@@ -762,9 +790,6 @@ class AeonEvolution:
                 logger.info("\n种群已灭绝！")
                 break
 
-            if 'next' in getattr(self.debugger, 'last_command', ''):
-                self.debugger.paused = True
-                self.debugger.last_command = ''
             
         # --- 演算结束 ---
         logger.info("\n\n== 演化结束 ===")
@@ -844,11 +869,25 @@ class AeonEvolution:
         }
 
         try:
-            with open(filepath, 'w', encoding='utf-8') as f:
+            from pathlib import Path
+            import tempfile
+            destination = Path(filepath)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=destination.parent,
+                                             prefix=destination.name + '.', suffix='.tmp', delete=False) as f:
+                temporary = f.name
                 json.dump(state, f, indent=4)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(temporary, destination)
             logger.info(f"\033[92m状态保存成功！\033[0m")
+            return True
         except Exception as e:
             logger.error(f"\033[91m错误: 存档失败。原因: {e}\033[0m")
+            if "temporary" in locals():
+                try: os.unlink(temporary)
+                except OSError: pass
+            return False
 
     def load_simulation_state(self, filepath):
         """从JSON文件加载模拟状态。"""

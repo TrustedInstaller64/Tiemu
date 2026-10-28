@@ -35,6 +35,7 @@ class AeonicCycleManager:
                  ):
         
         self.population_manager = population_manager
+        self.device = next(action_policy_network.parameters()).device
         self.action_policy_network = action_policy_network
         self.value_network = value_network
         self.action_optimizer = action_optimizer
@@ -177,7 +178,7 @@ class AeonicCycleManager:
         if attacker is reincarnator:
             
             chosen_action = None
-            if self.kaoselanna_llm_enabled and self.llm_interface and self.llm_interface.llm:
+            if self.kaoselanna_llm_enabled and self.llm_interface and self.llm_interface.available:
                 try:
                     dominant_path_name = PATH_NAMES[defender.dominant_path_idx] if np.isfinite(defender.dominant_path_idx) else "未知"
                     prompt = (
@@ -200,7 +201,7 @@ class AeonicCycleManager:
 
             if chosen_action is None:
                 state_np = np.concatenate([attacker.titan_affinities, defender.titan_affinities])
-                state = torch.from_numpy(state_np).float().unsqueeze(0)
+                state = torch.from_numpy(state_np).float().unsqueeze(0).to(self.device)
                 
                 self.action_policy_network.train()
                 action_logits = self.action_policy_network(state)
@@ -212,7 +213,7 @@ class AeonicCycleManager:
             
             # --- 后续的交互逻辑 ---
             state_np = np.concatenate([attacker.titan_affinities, defender.titan_affinities])
-            state = torch.from_numpy(state_np).float().unsqueeze(0)
+            state = torch.from_numpy(state_np).float().unsqueeze(0).to(self.device)
             self.value_network.train()
             state_value = self.value_network(state)
 
@@ -259,7 +260,7 @@ class AeonicCycleManager:
             # 网络更新
             advantage = final_reward - state_value.item()
             self.value_optimizer.zero_grad()
-            value_loss = self.value_loss_criterion(state_value, torch.tensor([[final_reward]], dtype=torch.float))
+            value_loss = self.value_loss_criterion(state_value, torch.tensor([[final_reward]], dtype=torch.float, device=self.device))
             value_loss.backward(retain_graph=True)
             self.value_optimizer.step()
             self.action_policy_network.train()
@@ -267,7 +268,7 @@ class AeonicCycleManager:
             action_probs = torch.softmax(action_logits, dim=-1)
             action_dist = torch.distributions.Categorical(action_probs)
             action_list = ["谈判", "击杀"]
-            chosen_action_idx_tensor = torch.tensor([action_list.index(chosen_action)])
+            chosen_action_idx_tensor = torch.tensor([action_list.index(chosen_action)], dtype=torch.long, device=self.device)
             log_prob = action_dist.log_prob(chosen_action_idx_tensor)
 
             self.action_optimizer.zero_grad()

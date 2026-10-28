@@ -1,4 +1,5 @@
 import numpy as np
+from native_backend import get_native
 import random
 import math
 
@@ -25,9 +26,20 @@ class InteractionHandler:
         self.population_manager = population_manager
         self._bins = {}
         self._bin_size = 10 # 每个桶10分
+        self._native_opponents = None
+        self._indexed_population = []
+        self._entity_indices = {}
 
     def update_bins(self, population: list):
         """在每代开始时调用，更新分桶。"""
+        native = get_native()
+        self._native_opponents = None
+        if native is not None:
+            self._indexed_population = list(population)
+            self._entity_indices = {p: i for i, p in enumerate(population)}
+            self._native_opponents = native.OpponentIndex(
+                np.array([p.score for p in population], dtype=np.float64), self._bin_size)
+            return
         self._bins.clear()
         for entity in population:
             bin_key = int(entity.score // self._bin_size)
@@ -35,7 +47,22 @@ class InteractionHandler:
                 self._bins[bin_key] = []
             self._bins[bin_key].append(entity)
 
+    def discard_opponent(self, entity):
+        if self._native_opponents is not None:
+            self._native_opponents.remove(self._entity_indices[entity])
+
     def select_opponents(self, population: list, reincarnator: Pathstrider):
+        if self._native_opponents is not None:
+            index = self._native_opponents
+            if index.alive_count < 2:
+                return None, None
+            first_id = index.entity_at(int(np.random.randint(index.alive_count)))
+            first = self._indexed_population[first_id]
+            count = index.opponent_count(first_id, first.score)
+            if not count:
+                return first, None
+            second_id = index.opponent_at(first_id, first.score, int(np.random.randint(count)))
+            return first, self._indexed_population[second_id]
         if len(population) < 2: return None, None
         
         entity1 = np.random.choice(population)
@@ -111,9 +138,14 @@ class InteractionHandler:
         if not (np.isfinite(strider1.score) and np.isfinite(strider2.score)): return None
         winner, loser = (strider1, strider2) if strider1.score * (1 + np.random.rand()*0.2) > strider2.score else (strider2, strider1)
         modifier = self.PATH_INTERACTION_MATRIX[winner.dominant_path_idx, loser.dominant_path_idx]
-        influence = loser.titan_affinities * 0.1 * modifier
-        winner.titan_affinities += influence
-        loser.titan_affinities -= influence * 0.5
+        native = get_native()
+        if native is not None:
+            winner.titan_affinities, loser.titan_affinities = native.clash(
+                winner.titan_affinities, loser.titan_affinities, modifier)
+        else:
+            influence = loser.titan_affinities * 0.1 * modifier
+            winner.titan_affinities += influence
+            loser.titan_affinities -= influence * 0.5
         self.population_manager.recalculate_and_normalize_entity(winner, global_path_distribution, cosmic_zeitgeist)
         self.population_manager.recalculate_and_normalize_entity(loser, global_path_distribution, cosmic_zeitgeist)
         if np.random.rand() < 0.1 * (winner.score / (loser.score + 1e-6) - 1): return loser
@@ -121,18 +153,28 @@ class InteractionHandler:
 
     def _handle_synergy(self, strider1: Pathstrider, strider2: Pathstrider, 
                         global_path_distribution: np.ndarray, cosmic_zeitgeist: np.ndarray):
-        strider1.titan_affinities += strider2.titan_affinities * 0.02
-        strider2.titan_affinities += strider1.titan_affinities * 0.02
+        native = get_native()
+        if native is not None:
+            strider1.titan_affinities, strider2.titan_affinities = native.synergy(
+                strider1.titan_affinities, strider2.titan_affinities)
+        else:
+            strider1.titan_affinities += strider2.titan_affinities * 0.02
+            strider2.titan_affinities += strider1.titan_affinities * 0.02
         self.population_manager.recalculate_and_normalize_entity(strider1, global_path_distribution, cosmic_zeitgeist)
         self.population_manager.recalculate_and_normalize_entity(strider2, global_path_distribution, cosmic_zeitgeist)
     
     def _handle_repulsion(self, strider1: Pathstrider, strider2: Pathstrider, 
                           global_path_distribution: np.ndarray, cosmic_zeitgeist: np.ndarray):
         for s in [strider1, strider2]:
-            dom_idx = np.argmax(s.titan_affinities)
-            damage = s.titan_affinities[dom_idx] * 0.05
-            s.titan_affinities[dom_idx] -= damage
-            s.titan_affinities += np.random.rand(len(TITAN_NAMES)) * damage * 0.1
+            native = get_native()
+            if native is not None:
+                s.titan_affinities = native.repulsion(
+                    s.titan_affinities, np.random.rand(len(TITAN_NAMES)))
+            else:
+                dom_idx = np.argmax(s.titan_affinities)
+                damage = s.titan_affinities[dom_idx] * 0.05
+                s.titan_affinities[dom_idx] -= damage
+                s.titan_affinities += np.random.rand(len(TITAN_NAMES)) * damage * 0.1
             self.population_manager.recalculate_and_normalize_entity(s, global_path_distribution, cosmic_zeitgeist)
 
     def _handle_mentorship_or_assimilation(self, strider1: Pathstrider, strider2: Pathstrider, 
@@ -140,11 +182,16 @@ class InteractionHandler:
         stronger, weaker = (strider1, strider2) if strider1.score > strider2.score else (strider2, strider1)
         if not (np.isfinite(stronger.score) and np.isfinite(weaker.score) and weaker.score > 0): return
         score_ratio = stronger.score / (weaker.score + 1e-6)
-        influence_strength = 0.05 * math.tanh(score_ratio - 1) 
-        direction_vector = stronger.titan_affinities - weaker.titan_affinities
-        weaker.titan_affinities += direction_vector * influence_strength
-        weaker_influence_on_stronger = (weaker.titan_affinities - stronger.titan_affinities) * 0.005
-        stronger.titan_affinities += weaker_influence_on_stronger
+        native = get_native()
+        if native is not None:
+            stronger.titan_affinities, weaker.titan_affinities = native.mentorship(
+                stronger.titan_affinities, weaker.titan_affinities, score_ratio)
+        else:
+            influence_strength = 0.05 * math.tanh(score_ratio - 1)
+            direction_vector = stronger.titan_affinities - weaker.titan_affinities
+            weaker.titan_affinities += direction_vector * influence_strength
+            weaker_influence_on_stronger = (weaker.titan_affinities - stronger.titan_affinities) * 0.005
+            stronger.titan_affinities += weaker_influence_on_stronger
         self.population_manager.recalculate_and_normalize_entity(stronger, global_path_distribution, cosmic_zeitgeist)
         self.population_manager.recalculate_and_normalize_entity(weaker, global_path_distribution, cosmic_zeitgeist)
 
