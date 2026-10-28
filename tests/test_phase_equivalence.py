@@ -1,16 +1,15 @@
 """Compare real phase transitions and trained networks with frozen upstream."""
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys
 
 import numpy as np
 import pytest
+from reference_upstream import reference_result, replay_environment
 
 
 ROOT = Path(__file__).resolve().parents[1]
-FIXTURES = ROOT / "tests" / "fixtures"
 
 
 def replay(backend, phase, population, tmp_path):
@@ -18,8 +17,8 @@ def replay(backend, phase, population, tmp_path):
         [sys.executable, "-B", str(ROOT / "tests" / "replay_phases.py"),
          "--root", str(ROOT), "--backend", backend, "--phase", phase,
          "--population", str(population)],
-        cwd=tmp_path, env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1", "PYTHONHASHSEED": "0"},
-        capture_output=True, text=True, timeout=60)
+        cwd=tmp_path, env=replay_environment(),
+        capture_output=True, text=True, encoding="utf-8", timeout=60)
     assert process.returncode == 0, process.stdout + process.stderr
     assert not list(tmp_path.rglob("*.pth")), "The replay must not export models"
     return json.loads(process.stdout)
@@ -46,7 +45,7 @@ def assert_state_equal(actual, expected, tolerance=1e-10, location="state"):
 
 @pytest.mark.parametrize("backend", ["python", "cpp"])
 def test_inorganic_seventeen_generations_match_upstream_legacy_and_rng(backend, tmp_path):
-    expected = json.loads((FIXTURES / "upstream-inorganic.json").read_text(encoding='utf-8'))
+    expected = reference_result("replay_phases.py", "--phase", "inorganic", "--population", "100")
     actual = replay(backend, "inorganic", 100, tmp_path)
     assert actual["generations"] == 17
     assert actual["rng"] == expected["rng"]
@@ -56,7 +55,7 @@ def test_inorganic_seventeen_generations_match_upstream_legacy_and_rng(backend, 
 @pytest.mark.parametrize("backend", ["python", "cpp"])
 @pytest.mark.parametrize("population", [100, 200])
 def test_aeonic_two_generations_match_upstream_world_rng_and_real_training(backend, population, tmp_path):
-    expected = json.loads((FIXTURES / f"upstream-aeonic{population}.json").read_text(encoding='utf-8'))
+    expected = reference_result("replay_phases.py", "--phase", "aeonic", "--population", str(population))
     actual = replay(backend, "aeonic", population, tmp_path)
     actual_networks, expected_networks = actual.pop("networks"), expected.pop("networks")
     assert len(actual["outcomes"]) == 2

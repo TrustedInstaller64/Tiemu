@@ -1,10 +1,10 @@
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys
 import numpy as np
 import pytest
+from reference_upstream import reference_result, replay_environment
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -14,11 +14,12 @@ def test_world_matches_frozen_upstream(backend, reincarnator):
     cmd = [sys.executable, str(ROOT/'tests/replay_world.py'), '--root', str(ROOT), '--backend', backend]
     if reincarnator:
         cmd.append('--reincarnator')
-    run = subprocess.run(cmd, cwd=ROOT, env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1'}, capture_output=True, text=True, timeout=60)
+    run = subprocess.run(cmd, cwd=ROOT, env=replay_environment(), capture_output=True,
+                         text=True, encoding='utf-8', timeout=60)
     assert run.returncode == 0, run.stderr
     actual = json.loads(run.stdout)
-    fixture = 'upstream-guide.json' if reincarnator else 'upstream-human.json'
-    expected = json.loads((ROOT/'tests/fixtures'/fixture).read_text(encoding='utf-8'))
+    arguments = ('--reincarnator',) if reincarnator else ()
+    expected = reference_result('replay_world.py', *arguments)
     for key in ('seats', 'random_state', 'numpy_state', 'torch_state'):
         assert actual[key] == expected[key], key
     assert len(actual['population']) == len(expected['population'])
