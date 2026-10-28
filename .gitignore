@@ -25,3 +25,12 @@ models/
 *.log
 *.clog
 /__pycache__
+
+# Native builds and test artifacts
+/build/
+/dist/
+*.egg-info/
+*.so
+*.pyd
+.pytest_cache/
+/runs/

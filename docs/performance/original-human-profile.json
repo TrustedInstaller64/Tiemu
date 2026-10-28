@@ -1,0 +1,132 @@
+[
+  {
+    "initial_population": 200,
+    "run": {
+      "input_populations": [
+        200,
+        172
+      ],
+      "generations": [
+        {
+          "generation": 176200,
+          "run_seconds": 0.10754849997465499,
+          "evolve_seconds": 0.0010363340261392295,
+          "culled": 56,
+          "population_after": 172
+        },
+        {
+          "generation": 176201,
+          "run_seconds": 0.05334341601701453,
+          "evolve_seconds": 0.0013907089887652546,
+          "culled": 117,
+          "population_after": 127
+        }
+      ],
+      "total_seconds": 0.163318959006574
+    },
+    "groups": {
+      "distribution": {
+        "calls": 569,
+        "inclusive_seconds": 0.10221736688981764,
+        "exclusive_seconds": 0.10221736688981764,
+        "exclusive_percent": 62.58756944789437
+      },
+      "opponent_selection": {
+        "calls": 744,
+        "inclusive_seconds": 0.03251295574591495,
+        "exclusive_seconds": 0.03251295574591495,
+        "exclusive_percent": 19.90764326669889
+      },
+      "interaction": {
+        "calls": 565,
+        "inclusive_seconds": 0.00842850690241903,
+        "exclusive_seconds": 0.00842850690241903,
+        "exclusive_percent": 5.160764527087
+      },
+      "election": {
+        "calls": 2,
+        "inclusive_seconds": 0.0027668330003507435,
+        "exclusive_seconds": 0.0027668330003507435,
+        "exclusive_percent": 1.6941284815802502
+      },
+      "diversity": {
+        "calls": 2,
+        "inclusive_seconds": 0.0010797920112963766,
+        "exclusive_seconds": 0.0010797920112963766,
+        "exclusive_percent": 0.6611553354640916
+      },
+      "evolve_and_grow": {
+        "calls": 2,
+        "inclusive_seconds": 0.002423792000627145,
+        "exclusive_seconds": 0.0022490000119432807,
+        "exclusive_percent": 1.3770599724755488
+      }
+    },
+    "unattributed_seconds": 0.014064504444831982
+  },
+  {
+    "initial_population": 1000,
+    "run": {
+      "input_populations": [
+        1000,
+        843
+      ],
+      "generations": [
+        {
+          "generation": 176200,
+          "run_seconds": 2.0944645830022637,
+          "evolve_seconds": 0.004654832999221981,
+          "culled": 313,
+          "population_after": 843
+        },
+        {
+          "generation": 176201,
+          "run_seconds": 1.3589885840192437,
+          "evolve_seconds": 0.006427124986657873,
+          "culled": 399,
+          "population_after": 722
+        }
+      ],
+      "total_seconds": 3.4645351250073873
+    },
+    "groups": {
+      "distribution": {
+        "calls": 2905,
+        "inclusive_seconds": 2.558033919951413,
+        "exclusive_seconds": 2.558033919951413,
+        "exclusive_percent": 73.83483866240087
+      },
+      "opponent_selection": {
+        "calls": 3686,
+        "inclusive_seconds": 0.6634077627386432,
+        "exclusive_seconds": 0.6634077627386432,
+        "exclusive_percent": 19.148536204759324
+      },
+      "interaction": {
+        "calls": 2901,
+        "inclusive_seconds": 0.06427558613358997,
+        "exclusive_seconds": 0.06427558613358997,
+        "exclusive_percent": 1.855244176040874
+      },
+      "election": {
+        "calls": 2,
+        "inclusive_seconds": 0.014817583985859528,
+        "exclusive_seconds": 0.014817583985859528,
+        "exclusive_percent": 0.42769328210600643
+      },
+      "diversity": {
+        "calls": 2,
+        "inclusive_seconds": 0.0007967910205479711,
+        "exclusive_seconds": 0.0007967910205479711,
+        "exclusive_percent": 0.022998497397144217
+      },
+      "evolve_and_grow": {
+        "calls": 2,
+        "inclusive_seconds": 0.011075541988248006,
+        "exclusive_seconds": 0.010027874988736585,
+        "exclusive_percent": 0.28944359421713767
+      }
+    },
+    "unattributed_seconds": 0.15317560618859716
+  }
+]
