@@ -21,13 +21,15 @@ Preserve original counts, random order, sequential updates, vote weights and flo
 
 ## Tasks
 
-- [ ] Baseline: archive fixed original source outside worktree; record profile and add build metadata before implementation commits.
-- [ ] Native kernels: tests first for mapping, concepts, purification, norm cap, weighted votes, sequential inorganic step, ordered candidates and incremental histogram. Add cpp/tiemu_native.cpp and native_backend.py; root owns packaging. Build extension and run native differential tests.
-- [ ] Console: tests first for POSIX PTY, pipe/non-TTY, paused command handling and cleanup. Own console_control.py/debugger.py/tests/test_console.py. Root wires safe points and signals in simulation/main.
-- [ ] Model backends: tests first for auto/explicit device choices, local model checks, disabled lazy imports, MLX sampler/chat template and GGUF GPU capabilities. Own device_utils.py/cpu_llm_interface.py/tests/test_backends.py. Root wires device tensors and config.
-- [ ] Integration: native/reference selection in entities/models/population/parliament/interaction/simulation, seeded replay against archived original, bounded CLI execution and no-interactive/signal lifecycle. Tests for actual trajectories and RNG states, not only kernel self-comparison.
+- [x] Baseline: archive fixed original source outside worktree; record profile and add build metadata before implementation commits.
+- [x] Native kernels: tests first for mapping, concepts, purification, norm cap, weighted votes, sequential inorganic step, ordered candidates and incremental histogram. Add cpp/tiemu_native.cpp and native_backend.py; root owns packaging. Build extension and run native differential tests.
+- [x] Console: tests first for POSIX PTY, pipe/non-TTY, paused command handling and cleanup. Own console_control.py/debugger.py/tests/test_console.py. Root wires safe points and signals in simulation/main.
+- [x] Model backends: tests first for auto/explicit device choices, local model checks, disabled lazy imports, MLX sampler/chat template and GGUF GPU capabilities. Own device_utils.py/cpu_llm_interface.py/tests/test_backends.py. Root wires device tensors and config.
+- [x] Integration: native/reference selection in entities/models/population/parliament/interaction/simulation, seeded replay against archived original, bounded CLI execution and no-interactive/signal lifecycle. Tests for actual trajectories and RNG states, not only kernel self-comparison.
 - [ ] Delivery: Docker CPU and optional GGUF build, platform CI and Chinese run instructions. Benchmark identical workload including crossing/copy costs. Fresh review, full tests, install/build smoke, commits and push to user repository without force.
 
 ## Execution notes
 
 2026-10-28: User explicitly requested direct changes and repository submission. Proceed without additional design approval rounds. Root coordinates commits; agents do not commit or edit each other's files.
+
+2026-10-28 validation: 131 tests pass locally. M1 MLX/Metal and MPS training exercised; MPS is slower for these small networks, so default small-network device is CPU with one thread. Incomplete JSON restoration is explicitly rejected to prevent silent world reset. Benchmarks and review findings are documented in docs/performance.md.

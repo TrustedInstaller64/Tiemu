@@ -1,0 +1,31 @@
+{
+  "backend": "cpp",
+  "source_root": "/Users/TrustedInstaller/Documents/Deltame-13/Tiemu",
+  "initial_population": 1000,
+  "phase": "inorganic",
+  "generations": 1000,
+  "seconds": [
+    0.0261786250048317,
+    0.02486224999302067,
+    0.024772249977104366
+  ],
+  "median_seconds": 0.02486224999302067,
+  "outcomes": [
+    {
+      "avg_activity": 3.2958931919023873,
+      "avg_stability": 2.8269341421750496
+    },
+    {
+      "avg_activity": 3.2958931919023873,
+      "avg_stability": 2.8269341421750496
+    },
+    {
+      "avg_activity": 3.2958931919023873,
+      "avg_stability": 2.8269341421750496
+    }
+  ],
+  "python": "3.12.1",
+  "numpy": "2.2.2",
+  "torch": "2.12.0",
+  "scope": "CPU 1 thread; seed 731; no LLM/log/keyboard; excludes startup; human case: neutral legacy, no reincarnator, excludes pre-phases; inorganic case: original 10x10 grid"
+}

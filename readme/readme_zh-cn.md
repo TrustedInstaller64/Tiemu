@@ -1,120 +1,107 @@
-# Tiemu 项目
+# Tiemu 安装与运行
 
-[配置指南(中文)](readme/Guide.md)
+本分支基于 [YezQiu/Tiemu](https://github.com/YezQiu/Tiemu) 的 `691c6e0` 重做加速，保留原有世界规则。不是对 AMPHOREUS 方案的延续。
 
-## 快速开始
+[世界参数指南](Guide.md) · [实测性能和验证边界](../docs/performance.md)
 
-1. **克隆仓库：**
+## 安装 C++ 核心
 
-    ```sh
-    git clone https://github.com/YezQiu/Tiemu.git
-    cd Tiemu
-    ```
+推荐 Python 3.12（包支持 3.11～3.13）。数值依赖固定为 NumPy 2.2.2 / PyTorch 2.12.0，以便复现测试。需要 C++17 编译器：Linux 使用 GCC/build-essential，macOS 安装 Xcode Command Line Tools，Windows 安装 Visual Studio Build Tools 的“使用 C++ 的桌面开发”。Mac 使用原生 arm64 Python。
 
-    或者使用任何其他方法将整个项目获取到您的计算机上。
+```sh
+git clone git@github.com:TrustedInstaller64/Tiemu.git
+cd Tiemu
+python -m venv .venv
+```
 
-2. **创建并激活虚拟环境：**
+macOS/Linux 激活：`source .venv/bin/activate`；Windows PowerShell 激活：`.venv\Scripts\Activate.ps1`。
 
-    ```sh
-    python3 -m venv .venv
-    source .venv/bin/activate
-    ```
+```sh
+python -m pip install --upgrade pip
+python -m pip install ".[test]"
+python -m main --backend cpp --device cpu --disable-llm --no-interactive --seed 42 --smoke-test
+python -m pytest -q
+```
 
-3. **安装依赖：**
+`pip install .` 才会编译、安装原生扩展；仅安装 `requirements.txt` 不会构建 C++。默认不安装 LLM 框架，不下载模型。开发时修改 C++ 后需要重新安装项目。
 
-    ```sh
-    pip install -r requirements.txt
-    ```
+去掉 `--smoke-test` 才是原参数的完整模拟。烟测会缩短阶段并使用 24 个初始实体，不能用于衡量完整模拟结果。完整模拟默认阶段很长，先做烟测。
 
-4. **下载模型文件：**
+```sh
+python -m main --backend cpp --device cpu --torch-threads 1 --disable-llm --fast-forward --output-dir runs/cpu
+```
 
-    * 从 [Hugging Face](https://huggingface.co/) 或官方源下载 `Qwen3-0.6B-Q8_0.gguf`。
-    * 将其放置在 `models` 文件夹中。
+`--fast-forward` 减少终端输出和展示等待；文件日志仍受 `config.py` 中 `log.enable` 控制，大量日志会增加 I/O 成本。要测计算性能，可在配置中关闭文件日志。`--backend python` 保留参考路径；`auto` 在扩展缺失时会明确提示并回退，`cpp` 则明确报错。
 
-5. **运行项目：**
+## Apple Silicon：LLM 使用 MLX/Metal
 
-    ```sh
-    python main.py
-    ```
+```sh
+python -m pip install ".[mlx]"
+python -m main --backend cpp --device cpu --llm-backend mlx --llm-device metal --mlx-model /绝对路径/Qwen3-0.6B-MLX --output-dir runs/mac
+```
 
-    不使用 lama_cpp：
+必须先准备完整的本地 MLX 模型目录，包含模型配置、tokenizer 和权重；GGUF 文件不能作为 MLX 模型目录。程序不会隐式下载。默认自动选择时，原生 Apple Silicon macOS 优先尝试 MLX，再尝试 GGUF；全部不可用会记录原因并禁用可选 LLM。明确指定后端或 GPU 却不可用时会报错。
 
-    ```sh
-    python main.py --disable-llm
-    ```
+小型在线网络与 LLM 分开选设备。当前 M1 实测中，小网络 CPU 单线程比 MPS 快，所以默认 `--device cpu`；需要测试 Metal 小网络可传 `--device mps`。`--device auto` 是硬件可用性选择，并不是性能自动调优。当前 MLX 后端面向原生 Apple Silicon macOS，不在 Linux Docker 中启用。
 
-## 注意事项
+**ANE：当前版本未实现 Core ML 后端。** MLX 使用 CPU/Metal GPU，不调用 ANE。固定模型可另行转换到 Core ML，并允许 CPU+ANE 推理；这不等于整个演化循环或在线 Adam 训练能移到 ANE，也不保证全部算子在 ANE 执行。需要针对实际转换模型验证输出、算子分配和功耗，不能仅依据设备名称声称省电。[Apple MLX 说明](https://developer.apple.com/videos/play/wwdc2025/315/)、[Core ML compute units](https://developer.apple.com/documentation/coreml/mlcomputeunits)。
 
-* `models` 文件夹和大型模型文件已被 Git 忽略。
-* 如果您遇到问题，请检查所有依赖项是否已安装以及模型文件是否存在。
-* 即使没有 LLM 模型，您也应该能够运行该项目。
-* 您可以在**没有 LLM wheel 包**的情况下运行，使用参数：`--disable-llm`。
-* 本项目使用 `pyclog` 作为日志记录，快速使用参见 [关于日志系统](clog_zh-cn.md)，详情参阅 [Pyclog Project](https://github.com/Akanyi/pyclog)
+若目的是同时正常使用电脑，可先用默认单线程 CPU 小网络，并以 `nice -n 10 python -m main ...` 降低 macOS/Linux 进程调度优先级；LLM 可继续使用 MLX，或关闭 LLM 进一步减少争用。这是资源控制建议，不是能耗测试结论。
 
-## 交互式控制台与存档
+## Windows 原生与 CUDA
 
-本项目内置了一个强大的交互式控制台，允许您在模拟运行时暂停、观察甚至实时修改世界的参数。同时，您还可以随时保存和加载模拟进度。
+Windows 无需 Docker，安装和运行命令与上面一致。CPU 模式不需要 CUDA。
 
-### 交互式控制台 (Interactive Console)
+小网络要启用 CUDA，先按 [PyTorch 官方安装选择器](https://pytorch.org/get-started/locally/) 安装匹配显卡/驱动的 CUDA 版，再使用 `--device cuda`。默认 CPU 版包不能因为电脑有显卡就自动变成 CUDA 版。
 
-在模拟运行时，随时按下 `p` 键可以暂停模拟并进入交互式控制台。在这里，你可以像一个辣卤客一样观察和干预翁法罗斯的演化。
+LLM 的 llama.cpp 构建与 PyTorch 独立。安装 CUDA Toolkit 和 C++ 工具链后，可在 PowerShell 构建 CUDA 后端：
 
-控制台会显示提示符 `(翁法罗斯创世涡心) >`，等待您输入命令。
+```powershell
+$env:CMAKE_ARGS = "-DGGML_CUDA=on"
+python -m pip install --no-cache-dir --force-reinstall --no-binary llama-cpp-python "llama-cpp-python>=0.3.14,<0.4"
+Remove-Item Env:CMAKE_ARGS
+python -m main --backend cpp --device cpu --llm-backend llama_cpp --llm-device cuda --gguf-model C:\models\Qwen3-0.6B-Q8_0.gguf
+```
 
-**可用命令列表:**
+详见 [llama-cpp-python 官方安装说明](https://github.com/abetlen/llama-cpp-python#installation)。启动日志会记录请求的后端和层数；明确 GPU 配置不会悄悄回退到 CPU。`config.py` 的 `llm.n_gpu_layers=-1` 请求卸载全部可卸载层，显存不足时需要调小或改用 CPU。
 
-* **`c` 或 `continue`**: 恢复模拟。
-* **`n` 或 `next`**: 执行下一世代（一帧），然后再次暂停。这对于逐帧观察演化非常有用。
-* **`status`**: 显示世界的宏观状态，包括当前世代、种群数量、生态多样性、停滞计数等。
-* **`p <实体名称|baie>`**: 打印指定实体或当前“白厄”的详细信息，包括其泰坦亲和度和命途倾向。
-  * > *示例:* `p Neikos-0496`
-* **`top [k]`**: 显示当前世界中评分最高的 k 个实体（默认为 5）。
-  * > *示例:* `top 10`
-* **`zeitgeist`**: 查看当前由公民议会决定的主流思潮及其权重。
-* **`blueprint`**: 查看当前全局的演化蓝图（基础泰坦亲和度）。
-* **`set <参数名> <值>`**: **核心控制功能**。动态修改一个模拟参数。
-  * > *示例:* `set mutation_rate 0.5` (将突变率立刻调整为 0.5)
-* **`save <文件名.json>`**: 将当前模拟状态完整地保存到一个文件中。
-* **`load <文件名.json>`**: 从一个文件加载模拟状态，完全覆盖当前世界。
-* **`help`**: 显示所有可用命令的帮助信息。
+## Hyper-V Linux + Docker（默认 CPU）
 
-### 存档与读档 (Save & Load)
+在 Linux 虚拟机里安装 Docker Engine 和 Compose 后，在项目目录执行：
 
-您可以通过两种方式来利用存档功能：
+```sh
+docker compose build
+docker compose run --rm tiemu --no-interactive --disable-llm --device cpu --backend cpp --seed 42 --smoke-test --output-dir /data
+docker compose up -d
+docker compose logs -f
+docker compose stop
+```
 
-* **在模拟过程中操作**
+默认镜像为 CPU PyTorch、C++ 核心、不加载 LLM，以 UID 10001 运行；不要求虚拟机看到物理 GPU。命名卷 `tiemu-data` 持久保存 `/data` 中的快照、权重和日志。停止容器留出 60 秒保存时间，不要通过 `docker compose down -v` 删除需要保留的数据。若改用宿主绑定目录，须让 UID 10001 有写权限。
 
-在通过 `p` 键进入交互式控制台后，您可以使用以下命令：
+需要 CPU GGUF 时单独构建，并只读挂载模型：
 
-* **保存当前进度:**
+```sh
+docker build --build-arg WITH_LLM=1 -t tiemu:cpu-llm .
+docker run --rm --init --stop-timeout 60 -v tiemu-output:/data -v /宿主模型目录:/models:ro tiemu:cpu-llm --no-interactive --device cpu --backend cpp --llm-backend llama_cpp --llm-device cpu --gguf-model /models/Qwen3-0.6B-Q8_0.gguf --output-dir /data
+```
 
-    ```command
-    save my_world_state.json
-    ```
+Docker 默认 CMD 禁用 LLM；上面的完整命令覆盖 CMD 后才启用 CPU LLM。宿主有 NVIDIA 显卡不意味着 Hyper-V Linux 已配置 GPU 直通；本镜像不配置直通，也不包含 CUDA。
 
-* **加载之前的进度:**
+## 暂停、输出与恢复边界
 
-    ```command
-    load my_world_state.json
-    ```
+有真实终端时按 `p`，到下一个安全点暂停；输入 `c` 继续、`n` 单步、`status`/`top` 查看、`save 文件.json` 导出快照、`stop` 保存并退出。`help` 显示其余查询及参数修改命令。`n` 在有机网络训练期间表示一个训练步，其他阶段表示一代。
 
-    *注意：* 加载后，当前的所有进度都将被存档覆盖。您需要输入 `c` 或 `n` 来继续运行加载后的世界。
+macOS/Linux 使用 POSIX TTY，Windows 使用控制台接口。重定向、后台或 Docker 无 TTY 时自动关闭键盘输入，也可显式使用 `--no-interactive`。Ctrl+C、SIGTERM 和 Windows Ctrl+Break 在安全点退出；强杀进程无法执行保存。
 
-* **从存档启动**
+`--output-dir` 默认 `runs`。正常完成/受控停止会原子写入 `world.json`、`blueprint_policy.pth`、`baie_action_policy.pth`、`baie_value_policy.pth`；完成有机训练时还保存 `organic_prototype_model.pth`。权重转到 CPU 保存，便于跨设备加载。
 
-您可以直接在启动项目时通过命令行参数加载一个存档文件，这对于继续上次的模拟非常方便。
+**JSON 是供检查的世界快照，不是可恢复的完整训练断点。** 它缺少优化器、随机状态、阶段内部数据等。旧版宣称可以恢复，但实际入口会重跑早期阶段；本版本的 `load` / `--load-save` 明确拒绝恢复，防止世代回退或覆盖现有输出。早期阶段停止时的快照同样不能续跑。
 
-* **启动命令:**
+## 验证
 
-    ```sh
-    python main.py --load-save my_world_state.json
-    ```
-
-这将跳过所有初始化步骤，直接从 `my_world_state.json` 文件记录的状态开始模拟。
+测试包括 C++ 与参考核差分、冻结原版的种群/随机状态/训练回放、POSIX PTY、无终端 CLI、SIGTERM 保存以及设备选择。具体实测平台、速度和未验证范围见 [性能记录](../docs/performance.md)。不同设备、精度、模型量化和 LLM 采样不保证逐位相同，长程随机演化也不能以短回放证明完全一致。
 
 ## 致谢
 
-* HeyCrab3
-* AvalonRuFae
-* MoonofBridge24
-* Akanyi
+HeyCrab3、AvalonRuFae、MoonofBridge24、Akanyi，以及原项目作者和贡献者。日志说明见 [clog_zh-cn.md](clog_zh-cn.md)。

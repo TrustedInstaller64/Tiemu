@@ -1,0 +1,22 @@
+{
+  "backend": "cpp",
+  "source_root": "/Users/TrustedInstaller/Documents/Deltame-13/Tiemu",
+  "initial_population": 1000,
+  "generations": 2,
+  "seconds": [
+    0.09600783299538307,
+    0.09502587499446236,
+    0.09673483300139196
+  ],
+  "median_seconds": 0.09600783299538307,
+  "python": "3.12.1",
+  "numpy": "2.2.2",
+  "torch": "2.12.0",
+  "scope": "CPU 1 thread; seed 731; no LLM/log/keyboard; neutral legacy; human phase without reincarnator; excludes startup and pre-phases",
+  "phase": "human",
+  "outcomes": [
+    722,
+    722,
+    722
+  ]
+}

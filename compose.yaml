@@ -1,0 +1,12 @@
+services:
+  tiemu:
+    build:
+      context: .
+      args:
+        WITH_LLM: "0"
+    volumes:
+      - tiemu-data:/data
+    stop_grace_period: 60s
+    init: true
+volumes:
+  tiemu-data:

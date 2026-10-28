@@ -1,0 +1,146 @@
+{
+  "torch": "2.12.0",
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "hardware": "Apple M1",
+  "logical_cpus": 8,
+  "cpu_threads": 1,
+  "interop_threads": 1,
+  "mps_available": true,
+  "dtype": "float32",
+  "warmup_steps": 20,
+  "steps_per_repeat": 100,
+  "repeats": 5,
+  "scope": "Bounded network updates only; includes original host/device copies and item() dependencies, excludes world simulation and logging.",
+  "results": [
+    {
+      "case": "guide_train",
+      "device": "cpu",
+      "input_shape": [
+        49
+      ],
+      "parameter_counts": [
+        73868
+      ],
+      "repeat_seconds": [
+        0.11284041698672809,
+        0.16516987499198876,
+        0.08262400000239722,
+        0.11159250000491738,
+        0.11664895800640807
+      ],
+      "median_ms_per_step": 1.1284041698672809,
+      "weights_finite": true,
+      "weights_changed": [
+        true
+      ],
+      "last_loss": 0.014573542401194572
+    },
+    {
+      "case": "guide_train",
+      "device": "mps",
+      "input_shape": [
+        49
+      ],
+      "parameter_counts": [
+        73868
+      ],
+      "repeat_seconds": [
+        0.7524766660062596,
+        0.6965631659841165,
+        0.48234612500527874,
+        0.4576210840023123,
+        0.4935935000248719
+      ],
+      "median_ms_per_step": 4.935935000248719,
+      "weights_finite": true,
+      "weights_changed": [
+        true
+      ],
+      "last_loss": 0.015548945404589176
+    },
+    {
+      "case": "action_value_train",
+      "device": "cpu",
+      "input_shape": [
+        1,
+        24
+      ],
+      "parameter_counts": [
+        1362,
+        1345
+      ],
+      "repeat_seconds": [
+        0.07356545800575987,
+        0.10911845800001174,
+        0.09748491700156592,
+        0.09965724998619407,
+        0.0761075839982368
+      ],
+      "median_ms_per_step": 0.9748491700156592,
+      "weights_finite": true,
+      "weights_changed": [
+        true,
+        true
+      ],
+      "last_loss": 0.0
+    },
+    {
+      "case": "action_value_train",
+      "device": "mps",
+      "input_shape": [
+        1,
+        24
+      ],
+      "parameter_counts": [
+        1362,
+        1345
+      ],
+      "repeat_seconds": [
+        1.0274290830129758,
+        0.8956172499747481,
+        0.9149174169870093,
+        1.0594261669903062,
+        0.9338561659969855
+      ],
+      "median_ms_per_step": 9.338561659969855,
+      "weights_finite": true,
+      "weights_changed": [
+        true,
+        true
+      ],
+      "last_loss": 0.0
+    }
+  ],
+  "comparisons": [
+    {
+      "case": "guide_train",
+      "mps_over_cpu_time": 4.374261574050428,
+      "mps_speedup": 0.2286100140723938
+    },
+    {
+      "case": "action_value_train",
+      "mps_over_cpu_time": 9.579493881930318,
+      "mps_speedup": 0.10438964858950302
+    }
+  ],
+  "measured_on": "2026-10-28",
+  "seed": 42,
+  "benchmark": "benchmarks/benchmark_networks.py",
+  "network_weights": "Fresh seeded initialization; no external checkpoint.",
+  "provenance": "Recorded with the initial standalone form of benchmark_networks.py using the same workloads and timing boundaries.",
+  "reproduction_arguments": [
+    "--devices",
+    "cpu",
+    "mps",
+    "--threads",
+    "1",
+    "--steps",
+    "100",
+    "--repeats",
+    "5"
+  ],
+  "limitations": [
+    "Single Apple M1 machine and PyTorch 2.12.0; not a Docker, Windows/CUDA, or energy benchmark.",
+    "CPU thread counts other than 1 were not measured."
+  ]
+}

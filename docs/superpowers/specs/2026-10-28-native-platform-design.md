@@ -20,8 +20,8 @@ Use a native extension plus the original Python reference backend. A complete st
 
 ## Runtime platforms
 
-- Apple Silicon macOS: local MLX model for LLM via Metal; PyTorch MPS when available. Explicit CPU selection remains possible.
-- Windows native: GGUF llama.cpp with its own CUDA-capability check; PyTorch CUDA when available, CPU otherwise. No mandatory MLX installation.
+- Apple Silicon macOS: local MLX model for LLM via Metal; PyTorch CPU by default after M1 measurements; MPS remains explicitly selectable.
+- Windows native: GGUF llama.cpp with its own CUDA-capability check; PyTorch CPU by default, with explicit CUDA and hardware auto selection available. No mandatory MLX installation.
 - Hyper-V Linux VM/Docker: CPU native extension, CPU PyTorch and GGUF CPU support; default image can run without an LLM/model. No assumption of host GPU passthrough.
 - Separate `torch_device`, `llm_backend`, model paths and LLM GPU layer configuration. Explicit unavailable choices fail clearly; auto decisions are logged. No implicit model downloads.
 
@@ -29,10 +29,10 @@ Use a native extension plus the original Python reference backend. A complete st
 
 One owner reads stdin. Windows uses msvcrt; POSIX uses cbreak/select with TTY guarding and terminal restoration. Paused command input must not race a hotkey reader. Non-TTY operation is supported without opening keyboard devices or requiring root. `--no-interactive`, stop command, SIGINT/SIGTERM and Windows SIGBREAK reach bounded safe points in all phases. C++ calls are at most one generation/chunk. Exit with truthful return codes; no unconditional Windows pause.
 
-Stop exports a JSON world snapshot and CPU-portable policy weights to the configured output directory. Existing JSON is not a complete training checkpoint: phase internals, optimizers and RNG are not all restored. Document this limit; do not advertise exact resume. Atomic replacement prevents partially written snapshots.
+Stop exports a JSON world snapshot and CPU-portable policy weights to the configured output directory. Existing JSON is not a complete training checkpoint: phase internals, optimizers and RNG are not all restored. Document this limit; reject load/--load-save until complete resume is implemented. Atomic replacement prevents partially written snapshots.
 
 ## Packaging and validation
 
 Python 3.11/3.12, C++17, setuptools/pybind11 build; optional MLX and llama.cpp dependencies. Linux CPU multi-stage Docker image, mounted models/output, no embedded model files. Windows/MSVC, macOS/Clang, Linux/GCC CI builds run actual native tests. Unit differential tests, frozen original replay, PTY and non-TTY tests, backend capability/selection tests, short CLI runs, benchmark and fresh review precede submission.
 
-Local verification limits must be explicit: Docker CLI exists but daemon is unavailable; Windows/CUDA and MPS require their real hosts. CI results may extend validation but a mocked API is not real GPU acceptance.
+Local verification limits must be explicit: Docker CLI exists but daemon is unavailable; Windows/CUDA require their real hosts; MPS and MLX Metal were verified on this M1. CI results may extend validation but a mocked API is not real GPU acceptance.

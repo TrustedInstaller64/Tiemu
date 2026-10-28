@@ -1,0 +1,22 @@
+{
+  "backend": "python",
+  "source_root": "/private/tmp/tiemu-original-691c6e0",
+  "initial_population": 1000,
+  "generations": 2,
+  "seconds": [
+    3.048753667011624,
+    3.019052207993809,
+    3.039200749975862
+  ],
+  "median_seconds": 3.039200749975862,
+  "python": "3.12.1",
+  "numpy": "2.2.2",
+  "torch": "2.12.0",
+  "scope": "CPU 1 thread; seed 731; no LLM/log/keyboard; neutral legacy; human phase without reincarnator; excludes startup and pre-phases",
+  "phase": "human",
+  "outcomes": [
+    722,
+    722,
+    722
+  ]
+}

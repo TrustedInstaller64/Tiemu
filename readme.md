@@ -1,112 +1,49 @@
-# Tiemu Project
+# Tiemu
 
-[简体中文](readme/readme_zh-cn.md) [配置指南(Only-CHS)](readme/Guide.md)
+Native acceleration and platform support based on [YezQiu/Tiemu](https://github.com/YezQiu/Tiemu), baseline `691c6e0`.
 
-## Quick Start
+[中文安装与运行](readme/readme_zh-cn.md) · [测量与等价性](docs/performance.md) · [世界参数指南](readme/Guide.md)
 
-1. **Clone the repository:**
+## Install and run
 
-   ```sh
-   git clone https://github.com/YezQiu/Tiemu.git
-   cd Tiemu
-   ```
+Use Python 3.12 and a C++17 compiler (MSVC Build Tools on Windows, Xcode Command Line Tools on macOS, GCC on Linux).
 
-   Or use whatever method to get the whole thing into your computer
+```sh
+python -m venv .venv
+# macOS/Linux: source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install ".[test]"
+python -m main --backend cpp --device cpu --disable-llm --smoke-test
+python -m pytest -q
+```
 
-2. **Create and activate a virtual environment:**
+Remove `--smoke-test` for the full simulation. Outputs go to `runs/`; use `--output-dir` to change this. `pip install .` builds the C++ extension; installing only `requirements.txt` does not.
 
-   ```sh
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
+C++ accelerates path arithmetic, purification, interactions, sequential grid updates, voting, ordered opponent selection and incremental path statistics. Python retains control flow and random draws; existing PyTorch/NumPy/LLM kernels remain native. `--backend python` retains the reference path; `auto` reports a fallback if the native extension is missing.
 
-3. **Install dependencies:**
+Small online networks default to CPU with one PyTorch thread, because MPS was slower for their current single-sample workload on the tested M1. `--device cuda`, `--device mps`, and `--torch-threads N` remain available. LLM device selection is independent: Apple Silicon can use local MLX/Metal, Windows/Linux can use an appropriate CUDA-enabled llama.cpp build, and CPU-only operation needs no GPU.
 
-   ```sh
-   pip install -r requirements.txt
-   ```
+## Docker CPU
 
-4. **Download the model file:**
+```sh
+docker compose build
+docker compose up -d
+docker compose logs -f
+docker compose stop
+```
 
-   - Download `Qwen3-0.6B-Q8_0.gguf` from [Hugging Face](https://huggingface.co/) or the official source.
-   - Place it in the `models` folder.
+The default image disables LLM, runs as a non-root user, and stores outputs in the `tiemu-data` volume. It works without GPU passthrough; see the Chinese guide for optional CPU GGUF/model mounts and smoke checks. A Hyper-V guest does not automatically inherit the host GPU.
 
-5. **Run the project:**
+## Console and output
 
-   ```sh
-   python main.py
-   ```
+With an attached terminal, press `p` to pause at the next safe point. Commands include `c`, `n`, `status`, `top`, `p <name|baie>`, `zeitgeist`, `blueprint`, `set <parameter> <value>`, `save <path.json>`, `stop`, and `help`. `n` advances one generation or one organic training step. Linux/macOS use POSIX terminal input; Windows uses its console API. Non-TTY input is automatically disabled; `--no-interactive` makes this explicit.
 
-   No lama_cpp:
+Normal completion, `stop`, Ctrl+C and SIGTERM export `world.json` and CPU-loadable policy weights using atomic replacement. A JSON snapshot lacks optimizer, RNG and phase state and **cannot resume training**. `load` and `--load-save` therefore refuse restoration instead of silently restarting or overwriting a world. Files saved during an interrupted early phase are inspection snapshots, not checkpoints.
 
-   ```sh
-   python main.py --disable-llm
-   ```
-
-## Notes
-
-- The `models` folder and large model files are ignored by git.
-- If you encounter issues, check that all dependencies are installed and the model file is present.
-- you should still be able to run the thing without the LLM model.
-- you can run **without LLM whell package**, use arg: `--disable-llm`.
-- This project uses `pyclog` for logging. See [About the Logging System](readme/clog_en.md) for a quick guide, and the [Pyclog Project](https://github.com/Akanyi/pyclog) for full details.
-
-## Interactive Console and Archiving
-
-This project has a powerful built-in interactive console that allows you to pause the simulation, observe, and even modify the world's parameters in real-time. Additionally, you can save and load the simulation progress at any time.
-
-### Interactive Console
-
-During the simulation, you can press the `p` key at any time to pause the simulation and enter the interactive console. Here, you can observe and intervene in the evolution of Omphalos like a "La Lou ke" (辣卤客).
-
-The console will display the prompt `(翁法罗斯创世涡心) >`, waiting for you to input commands.
-
-**List of Available Commands:**
-
-- **`c` or `continue`**: Resume the simulation.
-- **`n` or `next`**: Execute the next generation (one frame), then pause again. This is very useful for observing evolution frame by frame.
-- **`status`**: Display the macro status of the world, including the current generation, population size, ecological diversity, stagnation count, etc.
-- **`p <entity_name|baie>`**: Print detailed information of the specified entity or the current "Baie" (白厄), including its Titan affinity and path tendency.
-  - > *Example:* `p Neikos-0496`
-- **`top [k]`**: Display the top k entities with the highest scores in the current world (default is 5).
-  - > *Example:* `top 10`
-- **`zeitgeist`**: View the current mainstream ideology and its weight as determined by the Citizens' Council.
-- **`blueprint`**: View the current global evolutionary blueprint (base Titan affinities).
-- **`set <parameter_name> <value>`**: **Core control function**. Dynamically modify a simulation parameter.
-  - > *Example:* `set mutation_rate 0.5` (Immediately adjusts the mutation rate to 0.5)
-- **`save <filename.json>`**: Save the current simulation state completely to a file.
-- **`load <filename.json>`**: Load a simulation state from a file, completely overwriting the current world.
-- **`help`**: Display help information for all available commands.
-
-### Save & Load
-
-You can utilize the save/load functionality in two ways:
-
-- **During the simulation**
-
-After entering the interactive console by pressing the `p` key, you can use the following commands:
-
-- **Save current progress:**
-
-    ```command
-    save my_world_state.json
-    ```
-
-- **Load previous progress:**
-
-    ```command
-    load my_world_state.json
-    ```
-
-    *Note:* After loading, all current progress will be overwritten by the archive. You need to enter `c` or `n` to continue running the loaded world.
-
-- **Start from an archive**
-
-You can directly load an archive file via a command-line argument when launching the project. This is very convenient for continuing a previous simulation.
+GPU/CPU arithmetic and independently sampled or quantized LLMs are not guaranteed to produce identical long trajectories or text. See [validation boundaries and measured speedups](docs/performance.md).
 
 ## Thanks
 
-- HeyCrab3
-- AvalonRuFae
-- MoonofBridge24
-- Akanyi
+Original contributors: HeyCrab3, AvalonRuFae, MoonofBridge24, Akanyi.
+
+Logging uses [pyclog](https://github.com/Akanyi/pyclog); see [logging guide](readme/clog_en.md).

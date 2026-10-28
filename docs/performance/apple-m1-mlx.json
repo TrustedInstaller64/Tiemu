@@ -1,0 +1,26 @@
+{
+  "metal_available": true,
+  "backend": "mlx",
+  "device": "metal",
+  "available": true,
+  "load_seconds": 4.885339166998165,
+  "response": "你好！",
+  "generation_seconds": 1.1053600409941282,
+  "measured_on": "2026-10-28",
+  "hardware": "Apple M1",
+  "model_name": "Qwen3-0.6B-MLX",
+  "model_source": "Existing local 4-bit checkpoint; model files are not committed to this repository and were not downloaded for this test.",
+  "model_in_repository": false,
+  "offline": true,
+  "mlx_version": "0.32.0",
+  "mlx_lm_version": "0.31.3",
+  "transformers_version": "5.14.1",
+  "prompt": "请简短回答：你好。",
+  "max_tokens": 16,
+  "temperature": 0.0,
+  "seed": 42,
+  "enable_thinking": false,
+  "limitations": [
+    "One short generation outside the GPU-restricting sandbox; not a steady-state throughput, energy, or ANE benchmark."
+  ]
+}
