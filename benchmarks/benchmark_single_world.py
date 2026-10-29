@@ -306,7 +306,9 @@ class BoundaryTimers:
                          'generation must return a non-None native result, ruling out observer-forced fallback. '
                          'The entry span includes eligibility, packing, core execution and writeback. '
                          'Separate eligibility and C ABI execution spans identify marshaling overhead '
-                         'without modifying any protected entity or handler method.'}
+                         'without modifying any protected entity or handler method. Eligibility covers '
+                         'structural checks; batched finite-value checks are inside the remaining entry '
+                         'time, so compare the total entry span across revisions.'}
 
 
 def sample(population, generations, profile_path=None, boundary_timers=False):

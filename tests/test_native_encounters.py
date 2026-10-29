@@ -49,7 +49,8 @@ def native():
 
 
 def source_at_baseline(filename):
-    return subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{BASELINE}:{filename}'], text=True)
+    return subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{BASELINE}:{filename}'],
+                                   encoding='utf-8')
 
 
 @functools.lru_cache(maxsize=1)
@@ -298,7 +299,11 @@ def test_stale_bucket_draws_and_culling_keep_numpy_rng_consumption(native):
                                    'custom_handler', 'duplicate', 'nonfinite', 'different_matrix',
                                    'other_python_thread', 'custom_numpy_rng', 'custom_python_rng',
                                    'tide_alias', 'scalar_float32', 'integer_hp', 'method_override',
-                                   'clash_zero_denominator', 'numpy_integer_score', 'cache_view'])
+                                   'clash_zero_denominator', 'numpy_integer_score', 'cache_view',
+                                   'last_titan_inf', 'last_cache_nan', 'last_score_nan', 'last_hp_inf',
+                                   'titan_float32', 'readonly_titan', 'cache_float32', 'shared_cache',
+                                   'entity_class_method', 'entity_instance_method',
+                                   'entity_class_property', 'entity_instance_property'])
 def test_ineligible_input_returns_none_without_mutating_state_or_rng(native, unsafe, monkeypatch):
     bridge = candidate()
     world = make_world()
@@ -342,11 +347,42 @@ def test_ineligible_input_returns_none_without_mutating_state_or_rng(native, uns
         world.population[0].score = np.int64(0)
     elif unsafe == 'cache_view':
         world.population[0]._path_affinities = np.arange(12., dtype=np.float64)[:]
+    elif unsafe == 'last_titan_inf':
+        world.population[-1].titan_affinities[-1] = np.inf
+    elif unsafe == 'last_cache_nan':
+        world.population[-1]._path_affinities[-1] = np.nan
+    elif unsafe == 'last_score_nan':
+        world.population[-1].score = np.float64(np.nan)
+    elif unsafe == 'last_hp_inf':
+        world.population[-1].hp = float('-inf')
+    elif unsafe == 'titan_float32':
+        world.population[-1].titan_affinities = world.population[-1].titan_affinities.astype(np.float32)
+    elif unsafe == 'readonly_titan':
+        world.population[-1].titan_affinities.flags.writeable = False
+    elif unsafe == 'cache_float32':
+        world.population[-1]._path_affinities = world.population[-1]._path_affinities.astype(np.float32)
+    elif unsafe == 'shared_cache':
+        world.population[-1]._path_affinities = world.population[1]._path_affinities
+    elif unsafe in ('entity_class_method', 'entity_class_property'):
+        # An earlier accepted call must not cache class eligibility forever.
+        assert bridge._eligible(world)
+        if unsafe == 'entity_class_method':
+            monkeypatch.setattr(Pathstrider, 'internal_purification', lambda *args: None)
+        else:
+            monkeypatch.setattr(Pathstrider, 'path_affinities', property(lambda self: np.ones(12)))
+    elif unsafe == 'entity_instance_method':
+        world.population[-1].internal_purification = lambda *args: None
+    elif unsafe == 'entity_instance_property':
+        world.population[-1].__dict__['path_affinities'] = np.ones(12)
     before = pickle.dumps(snapshot(world))
     before_rng = rng_state()
+    before_arrays = [(entity.titan_affinities, entity._path_affinities) for entity in world.population]
     assert world.interaction_handler._native_opponents is None
     assert bridge.try_run_encounters(world, trace=True) is None
     assert pickle.dumps(snapshot(world)) == before
+    for entity, (titans, paths) in zip(world.population, before_arrays):
+        assert entity.titan_affinities is titans
+        assert entity._path_affinities is paths
     assert rng_state() == before_rng
     assert world.interaction_handler._native_opponents is None
 

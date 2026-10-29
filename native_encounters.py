@@ -33,6 +33,8 @@ _U = ct.POINTER(ct.c_uint32)
 _B = ct.POINTER(ct.c_uint8)
 _MT = ct.c_uint32 * 625
 _PATH_NAMES, _TITAN_NAMES = tuple(PATH_NAMES), tuple(TITAN_NAMES)
+_VALID_ASPECTS = (None, *_TITAN_NAMES)
+_FLOAT64 = np.dtype(np.float64)
 _TRAITS = {'Mortal': 0, 'GoldenOne': 1, 'Reincarnator': 2}
 _RELATIONS = {'CLASH': 1, 'SYNERGY': 2, 'REPULSION': 3, 'MENTORSHIP': 4}
 _METHODS = {
@@ -130,24 +132,28 @@ def _standard_rngs():
                for owner, _, original in _RNG_FUNCTIONS)
 
 
-def _array(value, shape, *, owned=False, writable=False):
-    return (type(value) is np.ndarray and value.dtype == np.dtype(np.float64)
-            and value.shape == shape and value.flags.c_contiguous and value.flags.aligned
-            and (not owned or value.flags.owndata) and (not writable or value.flags.writeable)
-            and bool(np.all(np.isfinite(value))))
+def _array_layout(value, shape, *, owned=False, writable=False):
+    if type(value) is not np.ndarray or value.dtype != _FLOAT64 or value.shape != shape:
+        return False
+    flags = value.flags
+    return (flags.c_contiguous and flags.aligned and (not owned or flags.owndata)
+            and (not writable or flags.writeable))
+
+
+def _array(value, shape):
+    return _array_layout(value, shape) and bool(np.isfinite(value).all())
 
 
 def _number(value):
     return isinstance(value, (int, float, np.integer, np.floating)) and bool(np.isfinite(value))
 
 
-def _entity_number(value):
-    # Fixed-width integers and lower-precision floating scalars have different
-    # overflow/promotion rules. The newborn score exception is checked separately.
-    return type(value) in (float, np.float64) and _number(value)
-
-
 def _eligible(sim):
+    """Check structure without reading lazy caches; packed values are checked below.
+
+    Class methods are checked once per call, while every entity still rejects
+    instance overrides. No validation is cached across generations.
+    """
     if threading.active_count() != 1 or not _standard_rngs():
         return False
     if tuple(PATH_NAMES) != _PATH_NAMES or tuple(TITAN_NAMES) != _TITAN_NAMES:
@@ -187,33 +193,43 @@ def _eligible(sim):
         return False
     if not _array(model.titan_to_path_matrix, (12, 12)):
         return False
-    reserved_ranges = [(array.ctypes.data, array.ctypes.data + array.nbytes) for array in (
-        manager.cosmic_tide_vector, model.titan_to_path_matrix, handler.PATH_INTERACTION_MATRIX)]
+    reserved_ranges = []
+    for array in (manager.cosmic_tide_vector, model.titan_to_path_matrix, handler.PATH_INTERACTION_MATRIX):
+        start = array.ctypes.data
+        reserved_ranges.append((start, start + array.nbytes))
+    path_methods = _METHODS[Pathstrider]
+    if any(getattr(Pathstrider, name) is not original for name, original in path_methods.items()):
+        return False
     seen_arrays = set()
     for entity in population:
-        if not _original_methods(entity, Pathstrider) or entity._titan_to_path_model is not model:
+        if (type(entity) is not Pathstrider or not entity.__dict__.keys().isdisjoint(path_methods)
+                or entity._titan_to_path_model is not model):
             return False
         if (type(entity.trait) is not str or entity.trait not in _TRAITS
-                or entity.titan_aspect not in (None, *_TITAN_NAMES)
+                or entity.titan_aspect not in _VALID_ASPECTS
                 or type(entity.name) is not str or type(entity.is_titan_boss) is not bool
                 or type(entity.data_modification_unlocked) is not bool
-                or not (_entity_number(entity.score) or (type(entity.score) is int and entity.score == 0))
-                or not _entity_number(entity.hp) or entity.score == -1e-6
+                or not (type(entity.score) in (float, np.float64)
+                        or (type(entity.score) is int and entity.score == 0))
+                or type(entity.hp) not in (float, np.float64) or entity.score == -1e-6
                 or abs(entity.score) > 1e15):
             return False
-        if not _array(entity.titan_affinities, (12,), owned=True, writable=True):
+        if not _array_layout(entity.titan_affinities, (12,), owned=True, writable=True):
             return False
         cache = entity._path_affinities
-        if cache is not None and not _array(cache, (12,), owned=True):
+        if cache is not None and not _array_layout(cache, (12,), owned=True):
             return False
         for array in (entity.titan_affinities, cache):
             if array is not None:
-                if id(array) in seen_arrays:
+                identity = id(array)
+                if identity in seen_arrays:
                     return False
-                start, end = array.ctypes.data, array.ctypes.data + array.nbytes
-                if any(start < right and left < end for left, right in reserved_ranges):
-                    return False
-                seen_arrays.add(id(array))
+                start = array.ctypes.data
+                end = start + array.nbytes
+                for left, right in reserved_ranges:
+                    if start < right and left < end:
+                        return False
+                seen_arrays.add(identity)
     return sim.reincarnator is None or any(entity is sim.reincarnator for entity in population)
 
 
@@ -251,12 +267,10 @@ def try_run_encounters(sim, *, trace=False):
         eligible = False
     if not eligible:
         return None
-    run, last_error = _entry_points(native._lib)
     population = sim.population
     count, encounters = len(population), min(2*len(population), 5000)
     manager, handler = sim.population_manager, sim.interaction_handler
     titans = np.stack([entity.titan_affinities for entity in population])
-    original_titans = titans.copy()
     paths = np.zeros((count, 12), dtype=np.float64)
     valid = np.zeros(count, dtype=np.uint8)
     for i, entity in enumerate(population):
@@ -265,6 +279,14 @@ def try_run_encounters(sim, *, trace=False):
             valid[i] = 1
     scores = np.array([entity.score for entity in population], dtype=np.float64)
     hp = np.array([entity.hp for entity in population], dtype=np.float64)
+    # These copies are already needed by the C ABI. Validate whole buffers once
+    # instead of allocating/reducing a 12-element mask for every source array.
+    # Missing caches remain zero rows, and no entity/index/RNG has been changed.
+    if not (np.isfinite(titans).all() and np.isfinite(paths).all()
+            and np.isfinite(scores).all() and np.isfinite(hp).all()):
+        return None
+    run, last_error = _entry_points(native._lib)
+    original_titans = titans.copy()
     traits = np.array([_TRAITS[entity.trait] for entity in population], dtype=np.int32)
     aspects = np.array([-1 if entity.titan_aspect is None else _TITAN_NAMES.index(entity.titan_aspect)
                         for entity in population], dtype=np.int32)
