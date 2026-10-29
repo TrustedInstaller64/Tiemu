@@ -225,6 +225,17 @@ class BoundaryTimers:
                 self.wrap('Pathstrider.dominant_path_idx', original_property.fget),
                 original_property.fset, original_property.fdel, original_property.__doc__))
         else:
+            import native_encounters as encounter_module
+            self.replace(encounter_module, '_eligible', self.wrap(
+                'encounters.eligibility', encounter_module._eligible))
+            original_entry_points = encounter_module._entry_points
+
+            @functools.wraps(original_entry_points)
+            def observed_entry_points(library):
+                run, error = original_entry_points(library)
+                return self.wrap('encounters.C++_run', run), error
+
+            self.replace(encounter_module, '_entry_points', observed_entry_points)
             original_encounters = simulation_module.try_run_encounters
             @functools.wraps(original_encounters)
             def observed_encounters(*positional, **keywords):
@@ -293,7 +304,9 @@ class BoundaryTimers:
                          'When the standalone encounter entry is present, protected entity/handler/manager '
                          'methods are left untouched. Only its outer entry is wrapped and every human '
                          'generation must return a non-None native result, ruling out observer-forced fallback. '
-                         'The entry span includes eligibility, packing, core execution and writeback.'}
+                         'The entry span includes eligibility, packing, core execution and writeback. '
+                         'Separate eligibility and C ABI execution spans identify marshaling overhead '
+                         'without modifying any protected entity or handler method.'}
 
 
 def sample(population, generations, profile_path=None, boundary_timers=False):

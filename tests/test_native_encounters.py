@@ -112,7 +112,9 @@ def make_world(size=16, relation='SYNERGY', kind='mortal', frozen=False):
         entity.score = 3.0 + (i % 7) * 0.3
         entity.activity, entity.stability, entity.heroic_tendency = 1.0+i, 2.0+i, 1.0+i
         if i % 2:
-            entity._path_affinities = np.roll(np.arange(1., 13.)/78., i)
+            # NumPy roll(axis=None) returns reshape(...), potentially a view.
+            # Ordinary native caches own their storage; alias cases are separate.
+            entity._path_affinities = np.roll(np.arange(1., 13.)/78., i).copy()
     relations = np.full((12, 12), relation, dtype=object)
     modifiers = np.arange(144, dtype=np.float64).reshape(12, 12)/200.0 + 0.5
     handler = classes['InteractionHandler'](relations, modifiers, 0.5, 0.0, size, model, manager)
@@ -163,6 +165,12 @@ def snapshot(world):
 
 
 def assert_same_entities(actual, expected):
+    assert len(actual.population) == len(expected.population)
+    for left, right in zip(actual.population, expected.population):
+        # to_dict deliberately casts these to float, so check scalar kinds
+        # before serialization to keep promotion differences observable.
+        assert type(left.score) is type(right.score)
+        assert type(left.hp) is type(right.hp)
     assert actual.parliament_manager._seat_cache_key == expected.parliament_manager._seat_cache_key
     left_seats = actual.parliament_manager._normalized_seat_vector
     right_seats = expected.parliament_manager._normalized_seat_vector
@@ -290,7 +298,7 @@ def test_stale_bucket_draws_and_culling_keep_numpy_rng_consumption(native):
                                    'custom_handler', 'duplicate', 'nonfinite', 'different_matrix',
                                    'other_python_thread', 'custom_numpy_rng', 'custom_python_rng',
                                    'tide_alias', 'scalar_float32', 'integer_hp', 'method_override',
-                                   'clash_zero_denominator', 'numpy_integer_score'])
+                                   'clash_zero_denominator', 'numpy_integer_score', 'cache_view'])
 def test_ineligible_input_returns_none_without_mutating_state_or_rng(native, unsafe, monkeypatch):
     bridge = candidate()
     world = make_world()
@@ -332,6 +340,8 @@ def test_ineligible_input_returns_none_without_mutating_state_or_rng(native, uns
         world.population[0].score = -1e-6
     elif unsafe == 'numpy_integer_score':
         world.population[0].score = np.int64(0)
+    elif unsafe == 'cache_view':
+        world.population[0]._path_affinities = np.arange(12., dtype=np.float64)[:]
     before = pickle.dumps(snapshot(world))
     before_rng = rng_state()
     assert world.interaction_handler._native_opponents is None
@@ -408,6 +418,66 @@ def test_zero_battle_updates_preserve_newborn_score_type_changes(native, boss_hp
         for left, right in zip(actual.population, expected.population):
             assert type(left.hp) is type(right.hp)
             assert type(left.score) is type(right.score)
+    finally:
+        close_index(actual)
+        close_index(expected)
+
+
+@pytest.mark.parametrize('golden_score', [0.0, 3.0])
+def test_numpy_scalar_damage_promotes_python_float_hp_even_when_zero(native, golden_score):
+    bridge = candidate()
+    actual, expected = make_world(size=2, kind='battle'), make_world(size=2, kind='battle', frozen=True)
+    for world in (actual, expected):
+        world.population[0].score = np.float64(golden_score)
+        assert type(world.population[1].hp) is float
+    random.seed(15)
+    np.random.seed(731)
+    _, _, expected_trace = frozen_oracle()[1](expected, trace_recorder(expected.population))
+    expected_rng = rng_state()
+    random.seed(15)
+    np.random.seed(731)
+    try:
+        result = bridge.try_run_encounters(actual, trace=True)
+        assert result is not None
+        assert result.trace == expected_trace
+        assert rng_state() == expected_rng
+        assert_same_entities(actual, expected)
+        assert type(actual.population[1].hp) is type(expected.population[1].hp) is np.float64
+    finally:
+        close_index(actual)
+        close_index(expected)
+
+
+def test_tracking_context_replaces_stale_metadata_without_mutating_old_aliases(native):
+    bridge = candidate()
+    actual, expected = make_world(), make_world(frozen=True)
+    aliases = []
+    for world in (actual, expected):
+        manager = world.population_manager
+        manager._path_histogram = object()
+        manager._tracked_indices = {'old': 42}
+        manager._dirty_paths = {'old-dirty'}
+        aliases.append((manager._path_histogram, manager._tracked_indices, manager._dirty_paths))
+    random.seed(731)
+    np.random.seed(731)
+    _, _, expected_trace = frozen_oracle()[1](expected, trace_recorder(expected.population))
+    expected_rng = rng_state()
+    random.seed(731)
+    np.random.seed(731)
+    try:
+        result = bridge.try_run_encounters(actual, trace=True)
+        assert result is not None
+        assert result.trace == expected_trace
+        assert rng_state() == expected_rng
+        assert_same_entities(actual, expected)
+        for world, (_, old_indices, old_dirty) in zip((actual, expected), aliases):
+            manager = world.population_manager
+            assert manager._tracked_population is None
+            assert manager._path_histogram is None
+            assert manager._tracked_indices == {} and manager._tracked_indices is not old_indices
+            assert manager._dirty_paths == set() and manager._dirty_paths is not old_dirty
+            assert old_indices == {'old': 42}
+            assert old_dirty == {'old-dirty'}
     finally:
         close_index(actual)
         close_index(expected)

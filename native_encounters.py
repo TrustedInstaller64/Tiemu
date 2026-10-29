@@ -303,13 +303,16 @@ def try_run_encounters(sim, *, trace=False):
     result = _Result(_ptr(culled_ids, _I), count, 0, _ptr(updated_ids, _I), count, 0,
                      events, encounters*3, 0, traces, encounters if trace else 0, 0, 0,
                      (ct.c_double * 12)())
-    with opponent_index._lock:
-        config.opponent_index = opponent_index._live()
-        status = run(ct.byref(config), ct.byref(state), ct.byref(result))
-        if status:
-            raw = last_error()
-            message = raw.decode('utf-8', errors='replace') if raw else 'Encounter engine failed'
-            raise {1: ValueError, 2: IndexError, 3: RuntimeError}.get(status, RuntimeError)(message)
+    # Retain the original manager lifecycle, including replacement of stale
+    # dictionaries/sets and finally cleanup. Numeric histogram work stays in C++.
+    with manager.track_distribution(population):
+        with opponent_index._lock:
+            config.opponent_index = opponent_index._live()
+            status = run(ct.byref(config), ct.byref(state), ct.byref(result))
+            if status:
+                raw = last_error()
+                message = raw.decode('utf-8', errors='replace') if raw else 'Encounter engine failed'
+                raise {1: ValueError, 2: IndexError, 3: RuntimeError}.get(status, RuntimeError)(message)
     np.random.set_state((numpy_state[0], numpy_mt[:624], int(numpy_mt[624]), *numpy_state[3:]))
     random.setstate((python_state[0], tuple(int(value) for value in python_mt), python_state[2]))
     # The unused multiplier arithmetic previously initialized this public seat
@@ -319,7 +322,16 @@ def try_run_encounters(sim, *, trace=False):
     # Even zero damage and a zero score promotion change integer scalar types.
     # Event-time writes identify these operations independently of value changes.
     score_written = {events[i].first for i in range(result.event_count) if events[i].kind == 4}
-    hp_written = {events[i].second for i in range(result.event_count) if events[i].kind == 3}
+    hp_written = set()
+    hp_numpy = [type(entity.hp) is np.float64 for entity in population]
+    for i in range(result.event_count):
+        event = events[i]
+        if event.kind == 3:
+            hp_written.add(event.second)
+            # NumPy scalar damage promotes even an unchanged Python-float HP.
+            # Score multiplication keeps NumPy-ness (int(0) only becomes float),
+            # so its initial scalar kind is valid throughout this ordered replay.
+            hp_numpy[event.second] |= type(population[event.first].score) is np.float64
     for i, entity in enumerate(population):
         if old_mutated[i]:
             entity.titan_affinities[:] = original_titans[i]
@@ -330,7 +342,7 @@ def try_run_encounters(sim, *, trace=False):
         if i in score_written or scores[i] != entity.score:
             entity.score = np.float64(scores[i]) if isinstance(entity.score, np.generic) else float(scores[i])
         if i in hp_written or hp[i] != entity.hp:
-            entity.hp = np.float64(hp[i]) if isinstance(entity.hp, np.generic) else float(hp[i])
+            entity.hp = np.float64(hp[i]) if hp_numpy[i] else float(hp[i])
         if bool(unlocked[i]) != entity.data_modification_unlocked:
             entity.data_modification_unlocked = bool(unlocked[i])
     culled, updated = set(), set()

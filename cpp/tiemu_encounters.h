@@ -17,7 +17,8 @@
  * State buffers are in/out scratch copies, not user-visible Python arrays.
  * On error, scratch contents and index state are unspecified; do not commit
  * them to application state. No C++ exception crosses the ABI. Read the
- * encounter-specific thread-local error before the next encounter call.
+ * shared core thread-local error before the next status-returning core or
+ * encounter call.
  */
 
 #ifdef __cplusplus
