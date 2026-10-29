@@ -6,6 +6,8 @@ import torch.optim as optim
 from constants import PATH_NAMES, TITAN_NAMES, LONG_TERM_STAGNATION_THRESHOLD, BAIE_STAGNATION_THRESHOLD
 from entities import Pathstrider
 from population_manager import PopulationManager
+from native_backend import get_native
+from native_paths import _native_dominant_paths
 
 import logging 
 logger = logging.getLogger("OmphalosLogger") 
@@ -95,7 +97,10 @@ class StagnationManager:
             self.mutation_rate = self.base_mutation_rate
             return 0
             
-        num_dominant_paths = len(set(p.dominant_path_idx for p in population))
+        native = get_native()
+        indices = _native_dominant_paths(population, native) if native is not None else None
+        num_dominant_paths = len(set(indices if indices is not None else
+                                     (p.dominant_path_idx for p in population)))
         diversity_metric = num_dominant_paths / len(PATH_NAMES)
         
         #if diversity_metric < 0.25:

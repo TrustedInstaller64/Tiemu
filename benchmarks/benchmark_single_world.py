@@ -309,7 +309,9 @@ class BoundaryTimers:
                          'Separate eligibility and C ABI execution spans identify marshaling overhead '
                          'without modifying any protected entity or handler method. Eligibility covers '
                          'structural checks; batched finite-value checks are inside the remaining entry '
-                         'time, so compare the total entry span across revisions.'}
+                         'time, so compare the total entry span across revisions. Population, diversity '
+                         'and stagnation statistics may share batched path reads outside the encounter '
+                         'entry; their cost remains in the enclosing generation/evolution spans.'}
 
 
 def sample(population, generations, profile_path=None, boundary_timers=False):

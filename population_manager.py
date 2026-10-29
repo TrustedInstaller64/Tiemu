@@ -1,6 +1,7 @@
 import numpy as np
 from contextlib import contextmanager
 from native_backend import get_native
+from native_paths import _native_dominant_paths
 import random
 from collections import Counter
 
@@ -124,6 +125,14 @@ class PopulationManager:
                     self._path_histogram.update(self._tracked_indices[p], int(p.dominant_path_idx))
             self._dirty_paths.clear()
             return self._path_histogram.distribution()
+        native = get_native()
+        indices = _native_dominant_paths(population, native) if native is not None else None
+        if indices is not None:
+            histogram = native.PathHistogram(indices, len(PATH_NAMES))
+            try:
+                return histogram.distribution()
+            finally:
+                histogram.close()
         path_counts = np.zeros(len(PATH_NAMES))
         for p in population:
             path_counts[p.dominant_path_idx] += 1

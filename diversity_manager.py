@@ -3,6 +3,8 @@ import numpy as np
 import random
 from collections import Counter
 from constants import PATH_NAMES, TITAN_NAMES
+from native_backend import get_native
+from native_paths import _native_dominant_paths
 
 import logging 
 logger = logging.getLogger("OmphalosLogger") 
@@ -29,7 +31,10 @@ class DiversityInterventionManager:
         if not population:
             return 0.0, []
         
-        path_counts = Counter(p.dominant_path_idx for p in population)
+        native = get_native()
+        indices = _native_dominant_paths(population, native) if native is not None else None
+        path_counts = Counter(indices if indices is not None else
+                              (p.dominant_path_idx for p in population))
         num_present_paths = len(path_counts)
         diversity_index = num_present_paths / len(PATH_NAMES)
         
