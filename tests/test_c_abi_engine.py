@@ -1,6 +1,8 @@
 """Migration contracts: run only on the remote hosted CI while local load is forbidden."""
 import importlib
 import random
+import gc
+import weakref
 
 import numpy as np
 import pytest
@@ -15,6 +17,39 @@ def test_native_core_uses_c_abi_without_a_python_extension_binding():
     assert module.__binding__ == "c-abi"
     assert module.ABI_VERSION == 1
     assert module.__file__.endswith(".py")
+
+
+@pytest.mark.parametrize('parallel', [False, True])
+def test_converted_buffers_survive_collection_until_native_work_completes(monkeypatch, parallel):
+    module = native()
+    references = []
+    convert = module._array
+    def observe_conversion(*args, **kwargs):
+        result = convert(*args, **kwargs)
+        references.append(weakref.ref(result))
+        return result
+    monkeypatch.setattr(module, '_array', observe_conversion)
+    symbol = '_batch_concepts' if parallel else '_path_affinities'
+    function = getattr(module, symbol)
+    def collect_at_boundary(*args):
+        gc.collect()
+        assert references and all(reference() is not None for reference in references)
+        return function(*args)
+    monkeypatch.setattr(module, symbol, collect_at_boundary)
+    if parallel:
+        evaluator = module.BatchEvaluator(4, 1)
+        try:
+            paths, stats = evaluator.concepts([[1., 2.]] * 64, [[1., 0.], [0., 1.]],
+                                               [1.] * 64, [0.5, 0.5], [0] * 64)
+            assert stats.shape == (64, 4)
+            np.testing.assert_array_equal(paths, np.tile([1/3, 2/3], (64, 1)))
+        finally:
+            evaluator.close()
+    else:
+        paths = module.path_affinities([1., 2.], [[1., 0.], [0., 1.]])
+        np.testing.assert_array_equal(paths, [1/3, 2/3])
+    gc.collect()
+    assert all(reference() is None for reference in references)
 
 
 def test_backend_ignores_old_inplace_extension_name(monkeypatch):

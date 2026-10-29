@@ -39,7 +39,12 @@ def _bind(name, arguments, result=_ct.c_int):
         function = getattr(_lib, name)
     except AttributeError as exc:
         raise ImportError(f"Tiemu C ABI is missing required symbol {name}") from exc
-    function.argtypes = arguments
+    # Validated ndarray locals own every buffer until these synchronous calls
+    # return (including worker completion). Pass pointer-width addresses without
+    # constructing data_as pointer objects and their extra reference graphs.
+    # Keep handle-out pointers and return types typed; the public C ABI is unchanged.
+    function.argtypes = [_H if argument in (_D, _I, _U) else argument
+                         for argument in arguments]
     function.restype = result
     return function
 
@@ -122,7 +127,8 @@ def _integer(value, name):
 
 
 def _ptr(array, pointer=_D):
-    return array.ctypes.data_as(pointer)
+    # Never call this on an unbound temporary: the integer does not retain array.
+    return array.ctypes.data
 
 
 def _distribution(value, paths):

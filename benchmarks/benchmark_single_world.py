@@ -311,7 +311,8 @@ class BoundaryTimers:
                          'structural checks; batched finite-value checks are inside the remaining entry '
                          'time, so compare the total entry span across revisions. Population, diversity '
                          'and stagnation statistics may share batched path reads outside the encounter '
-                         'entry; their cost remains in the enclosing generation/evolution spans.'}
+                         'entry; their cost remains in the enclosing generation/evolution spans. '
+                         'Scalar C ABI conversion is included in its calling phase; no timer is subtracted.'}
 
 
 def sample(population, generations, profile_path=None, boundary_timers=False):

@@ -1,0 +1,389 @@
+{
+  "commit": "c7ad00788acd5ca9eb3fb122794b864a24b40dfa",
+  "baseline": "4a2311dfff44e5b92829dfdb84f735f37c171701",
+  "run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/40969055755",
+  "source": "Completed GitHub job log summaries; all checked state/RNG comparisons passed. Remaining aeonic regression prompted scalar buffer-argument overhead work.",
+  "results": [
+    {
+      "platform": "linux",
+      "records": [
+        {
+          "phase": "human",
+          "population": 1000,
+          "generations": 6,
+          "initial_reincarnator": false,
+          "median_seconds": {
+            "baseline": 0.21913911400000075,
+            "a-1": 0.11969249099999502,
+            "a-4": 0.12004523900000663,
+            "a-4-forced": 0.12206103700000881
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 1.8308509762739409,
+            "a-4": 1.8254710959423275,
+            "a-4-forced": 1.7953240393982965
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9999986538231571,
+            "a-1": 0.9999738768484142,
+            "a-4": 1.000043167059656,
+            "a-4-forced": 1.0034720600400595
+          }
+        },
+        {
+          "phase": "human",
+          "population": 10000,
+          "generations": 3,
+          "initial_reincarnator": false,
+          "median_seconds": {
+            "baseline": 0.7955595820000099,
+            "a-1": 0.7130292209999993,
+            "a-4": 0.7077991379999844,
+            "a-4-forced": 0.7185707239999886
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 1.1157461132999074,
+            "a-4": 1.1239906059337803,
+            "a-4-forced": 1.1071416569429045
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.999948952214739,
+            "a-1": 0.9999339312673025,
+            "a-4": 1.0029006366740372,
+            "a-4-forced": 1.0029722658738651
+          }
+        },
+        {
+          "phase": "human",
+          "population": 1000,
+          "generations": 6,
+          "initial_reincarnator": true,
+          "median_seconds": {
+            "baseline": 0.2302791710000065,
+            "a-1": 0.1307806779999794,
+            "a-4": 0.1303855300000123,
+            "a-4-forced": 0.13075353700000392
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 1.7608042298117066,
+            "a-4": 1.7661405448901024,
+            "a-4-forced": 1.7611697265214294
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9999841713864495,
+            "a-1": 0.9999076320163595,
+            "a-4": 0.9999692877848328,
+            "a-4-forced": 1.003184646107366
+          }
+        },
+        {
+          "phase": "aeonic",
+          "population": 200,
+          "generations": 2,
+          "initial_reincarnator": false,
+          "median_seconds": {
+            "baseline": 0.02191850299999487,
+            "a-1": 0.02379282000001126,
+            "a-4": 0.02384257399998546,
+            "a-4-forced": 0.023727995000001556
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 0.9212234195015344,
+            "a-4": 0.9193010368766492,
+            "a-4-forced": 0.9237402064520595
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 1.000129842532633,
+            "a-1": 1.000139155322838,
+            "a-4": 1.0001202762776231,
+            "a-4-forced": 1.0001376433195661
+          }
+        },
+        {
+          "phase": "inorganic",
+          "grid": [
+            10,
+            10
+          ],
+          "generations": 10000,
+          "median_seconds": {
+            "baseline": 0.3057644529999948,
+            "candidate": 0.03403375199999914
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "candidate": 8.984153525006661
+          },
+          "same_legacy": true,
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9999643333667585,
+            "candidate": 1.0001215558014525
+          }
+        }
+      ]
+    },
+    {
+      "platform": "macos",
+      "records": [
+        {
+          "phase": "human",
+          "population": 1000,
+          "generations": 6,
+          "initial_reincarnator": false,
+          "median_seconds": {
+            "baseline": 0.3178664169999763,
+            "a-1": 0.13424145800001952,
+            "a-4": 0.15292804200001342,
+            "a-4-forced": 0.1374953749999861
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 2.3678707139781667,
+            "a-4": 2.078535844982233,
+            "a-4-forced": 2.311833521673063
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9942384067582196,
+            "a-1": 0.9986184190741059,
+            "a-4": 0.9867627948894631,
+            "a-4-forced": 0.9992263376132768
+          }
+        },
+        {
+          "phase": "human",
+          "population": 10000,
+          "generations": 3,
+          "initial_reincarnator": false,
+          "median_seconds": {
+            "baseline": 0.7947971250000023,
+            "a-1": 0.7294844169999806,
+            "a-4": 0.7546113330000139,
+            "a-4-forced": 0.790111292000006
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 1.089532697995965,
+            "a-4": 1.0532536290440098,
+            "a-4-forced": 1.0059305986984886
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9962831710041701,
+            "a-1": 0.9923478733323294,
+            "a-4": 0.9977540793341254,
+            "a-4-forced": 0.9986061558527811
+          }
+        },
+        {
+          "phase": "human",
+          "population": 1000,
+          "generations": 6,
+          "initial_reincarnator": true,
+          "median_seconds": {
+            "baseline": 0.21608241699999553,
+            "a-1": 0.1164798749999818,
+            "a-4": 0.14641937499999358,
+            "a-4-forced": 0.12817787500000577
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 1.8551051587240224,
+            "a-4": 1.4757774850494,
+            "a-4-forced": 1.685801211792486
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9981923527329725,
+            "a-1": 0.9998515439371864,
+            "a-4": 0.9969060267311224,
+            "a-4-forced": 1.000742132758825
+          }
+        },
+        {
+          "phase": "aeonic",
+          "population": 200,
+          "generations": 2,
+          "initial_reincarnator": false,
+          "median_seconds": {
+            "baseline": 0.0266882920000171,
+            "a-1": 0.038269916999979614,
+            "a-4": 0.03592050000003155,
+            "a-4-forced": 0.053924208000012186
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 0.6973699995228972,
+            "a-4": 0.742982196795525,
+            "a-4-forced": 0.4949222805462635
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9934826247527859,
+            "a-1": 0.9977549729209007,
+            "a-4": 0.9884362331361509,
+            "a-4-forced": 0.9887766919077907
+          }
+        },
+        {
+          "phase": "inorganic",
+          "grid": [
+            10,
+            10
+          ],
+          "generations": 10000,
+          "median_seconds": {
+            "baseline": 0.40959454099998993,
+            "candidate": 0.04450283300002411
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "candidate": 9.203785767970503
+          },
+          "same_legacy": true,
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9859957679756145,
+            "candidate": 0.984319357825515
+          }
+        }
+      ]
+    },
+    {
+      "platform": "windows",
+      "records": [
+        {
+          "phase": "human",
+          "population": 1000,
+          "generations": 6,
+          "initial_reincarnator": false,
+          "median_seconds": {
+            "baseline": 0.24044000000003507,
+            "a-1": 0.12114730000001828,
+            "a-4": 0.12733629999996765,
+            "a-4-forced": 0.1202399000000014
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 1.9846913633238115,
+            "a-4": 1.888228258557035,
+            "a-4-forced": 1.9996689950676296
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9754582000294083,
+            "a-1": 1.0318017817977052,
+            "a-4": 0.9816525217085132,
+            "a-4-forced": 0.912612788510963
+          }
+        },
+        {
+          "phase": "human",
+          "population": 10000,
+          "generations": 3,
+          "initial_reincarnator": false,
+          "median_seconds": {
+            "baseline": 0.8513259999999718,
+            "a-1": 0.7120127999999681,
+            "a-4": 0.6963572999999883,
+            "a-4-forced": 0.7033615999999938
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 1.195661089238859,
+            "a-4": 1.2225419335734489,
+            "a-4-forced": 1.210367469591714
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9803621832937797,
+            "a-1": 1.0094621894438305,
+            "a-4": 0.9985327740968891,
+            "a-4-forced": 0.9878042455035911
+          }
+        },
+        {
+          "phase": "human",
+          "population": 1000,
+          "generations": 6,
+          "initial_reincarnator": true,
+          "median_seconds": {
+            "baseline": 0.26744880000001103,
+            "a-1": 0.14101080000000366,
+            "a-4": 0.1372875999999792,
+            "a-4-forced": 0.1390079999999898
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 1.8966547243190175,
+            "a-4": 1.9480914518139407,
+            "a-4-forced": 1.9239813535913808
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9931807508576933,
+            "a-1": 0.9972640393501516,
+            "a-4": 1.0243095516275418,
+            "a-4-forced": 1.0095763476630086
+          }
+        },
+        {
+          "phase": "aeonic",
+          "population": 200,
+          "generations": 2,
+          "initial_reincarnator": false,
+          "median_seconds": {
+            "baseline": 0.03290119999996932,
+            "a-1": 0.036577799999975014,
+            "a-4": 0.031864399999960824,
+            "a-4-forced": 0.03244699999999057
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "a-1": 0.899485480263761,
+            "a-4": 1.0325378792636852,
+            "a-4-forced": 1.013998212468915
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 1.0406641601926703,
+            "a-1": 1.015989232140391,
+            "a-4": 0.9807182937710555,
+            "a-4-forced": 0.9976312244198223
+          }
+        },
+        {
+          "phase": "inorganic",
+          "grid": [
+            10,
+            10
+          ],
+          "generations": 10000,
+          "median_seconds": {
+            "baseline": 0.32747590000002447,
+            "candidate": 0.034915600000033464
+          },
+          "speedup_over_baseline": {
+            "baseline": 1,
+            "candidate": 9.379071246082285
+          },
+          "same_legacy": true,
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 1.001982130593352,
+            "candidate": 0.8950154085844164
+          }
+        }
+      ]
+    }
+  ]
+}
