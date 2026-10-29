@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: baseline
-          ref: 1ce39e00b8808564a331861ffcc799d4237ac324
+          ref: 4a2311dfff44e5b92829dfdb84f735f37c171701
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
