@@ -1,4 +1,5 @@
 #include "tiemu_core.h"
+#include "tiemu_encounters.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -20,6 +21,9 @@ int main(void) {
     if (tiemu_opponent_destroy(&index)) return 9;
     if (tiemu_concepts(NULL, 0, 1.0, NULL, 0, 0, output, 3) != TIEMU_VALUE_ERROR) return 10;
     if (strlen(tiemu_last_error()) == 0) return 11;
+    if (tiemu_encounters_abi_version() != TIEMU_ENCOUNTERS_ABI_VERSION) return 12;
+    if (tiemu_encounters_run(NULL, NULL, NULL) != TIEMU_VALUE_ERROR) return 13;
+    if (strlen(tiemu_encounters_last_error()) == 0) return 14;
     puts("standalone C client: ABI, arithmetic, state handle and error contracts passed");
     return 0;
 }

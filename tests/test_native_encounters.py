@@ -13,13 +13,11 @@ from pathlib import Path
 import pickle
 import random
 import subprocess
+import threading
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
-
-pytestmark = pytest.mark.xfail(raises=pytest.fail.Exception, strict=True,
-                              reason='Remote RED: the standalone encounter bridge is absent')
 
 from constants import PATH_NAMES, TITAN_NAMES
 from entities import Pathstrider
@@ -289,8 +287,11 @@ def test_stale_bucket_draws_and_culling_keep_numpy_rng_consumption(native):
 
 
 @pytest.mark.parametrize('unsafe', ['purity_zero', 'purity_negative', 'shared_array', 'view',
-                                   'custom_handler', 'duplicate', 'nonfinite', 'different_matrix'])
-def test_ineligible_input_returns_none_without_mutating_state_or_rng(native, unsafe):
+                                   'custom_handler', 'duplicate', 'nonfinite', 'different_matrix',
+                                   'other_python_thread', 'custom_numpy_rng', 'custom_python_rng',
+                                   'tide_alias', 'scalar_float32', 'integer_hp', 'method_override',
+                                   'clash_zero_denominator', 'numpy_integer_score'])
+def test_ineligible_input_returns_none_without_mutating_state_or_rng(native, unsafe, monkeypatch):
     bridge = candidate()
     world = make_world()
     if unsafe == 'purity_zero':
@@ -311,6 +312,26 @@ def test_ineligible_input_returns_none_without_mutating_state_or_rng(native, uns
         world.population[0].titan_affinities[0] = np.nan
     elif unsafe == 'different_matrix':
         world.population[0]._titan_to_path_model = TitanToPathModel()
+    elif unsafe == 'other_python_thread':
+        monkeypatch.setattr(threading, 'active_count', lambda: 2)
+    elif unsafe == 'custom_numpy_rng':
+        original = np.random.randint
+        monkeypatch.setattr(np.random, 'randint', lambda *args, **kwargs: original(*args, **kwargs))
+    elif unsafe == 'custom_python_rng':
+        original = random.random
+        monkeypatch.setattr(random, 'random', lambda: original())
+    elif unsafe == 'tide_alias':
+        world.population_manager.cosmic_tide_vector = world.population[0].titan_affinities[:]
+    elif unsafe == 'scalar_float32':
+        world.population[0].score = np.float32(world.population[0].score)
+    elif unsafe == 'integer_hp':
+        world.population[0].hp = 100
+    elif unsafe == 'method_override':
+        world.interaction_handler.entity_interaction = lambda *args, **kwargs: None
+    elif unsafe == 'clash_zero_denominator':
+        world.population[0].score = -1e-6
+    elif unsafe == 'numpy_integer_score':
+        world.population[0].score = np.int64(0)
     before = pickle.dumps(snapshot(world))
     before_rng = rng_state()
     assert world.interaction_handler._native_opponents is None
@@ -337,3 +358,56 @@ def test_production_call_omits_per_encounter_trace_and_preserves_cached_gaussian
         assert np.random.get_state()[3:] == numpy_gauss
     finally:
         close_index(world)
+
+
+def test_unscored_newborn_integer_zero_uses_native_loop(native):
+    bridge = candidate()
+    actual, expected = make_world(), make_world(frozen=True)
+    for world in (actual, expected):
+        newborn = Pathstrider('unscored-newborn', np.ones(12),
+                             titan_to_path_model=world.population_manager.titan_to_path_model)
+        assert type(newborn.score) is int and newborn.score == 0
+        world.population.append(newborn)
+    random.seed(731)
+    np.random.seed(731)
+    _, _, expected_trace = frozen_oracle()[1](expected, trace_recorder(expected.population))
+    expected_rng = rng_state()
+    random.seed(731)
+    np.random.seed(731)
+    try:
+        result = bridge.try_run_encounters(actual, trace=True)
+        assert result is not None, 'Normal newborns must not disable the whole native generation'
+        assert result.trace == expected_trace
+        assert rng_state() == expected_rng
+        assert_same_entities(actual, expected)
+        assert type(actual.population[-1].score) is type(expected.population[-1].score)
+    finally:
+        close_index(actual)
+        close_index(expected)
+
+
+@pytest.mark.parametrize('boss_hp', [0.0, 100.0])
+def test_zero_battle_updates_preserve_newborn_score_type_changes(native, boss_hp):
+    bridge = candidate()
+    actual, expected = make_world(size=2, kind='battle'), make_world(size=2, kind='battle', frozen=True)
+    for world in (actual, expected):
+        world.population[0].score = 0
+        world.population[1].hp = boss_hp
+    random.seed(15)
+    np.random.seed(731)
+    _, _, expected_trace = frozen_oracle()[1](expected, trace_recorder(expected.population))
+    expected_rng = rng_state()
+    random.seed(15)
+    np.random.seed(731)
+    try:
+        result = bridge.try_run_encounters(actual, trace=True)
+        assert result is not None
+        assert result.trace == expected_trace
+        assert rng_state() == expected_rng
+        assert_same_entities(actual, expected)
+        for left, right in zip(actual.population, expected.population):
+            assert type(left.hp) is type(right.hp)
+            assert type(left.score) is type(right.score)
+    finally:
+        close_index(actual)
+        close_index(expected)

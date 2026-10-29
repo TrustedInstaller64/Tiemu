@@ -18,11 +18,32 @@ C++ 移植和取消重复计算可以减少指令数；减少对象跳转、分�
 
 - 四个有界场景：人类 1,000×6、人类 10,000×3、人类 1,000×6 且含轮回者、永劫 200×2。它们用于诊断，不是完整世界运行。Guide 是否实际更新由 optimizer step 明确记录，不因启用轮回者便假定训练发生。
 - 每个场景对比 1/4 线程预算、未剖析/剖析运行的已检查状态摘要；原有固定 seed 和随机数顺序不变。
-- cProfile 只用于定位与调用次数。累计时间相互嵌套，不能直接相加；剖析会放大小调用开销，速度改善必须另用未剖析基准证明。它不提供工作线程内部归因。
+- A1 的 pybind11 类方法触发了 cProfile 调用栈缺失：部分函数调用数丢失，甚至 self 时间大于累计时间。初次 cProfile 记录只保留作诊断，不用于占比或可靠调用数。改用独立边界计时，并检查调用次数和未剖析/剖析状态一致；累计时间仍相互嵌套，不能相加。速度改善另用未剖析基准证明。[pybind11 issue 5600](https://github.com/pybind/pybind11/issues/5600)
 - 独立记录阶段 wall/process CPU 时间、缺页与上下文切换。预热为另一个实例，正式实例首次启动原生线程池包含在计时内。
 - PMU 探测只检测权限/可用性，不把 `perf stat true` 或整个 Python 启动进程的计数当作阶段 IPC、缓存或主频证据。没有阶段硬件计数和有效频率测量时，不能声称“已证实主频受限”或“已证实内存受限”。
 - Hyper-V 默认不向来宾开放 Intel PMU，容器还可能受权限和 `perf_event_paranoid` 限制。此次不调整宿主安全设置；若不可用则如实记录。[Microsoft Hyper-V PMU](https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/manage/performance-monitoring-hardware)、[Linux perf permissions](https://www.kernel.org/doc/html/latest/admin-guide/perf-security.html)
 
 ## 执行证据
 
-云端任务结果与实际迁移在验证后补充。当前仅有静态假说，见[实施计划](superpowers/plans/2026-10-30-a2-profile-migration.md)。
+### 迁移前瓶颈
+
+`6badfd7` 的[云端边界计时](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40960718586)覆盖四个场景及 1/4 线程预算，所有调用完整性、状态和 RNG 比较均通过。[日志 JSON 记录](performance/a2-boundary-profile-6badfd7.json)。
+
+| 场景 / 1 线程 | 未剖析阶段时间 | 重要调用数 | 原生批评分边界时间（剖析运行） |
+|---|---:|---|---:|
+| 人类 1,000 × 6 | 0.28786 s | 8,830 次选人，6,070 次有效交互，37,363 次 dominant 查询 | 0.00031 s |
+| 人类 10,000 × 3 | 1.05602 s | 15,000 次选人，14,120 次有效交互，216,333 次 dominant 查询 | 0.00274 s |
+| 人类 1,000 × 6，轮回者 | 0.30529 s | Guide 的 Adam 确实更新 6 次 | Guide 边界 0.01929 s |
+| 永劫 200 × 2 | 0.02943 s | 152 次永劫交互 | 永劫交互边界 0.02531 s |
+
+表中两类时间来自不同运行，不能相除当作精确 CPU 占比；剖析本身放大了小调用开销。10,000 场景的原生评分在 4 线程时缩短到 0.00170 s，但未剖析全阶段为 1.16135 s，没有整体收益。这支持优先移走交互循环、缓存读取和小调用边界，而非继续给批评分加线程。
+
+云端 PMU 探测记录 `perf_event_paranoid=4`，cycles/instructions/cache-misses 无法访问，因此此次没有阶段 IPC、缓存命中率或有效频率的实测因果结论。CPU 为 runner 暴露的 AMD EPYC 9V74；静态 MHz 不是实际睿频对照实验。
+
+### 脱离 pybind11 的边界
+
+生产核心改为 C++17 共享库，公开有效的 C 头文件，不使用 Python C API 或 NumPy/pybind11 头文件。`ctypes` 只转换缓冲区和管理生命周期。无机阶段一次处理有序网格段；实体交互阶段一次处理本代全部交互，保留旧桶、淘汰顺序、缓存刷新、数组别名及两套 MT19937 状态。Python 仍保留模型后端、出生/演化的外层编排、事件显示与存档，尚不是整个应用的 C++ 重写。
+
+中间提交 `534c984` 仅把小函数的接口换成 C ABI，人类循环还在 Python，云端同机对比出现约 1.7～2.8 倍耗时回退。这个版本不是最终提速成果。相同提交已移走完整无机循环，在 10×10、10,000 代场景分别取得 Linux 8.84、Windows 7.68、云端 macOS 11.46 倍速度，并且遗物和已检查 RNG 摘要相同。[中间版本对照](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40963299164)。这验证了“整段迁移”与“只更换绑定”的区别，后续人类阶段结果须使用完整迁移后的新证据。
+
+实现和验收进度见[实施计划](superpowers/plans/2026-10-30-a2-profile-migration.md)。

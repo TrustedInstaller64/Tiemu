@@ -23,7 +23,7 @@ if sys.platform.startswith('linux'):
 setup(
     py_modules=[p.stem for p in Path(__file__).parent.glob('*.py') if p.stem != 'setup'],
     ext_modules=[Extension('_tiemu_core',
-                           ['cpp/tiemu_core.cpp', 'cpp/tiemu_inorganic.cpp'],
+                           ['cpp/tiemu_core.cpp', 'cpp/tiemu_inorganic.cpp', 'cpp/tiemu_encounters.cpp'],
                            language='c++', define_macros=[('TIEMU_CORE_BUILD', '1')],
                            extra_compile_args=compile_args, extra_link_args=link_args)],
     cmdclass={'build_ext': CoreBuild},

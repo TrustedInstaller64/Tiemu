@@ -166,6 +166,8 @@ class BoundaryTimers:
         self.stack = []
         self.rows = {}
         self.patches = []
+        self.native_encounter_entry = False
+        self.native_encounter_successes = 0
 
     def wrap(self, name, function):
         @functools.wraps(function)
@@ -198,22 +200,40 @@ class BoundaryTimers:
         from parliament_manager import ParliamentManager
         from population_manager import PopulationManager
         from aeonic_cycle_manager import AeonicCycleManager
-        for owner, names in (
+        simulation_module = sys.modules[AeonEvolution.__module__]
+        self.native_encounter_entry = hasattr(simulation_module, 'try_run_encounters')
+        targets = [
             (AeonEvolution, ('_run_one_generation', '_evolve_and_grow', '_train_hybrid_guide_network')),
-            (InteractionHandler, ('select_opponents', 'entity_interaction', 'update_bins')),
-            (PopulationManager, ('get_global_path_distribution', 'mark_paths_dirty',
-                                 '_add_new_entities', 'recalculate_and_normalize_entity')),
-            (ParliamentManager, ('get_zeitgeist_multiplier', 'hold_election')),
             (AeonicCycleManager, ('run_aeonic_cycle_generation', 'aeonic_interaction')),
-        ):
+        ]
+        if not self.native_encounter_entry:
+            # A1's fine-grained spans are retained for its original loop. The
+            # new engine deliberately rejects modified handler/property methods.
+            targets.extend([
+                (InteractionHandler, ('select_opponents', 'entity_interaction', 'update_bins')),
+                (PopulationManager, ('get_global_path_distribution', 'mark_paths_dirty',
+                                     '_add_new_entities', 'recalculate_and_normalize_entity')),
+                (ParliamentManager, ('get_zeitgeist_multiplier', 'hold_election')),
+            ])
+        for owner, names in targets:
             for name in names:
                 original = getattr(owner, name)
                 self.replace(owner, name, self.wrap(f'{owner.__name__}.{name}', original))
-        original_property = Pathstrider.dominant_path_idx
-        self.replace(Pathstrider, 'dominant_path_idx', property(
-            self.wrap('Pathstrider.dominant_path_idx', original_property.fget),
-            original_property.fset, original_property.fdel, original_property.__doc__))
-        simulation_module = sys.modules[AeonEvolution.__module__]
+        if not self.native_encounter_entry:
+            original_property = Pathstrider.dominant_path_idx
+            self.replace(Pathstrider, 'dominant_path_idx', property(
+                self.wrap('Pathstrider.dominant_path_idx', original_property.fget),
+                original_property.fset, original_property.fdel, original_property.__doc__))
+        else:
+            original_encounters = simulation_module.try_run_encounters
+            @functools.wraps(original_encounters)
+            def observed_encounters(*positional, **keywords):
+                result = original_encounters(*positional, **keywords)
+                if result is not None:
+                    self.native_encounter_successes += 1
+                return result
+            self.replace(simulation_module, 'try_run_encounters', self.wrap(
+                'try_run_encounters', observed_encounters))
         self.replace(simulation_module, 'evaluate_entities', self.wrap(
             'evaluate_entities', simulation_module.evaluate_entities))
         original_evaluator = AeonEvolution._get_native_evaluator
@@ -249,13 +269,20 @@ class BoundaryTimers:
             for name in ('AeonEvolution._run_one_generation', 'AeonEvolution._evolve_and_grow'):
                 if count(name) != generations:
                     errors.append(f'{name}: expected {generations}, got {count(name)}')
-            if count('PopulationManager.get_global_path_distribution') < count('InteractionHandler.entity_interaction'):
+            if self.native_encounter_entry:
+                if count('try_run_encounters') != generations or self.native_encounter_successes != generations:
+                    errors.append('Native encounter entry must execute successfully once per human generation')
+            elif count('PopulationManager.get_global_path_distribution') < count('InteractionHandler.entity_interaction'):
                 errors.append('Distribution call count is smaller than interaction count')
         elif count('AeonicCycleManager.run_aeonic_cycle_generation') != generations:
             errors.append('Aeonic generation span count differs from generation count')
         if any(row['exclusive_instrumented_seconds'] < -1e-9 for row in self.rows.values()):
             errors.append('Negative exclusive instrumented time')
+        if self.native_encounter_entry and 'try_run_encounters' in self.rows:
+            self.rows['try_run_encounters']['successful_returns'] = self.native_encounter_successes
         return {'valid': not errors, 'integrity_errors': errors,
+                'native_encounter_entry_present': self.native_encounter_entry,
+                'native_encounter_successful_calls': self.native_encounter_successes,
                 'spans': sorted(self.rows.values(), key=lambda row: row['inclusive_seconds'], reverse=True),
                 'scope': 'Explicit Python wrappers count calls and perf_counter spans without cProfile. '
                          'Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped '
@@ -263,7 +290,10 @@ class BoundaryTimers:
                          'it is not pure Python interpreter time. Native scoring span includes conversion, '
                          'worker startup/wait and computation. Wrappers are restored before state capture. '
                          'Results must match plain state/RNG digests and call-count integrity gates. '
-                         'Future method-identity fast paths require checking that wrappers do not force fallback.'}
+                         'When the standalone encounter entry is present, protected entity/handler/manager '
+                         'methods are left untouched. Only its outer entry is wrapped and every human '
+                         'generation must return a non-None native result, ruling out observer-forced fallback. '
+                         'The entry span includes eligibility, packing, core execution and writeback.'}
 
 
 def sample(population, generations, profile_path=None, boundary_timers=False):

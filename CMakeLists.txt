@@ -3,7 +3,7 @@ project(TiemuCore VERSION 1.0 LANGUAGES C CXX)
 
 # Standalone build: no Python, NumPy, Torch or binding headers/libraries needed.
 find_package(Threads REQUIRED)
-add_library(tiemu_core SHARED cpp/tiemu_core.cpp cpp/tiemu_inorganic.cpp)
+add_library(tiemu_core SHARED cpp/tiemu_core.cpp cpp/tiemu_inorganic.cpp cpp/tiemu_encounters.cpp)
 target_compile_features(tiemu_core PRIVATE cxx_std_17)
 target_compile_definitions(tiemu_core PRIVATE TIEMU_CORE_BUILD=1)
 target_include_directories(tiemu_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cpp)

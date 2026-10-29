@@ -1,6 +1,7 @@
 import numpy as np
 from native_backend import get_native
 from native_evaluation import evaluate_entities
+from native_encounters import try_run_encounters
 from device_utils import resolve_torch_device
 import torch.nn as nn
 import math
@@ -435,40 +436,39 @@ class AeonEvolution:
 
         # 议会选举后，不要立即全局重算
         
-        entities_to_update = set() # 创建一个集合
+        encounters = try_run_encounters(self)
+        if encounters is not None:
+            culled_this_gen, entities_to_update = encounters.culled, encounters.updated
+        else:
+            entities_to_update = set()
+            self.interaction_handler.update_bins(self.population)
+            culled_this_gen = set()
+            num_encounters = min(int(2 * len(self.population)), 5000)
+            with self.population_manager.track_distribution(self.population):
+                for _ in range(num_encounters):
+                    if get_native() is None:
+                        valid_population = [p for p in self.population if p not in culled_this_gen]
+                    else:
+                        if self.interaction_handler._native_opponents.alive_count < 2:
+                            break
+                        valid_population = self.population
+                    if len(valid_population) < 2: break
 
-        # 更新分桶 
-        self.interaction_handler.update_bins(self.population)
+                    entity1, entity2 = self.interaction_handler.select_opponents(valid_population, self.reincarnator)
+                    if not entity1 or not entity2: continue
 
-        # 交互
-        culled_this_gen = set()
-        num_encounters = min(int(2 * len(self.population)), 5000)
-        with self.population_manager.track_distribution(self.population):
-            for _ in range(num_encounters):
-                if get_native() is None:
-                    valid_population = [p for p in self.population if p not in culled_this_gen]
-                else:
-                    if self.interaction_handler._native_opponents.alive_count < 2:
-                        break
-                    valid_population = self.population
-                if len(valid_population) < 2: break
-            
-                entity1, entity2 = self.interaction_handler.select_opponents(valid_population, self.reincarnator)
-                if not entity1 or not entity2: continue
-            
-                if entity1 not in culled_this_gen and entity2 not in culled_this_gen:
-                    multiplier1 = self.parliament_manager.get_zeitgeist_multiplier(entity1.path_affinities)
-                    culled_entity = self.interaction_handler.entity_interaction(
-                        entity1, entity2, self.population, self.reincarnator, self.population_manager.get_global_path_distribution(self.population), self.cosmic_zeitgeist, multiplier1
-                    )
-                    if culled_entity:
-                        culled_this_gen.add(culled_entity)
-                        self.interaction_handler.discard_opponent(culled_entity)
-                
-                    # 无论是否淘汰，参与者状态都可能改变
-                    entities_to_update.add(entity1)
-                    entities_to_update.add(entity2)
-                    self.population_manager.mark_paths_dirty(entity1, entity2)
+                    if entity1 not in culled_this_gen and entity2 not in culled_this_gen:
+                        multiplier1 = self.parliament_manager.get_zeitgeist_multiplier(entity1.path_affinities)
+                        culled_entity = self.interaction_handler.entity_interaction(
+                            entity1, entity2, self.population, self.reincarnator, self.population_manager.get_global_path_distribution(self.population), self.cosmic_zeitgeist, multiplier1
+                        )
+                        if culled_entity:
+                            culled_this_gen.add(culled_entity)
+                            self.interaction_handler.discard_opponent(culled_entity)
+
+                        entities_to_update.add(entity1)
+                        entities_to_update.add(entity2)
+                        self.population_manager.mark_paths_dirty(entity1, entity2)
         
         # 翁法罗斯事件 
         self._check_for_aeonic_events(culled_this_gen, entities_to_update)

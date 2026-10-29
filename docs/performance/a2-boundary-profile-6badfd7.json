@@ -1,0 +1,1031 @@
+{
+  "commit": "6badfd7",
+  "run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/40960718586",
+  "source": "Parsed JSON records from job 123752441916 logs; inclusive spans overlap; observer timings are not speed measurements.",
+  "records": [
+    {
+      "case": "human-1000",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-w1-plain.json",
+      "boundary_file": "human-1000-w1-boundary.json",
+      "plain_median_seconds": 0.28786218399999086,
+      "boundary_seconds": 0.3930465709999993,
+      "boundary_to_plain_wall_ratio": 1.365398419265838,
+      "plain_median_process_cpu_over_wall": 0.9999686455237861,
+      "boundary_process_cpu_over_wall": 0.9999015409296125,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.28789599999999993,
+          "ru_stime": 0,
+          "ru_minflt": 44,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.28915599999999975,
+          "ru_stime": 0,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 1
+        },
+        {
+          "ru_utime": 0.2875620000000003,
+          "ru_stime": 0,
+          "ru_minflt": 1,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 2
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 6,
+          "inclusive_seconds": 0.34162944799999195,
+          "exclusive_instrumented_seconds": 0.04106687099950079
+        },
+        {
+          "name": "PopulationManager.get_global_path_distribution",
+          "calls": 6082,
+          "inclusive_seconds": 0.09076765000000364,
+          "exclusive_instrumented_seconds": 0.03884655300146278
+        },
+        {
+          "name": "Pathstrider.dominant_path_idx",
+          "calls": 37363,
+          "inclusive_seconds": 0.08024484699856771,
+          "exclusive_instrumented_seconds": 0.08024484699856771
+        },
+        {
+          "name": "InteractionHandler.select_opponents",
+          "calls": 8830,
+          "inclusive_seconds": 0.06753166900014662,
+          "exclusive_instrumented_seconds": 0.06753166900014662
+        },
+        {
+          "name": "InteractionHandler.entity_interaction",
+          "calls": 6070,
+          "inclusive_seconds": 0.058911329999162376,
+          "exclusive_instrumented_seconds": 0.03554327299798388
+        },
+        {
+          "name": "ParliamentManager.get_zeitgeist_multiplier",
+          "calls": 8032,
+          "inclusive_seconds": 0.051932643000981216,
+          "exclusive_instrumented_seconds": 0.051932643000981216
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 6,
+          "inclusive_seconds": 0.050058118999999124,
+          "exclusive_instrumented_seconds": 0.011238607000208845
+        },
+        {
+          "name": "PopulationManager._add_new_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.03513183000001163,
+          "exclusive_instrumented_seconds": 0.025688002999885384
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.02435862499997654,
+          "exclusive_instrumented_seconds": 0.012453058999639666
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 6,
+          "inclusive_seconds": 0.01587595300000544,
+          "exclusive_instrumented_seconds": 0.005733367000928524
+        },
+        {
+          "name": "PopulationManager.recalculate_and_normalize_entity",
+          "calls": 8365,
+          "inclusive_seconds": 0.013988023000095495,
+          "exclusive_instrumented_seconds": 0.013988023000095495
+        },
+        {
+          "name": "PopulationManager.mark_paths_dirty",
+          "calls": 6070,
+          "inclusive_seconds": 0.006321101000622775,
+          "exclusive_instrumented_seconds": 0.006321101000622775
+        },
+        {
+          "name": "InteractionHandler.update_bins",
+          "calls": 6,
+          "inclusive_seconds": 0.0007789829999893527,
+          "exclusive_instrumented_seconds": 0.0007789829999893527
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 6,
+          "inclusive_seconds": 0.0003113949999971055,
+          "exclusive_instrumented_seconds": 0.0003113949999971055
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 6,
+          "inclusive_seconds": 0.000009172999980933128,
+          "exclusive_instrumented_seconds": 0.000009172999980933128
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. Future method-identity fast paths require checking that wrappers do not force fallback."
+    },
+    {
+      "case": "human-1000",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-w4-plain.json",
+      "boundary_file": "human-1000-w4-boundary.json",
+      "plain_median_seconds": 0.283325645000005,
+      "boundary_seconds": 0.39066646100000924,
+      "boundary_to_plain_wall_ratio": 1.378860219307018,
+      "plain_median_process_cpu_over_wall": 1.0019668392530974,
+      "boundary_process_cpu_over_wall": 1.001301332596326,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.2828120000000003,
+          "ru_stime": 0.0010910000000000086,
+          "ru_minflt": 47,
+          "ru_majflt": 0,
+          "ru_nvcsw": 27,
+          "ru_nivcsw": 2
+        },
+        {
+          "ru_utime": 0.28103299999999987,
+          "ru_stime": 0,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 26,
+          "ru_nivcsw": 3
+        },
+        {
+          "ru_utime": 0.28669299999999964,
+          "ru_stime": 0.00006499999999998174,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 26,
+          "ru_nivcsw": 1
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 6,
+          "inclusive_seconds": 0.33894429200000786,
+          "exclusive_instrumented_seconds": 0.04133945700047548
+        },
+        {
+          "name": "PopulationManager.get_global_path_distribution",
+          "calls": 6082,
+          "inclusive_seconds": 0.09117534199931754,
+          "exclusive_instrumented_seconds": 0.0388116319987688
+        },
+        {
+          "name": "Pathstrider.dominant_path_idx",
+          "calls": 37363,
+          "inclusive_seconds": 0.08069768200022054,
+          "exclusive_instrumented_seconds": 0.08069768200022054
+        },
+        {
+          "name": "InteractionHandler.select_opponents",
+          "calls": 8830,
+          "inclusive_seconds": 0.06506767099985211,
+          "exclusive_instrumented_seconds": 0.06506767099985211
+        },
+        {
+          "name": "InteractionHandler.entity_interaction",
+          "calls": 6070,
+          "inclusive_seconds": 0.058337381000640676,
+          "exclusive_instrumented_seconds": 0.03517489500138993
+        },
+        {
+          "name": "ParliamentManager.get_zeitgeist_multiplier",
+          "calls": 8032,
+          "inclusive_seconds": 0.050767557999776614,
+          "exclusive_instrumented_seconds": 0.050767557999776614
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 6,
+          "inclusive_seconds": 0.05024865400001488,
+          "exclusive_instrumented_seconds": 0.011322219999968297
+        },
+        {
+          "name": "PopulationManager._add_new_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.0352367220000076,
+          "exclusive_instrumented_seconds": 0.025699118999966686
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.024825548999999114,
+          "exclusive_instrumented_seconds": 0.012685320999963778
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 6,
+          "inclusive_seconds": 0.0160118419999975,
+          "exclusive_instrumented_seconds": 0.005816535000050749
+        },
+        {
+          "name": "PopulationManager.recalculate_and_normalize_entity",
+          "calls": 8365,
+          "inclusive_seconds": 0.0139693089996058,
+          "exclusive_instrumented_seconds": 0.0139693089996058
+        },
+        {
+          "name": "PopulationManager.mark_paths_dirty",
+          "calls": 6070,
+          "inclusive_seconds": 0.006255199000023026,
+          "exclusive_instrumented_seconds": 0.006255199000023026
+        },
+        {
+          "name": "InteractionHandler.update_bins",
+          "calls": 6,
+          "inclusive_seconds": 0.0008149149999923111,
+          "exclusive_instrumented_seconds": 0.0008149149999923111
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 6,
+          "inclusive_seconds": 0.000761888999974758,
+          "exclusive_instrumented_seconds": 0.000761888999974758
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 6,
+          "inclusive_seconds": 0.000009543999993866237,
+          "exclusive_instrumented_seconds": 0.000009543999993866237
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. Future method-identity fast paths require checking that wrappers do not force fallback."
+    },
+    {
+      "case": "human-1000",
+      "same_checked_state_and_rng_digest": true
+    },
+    {
+      "case": "human-10000",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "human-10000-w1-plain.json",
+      "boundary_file": "human-10000-w1-boundary.json",
+      "plain_median_seconds": 1.0560218549999973,
+      "boundary_seconds": 1.5168772799999886,
+      "boundary_to_plain_wall_ratio": 1.4364070902680253,
+      "plain_median_process_cpu_over_wall": 0.9999432186257358,
+      "boundary_process_cpu_over_wall": 0.9999091831608232,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 1.0441539999999998,
+          "ru_stime": 0.005049999999999999,
+          "ru_minflt": 2001,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 5
+        },
+        {
+          "ru_utime": 1.054996,
+          "ru_stime": 0.0010129999999999861,
+          "ru_minflt": 299,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 3
+        },
+        {
+          "ru_utime": 1.1889569999999994,
+          "ru_stime": 0.000006999999999979245,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 7
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 3,
+          "inclusive_seconds": 1.2360833329999963,
+          "exclusive_instrumented_seconds": 0.12480115099684497
+        },
+        {
+          "name": "Pathstrider.dominant_path_idx",
+          "calls": 216333,
+          "inclusive_seconds": 0.4660226850038782,
+          "exclusive_instrumented_seconds": 0.4660226850038782
+        },
+        {
+          "name": "PopulationManager.get_global_path_distribution",
+          "calls": 14126,
+          "inclusive_seconds": 0.40970726800030377,
+          "exclusive_instrumented_seconds": 0.15786718200018868
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 3,
+          "inclusive_seconds": 0.27852585799999474,
+          "exclusive_instrumented_seconds": 0.10607366599869295
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 3,
+          "inclusive_seconds": 0.2070748249999781,
+          "exclusive_instrumented_seconds": 0.11147284599950069
+        },
+        {
+          "name": "ParliamentManager.get_zeitgeist_multiplier",
+          "calls": 29476,
+          "inclusive_seconds": 0.187633909000823,
+          "exclusive_instrumented_seconds": 0.187633909000823
+        },
+        {
+          "name": "InteractionHandler.entity_interaction",
+          "calls": 14120,
+          "inclusive_seconds": 0.17893385700072884,
+          "exclusive_instrumented_seconds": 0.10341413700081148
+        },
+        {
+          "name": "InteractionHandler.select_opponents",
+          "calls": 15000,
+          "inclusive_seconds": 0.12967567500001564,
+          "exclusive_instrumented_seconds": 0.12967567500001564
+        },
+        {
+          "name": "PopulationManager._add_new_entities",
+          "calls": 3,
+          "inclusive_seconds": 0.11950335999999595,
+          "exclusive_instrumented_seconds": 0.030738504999916927
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 3,
+          "inclusive_seconds": 0.09165610200000174,
+          "exclusive_instrumented_seconds": 0.033285981999114256
+        },
+        {
+          "name": "PopulationManager.recalculate_and_normalize_entity",
+          "calls": 23903,
+          "inclusive_seconds": 0.03730276899945295,
+          "exclusive_instrumented_seconds": 0.03730276899945295
+        },
+        {
+          "name": "PopulationManager.mark_paths_dirty",
+          "calls": 14120,
+          "inclusive_seconds": 0.01900872100077322,
+          "exclusive_instrumented_seconds": 0.01900872100077322
+        },
+        {
+          "name": "InteractionHandler.update_bins",
+          "calls": 3,
+          "inclusive_seconds": 0.004562026000002106,
+          "exclusive_instrumented_seconds": 0.004562026000002106
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 3,
+          "inclusive_seconds": 0.0027404439999969554,
+          "exclusive_instrumented_seconds": 0.0027404439999969554
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 3,
+          "inclusive_seconds": 0.000009492999978988337,
+          "exclusive_instrumented_seconds": 0.000009492999978988337
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. Future method-identity fast paths require checking that wrappers do not force fallback."
+    },
+    {
+      "case": "human-10000",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "human-10000-w4-plain.json",
+      "boundary_file": "human-10000-w4-boundary.json",
+      "plain_median_seconds": 1.1613495090000043,
+      "boundary_seconds": 1.5300575149999958,
+      "boundary_to_plain_wall_ratio": 1.3174823798887834,
+      "plain_median_process_cpu_over_wall": 1.0023288084315338,
+      "boundary_process_cpu_over_wall": 1.00207248353014,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 1.1565640000000004,
+          "ru_stime": 0.008006000000000013,
+          "ru_minflt": 2004,
+          "ru_majflt": 0,
+          "ru_nvcsw": 14,
+          "ru_nivcsw": 14
+        },
+        {
+          "ru_utime": 1.1263489999999998,
+          "ru_stime": 0.0008079999999999754,
+          "ru_minflt": 122,
+          "ru_majflt": 0,
+          "ru_nvcsw": 14,
+          "ru_nivcsw": 11
+        },
+        {
+          "ru_utime": 1.1846549999999993,
+          "ru_stime": 0.00009700000000001374,
+          "ru_minflt": 4,
+          "ru_majflt": 0,
+          "ru_nvcsw": 14,
+          "ru_nivcsw": 7
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 3,
+          "inclusive_seconds": 1.245330456000005,
+          "exclusive_instrumented_seconds": 0.12759417700158338
+        },
+        {
+          "name": "Pathstrider.dominant_path_idx",
+          "calls": 216333,
+          "inclusive_seconds": 0.47114464499938435,
+          "exclusive_instrumented_seconds": 0.47114464499938435
+        },
+        {
+          "name": "PopulationManager.get_global_path_distribution",
+          "calls": 14126,
+          "inclusive_seconds": 0.4142898030004005,
+          "exclusive_instrumented_seconds": 0.15951778699869124
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 3,
+          "inclusive_seconds": 0.2825245679999995,
+          "exclusive_instrumented_seconds": 0.10741064600047423
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 3,
+          "inclusive_seconds": 0.20380822700001033,
+          "exclusive_instrumented_seconds": 0.11039064499978224
+        },
+        {
+          "name": "ParliamentManager.get_zeitgeist_multiplier",
+          "calls": 29476,
+          "inclusive_seconds": 0.1870622829995341,
+          "exclusive_instrumented_seconds": 0.1870622829995341
+        },
+        {
+          "name": "InteractionHandler.entity_interaction",
+          "calls": 14120,
+          "inclusive_seconds": 0.18364780499935307,
+          "exclusive_instrumented_seconds": 0.10542934000126536
+        },
+        {
+          "name": "InteractionHandler.select_opponents",
+          "calls": 15000,
+          "inclusive_seconds": 0.1281006340007167,
+          "exclusive_instrumented_seconds": 0.1281006340007167
+        },
+        {
+          "name": "PopulationManager._add_new_entities",
+          "calls": 3,
+          "inclusive_seconds": 0.12137572899999327,
+          "exclusive_instrumented_seconds": 0.032255340000034494
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 3,
+          "inclusive_seconds": 0.09358325700000591,
+          "exclusive_instrumented_seconds": 0.03411562999960438
+        },
+        {
+          "name": "PopulationManager.recalculate_and_normalize_entity",
+          "calls": 23903,
+          "inclusive_seconds": 0.03887222199938378,
+          "exclusive_instrumented_seconds": 0.03887222199938378
+        },
+        {
+          "name": "PopulationManager.mark_paths_dirty",
+          "calls": 14120,
+          "inclusive_seconds": 0.01923219099955986,
+          "exclusive_instrumented_seconds": 0.01923219099955986
+        },
+        {
+          "name": "InteractionHandler.update_bins",
+          "calls": 3,
+          "inclusive_seconds": 0.0050184459999940145,
+          "exclusive_instrumented_seconds": 0.0050184459999940145
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 3,
+          "inclusive_seconds": 0.0016992110000018101,
+          "exclusive_instrumented_seconds": 0.0016992110000018101
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 3,
+          "inclusive_seconds": 0.000011826999994468679,
+          "exclusive_instrumented_seconds": 0.000011826999994468679
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. Future method-identity fast paths require checking that wrappers do not force fallback."
+    },
+    {
+      "case": "human-10000",
+      "same_checked_state_and_rng_digest": true
+    },
+    {
+      "case": "human-1000-reincarnator",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-reincarnator-w1-plain.json",
+      "boundary_file": "human-1000-reincarnator-w1-boundary.json",
+      "plain_median_seconds": 0.30528659200000163,
+      "boundary_seconds": 0.40022832999999025,
+      "boundary_to_plain_wall_ratio": 1.3109921643725124,
+      "plain_median_process_cpu_over_wall": 0.9999129191152755,
+      "boundary_process_cpu_over_wall": 0.9998362134934566,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.3037960000000002,
+          "ru_stime": 0.0009890000000000176,
+          "ru_minflt": 140,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 4
+        },
+        {
+          "ru_utime": 0.305326,
+          "ru_stime": 0.00003199999999997649,
+          "ru_minflt": 2,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 1
+        },
+        {
+          "ru_utime": 0.30526600000000004,
+          "ru_stime": 0,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 2
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 6,
+          "inclusive_seconds": 0.3291711890000073,
+          "exclusive_instrumented_seconds": 0.040558726999279315
+        },
+        {
+          "name": "PopulationManager.get_global_path_distribution",
+          "calls": 6091,
+          "inclusive_seconds": 0.0970788889995049,
+          "exclusive_instrumented_seconds": 0.04115800500011346
+        },
+        {
+          "name": "Pathstrider.dominant_path_idx",
+          "calls": 40223,
+          "inclusive_seconds": 0.08360878699873808,
+          "exclusive_instrumented_seconds": 0.08360878699873808
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 6,
+          "inclusive_seconds": 0.0698034190000385,
+          "exclusive_instrumented_seconds": 0.01134932600068339
+        },
+        {
+          "name": "InteractionHandler.select_opponents",
+          "calls": 8852,
+          "inclusive_seconds": 0.06173411200038004,
+          "exclusive_instrumented_seconds": 0.06173411200038004
+        },
+        {
+          "name": "InteractionHandler.entity_interaction",
+          "calls": 6072,
+          "inclusive_seconds": 0.057694332000721715,
+          "exclusive_instrumented_seconds": 0.0347076160003752
+        },
+        {
+          "name": "ParliamentManager.get_zeitgeist_multiplier",
+          "calls": 8035,
+          "inclusive_seconds": 0.04958755099923451,
+          "exclusive_instrumented_seconds": 0.04958755099923451
+        },
+        {
+          "name": "PopulationManager._add_new_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.0336762259999972,
+          "exclusive_instrumented_seconds": 0.024377638999652618
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.023809147999998004,
+          "exclusive_instrumented_seconds": 0.012395393000076638
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 6,
+          "inclusive_seconds": 0.019287350999988462,
+          "exclusive_instrumented_seconds": 0.013181840999976657
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 6,
+          "inclusive_seconds": 0.015389482000017551,
+          "exclusive_instrumented_seconds": 0.005601746999516877
+        },
+        {
+          "name": "PopulationManager.recalculate_and_normalize_entity",
+          "calls": 8441,
+          "inclusive_seconds": 0.013722711001278753,
+          "exclusive_instrumented_seconds": 0.013722711001278753
+        },
+        {
+          "name": "PopulationManager.mark_paths_dirty",
+          "calls": 6072,
+          "inclusive_seconds": 0.005894392000740822,
+          "exclusive_instrumented_seconds": 0.005894392000740822
+        },
+        {
+          "name": "InteractionHandler.update_bins",
+          "calls": 6,
+          "inclusive_seconds": 0.0007784539999988738,
+          "exclusive_instrumented_seconds": 0.0007784539999988738
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 6,
+          "inclusive_seconds": 0.00031830700000057277,
+          "exclusive_instrumented_seconds": 0.00031830700000057277
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. Future method-identity fast paths require checking that wrappers do not force fallback."
+    },
+    {
+      "case": "human-1000-reincarnator",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-reincarnator-w4-plain.json",
+      "boundary_file": "human-1000-reincarnator-w4-boundary.json",
+      "plain_median_seconds": 0.30418101899999783,
+      "boundary_seconds": 0.40529404600000873,
+      "boundary_to_plain_wall_ratio": 1.3324107050874585,
+      "plain_median_process_cpu_over_wall": 1.0017650805489684,
+      "boundary_process_cpu_over_wall": 1.0015597737154796,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.3044850000000001,
+          "ru_stime": 0.0010239999999999971,
+          "ru_minflt": 152,
+          "ru_majflt": 0,
+          "ru_nvcsw": 26,
+          "ru_nivcsw": 1
+        },
+        {
+          "ru_utime": 0.3047329999999997,
+          "ru_stime": 0,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 26,
+          "ru_nivcsw": 1
+        },
+        {
+          "ru_utime": 0.3042769999999999,
+          "ru_stime": 0.000017999999999990246,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 26,
+          "ru_nivcsw": 3
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 6,
+          "inclusive_seconds": 0.3329716499999904,
+          "exclusive_instrumented_seconds": 0.04064021499884518
+        },
+        {
+          "name": "PopulationManager.get_global_path_distribution",
+          "calls": 6091,
+          "inclusive_seconds": 0.09757126199980348,
+          "exclusive_instrumented_seconds": 0.04148459999989029
+        },
+        {
+          "name": "Pathstrider.dominant_path_idx",
+          "calls": 40223,
+          "inclusive_seconds": 0.08432145699984517,
+          "exclusive_instrumented_seconds": 0.08432145699984517
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 6,
+          "inclusive_seconds": 0.0708292980000067,
+          "exclusive_instrumented_seconds": 0.01150761900022701
+        },
+        {
+          "name": "InteractionHandler.select_opponents",
+          "calls": 8852,
+          "inclusive_seconds": 0.06170258600006662,
+          "exclusive_instrumented_seconds": 0.06170258600006662
+        },
+        {
+          "name": "InteractionHandler.entity_interaction",
+          "calls": 6072,
+          "inclusive_seconds": 0.05932736200054478,
+          "exclusive_instrumented_seconds": 0.035616084000380965
+        },
+        {
+          "name": "ParliamentManager.get_zeitgeist_multiplier",
+          "calls": 8035,
+          "inclusive_seconds": 0.05025046400022859,
+          "exclusive_instrumented_seconds": 0.05025046400022859
+        },
+        {
+          "name": "PopulationManager._add_new_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.03419376299999044,
+          "exclusive_instrumented_seconds": 0.02475113499986037
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.024664411000017594,
+          "exclusive_instrumented_seconds": 0.012667213999691285
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 6,
+          "inclusive_seconds": 0.0196546389999952,
+          "exclusive_instrumented_seconds": 0.01350873199996272
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 6,
+          "inclusive_seconds": 0.01569717200001719,
+          "exclusive_instrumented_seconds": 0.005711889000025394
+        },
+        {
+          "name": "PopulationManager.recalculate_and_normalize_entity",
+          "calls": 8441,
+          "inclusive_seconds": 0.014169235000423441,
+          "exclusive_instrumented_seconds": 0.014169235000423441
+        },
+        {
+          "name": "PopulationManager.mark_paths_dirty",
+          "calls": 6072,
+          "inclusive_seconds": 0.005887817000541418,
+          "exclusive_instrumented_seconds": 0.005887817000541418
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 6,
+          "inclusive_seconds": 0.0008080360000093378,
+          "exclusive_instrumented_seconds": 0.0008080360000093378
+        },
+        {
+          "name": "InteractionHandler.update_bins",
+          "calls": 6,
+          "inclusive_seconds": 0.0007738649999993186,
+          "exclusive_instrumented_seconds": 0.0007738649999993186
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. Future method-identity fast paths require checking that wrappers do not force fallback."
+    },
+    {
+      "case": "human-1000-reincarnator",
+      "same_checked_state_and_rng_digest": true
+    },
+    {
+      "case": "aeonic-200",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "aeonic-200-w1-plain.json",
+      "boundary_file": "aeonic-200-w1-boundary.json",
+      "plain_median_seconds": 0.029434519999995246,
+      "boundary_seconds": 0.02958595199999081,
+      "boundary_to_plain_wall_ratio": 1.0051447076424413,
+      "plain_median_process_cpu_over_wall": 0.9998586693448663,
+      "boundary_process_cpu_over_wall": 1.0002369029737246,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.029241000000000295,
+          "ru_stime": 0,
+          "ru_minflt": 1,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.02962100000000012,
+          "ru_stime": 0,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 1
+        },
+        {
+          "ru_utime": 0.02944900000000006,
+          "ru_stime": 0,
+          "ru_minflt": 1,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 1
+        }
+      ],
+      "optimizer_steps": [
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15
+      ],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+          "calls": 2,
+          "inclusive_seconds": 0.029494707999987213,
+          "exclusive_instrumented_seconds": 0.0035179980000350497
+        },
+        {
+          "name": "AeonicCycleManager.aeonic_interaction",
+          "calls": 152,
+          "inclusive_seconds": 0.025309378999992305,
+          "exclusive_instrumented_seconds": 0.025309378999992305
+        },
+        {
+          "name": "PopulationManager.get_global_path_distribution",
+          "calls": 1,
+          "inclusive_seconds": 0.0006140529999925093,
+          "exclusive_instrumented_seconds": 0.0002457419998336263
+        },
+        {
+          "name": "Pathstrider.dominant_path_idx",
+          "calls": 200,
+          "inclusive_seconds": 0.00036831100015888296,
+          "exclusive_instrumented_seconds": 0.00036831100015888296
+        },
+        {
+          "name": "ParliamentManager.get_zeitgeist_multiplier",
+          "calls": 1,
+          "inclusive_seconds": 0.000041310999989718766,
+          "exclusive_instrumented_seconds": 0.000041310999989718766
+        },
+        {
+          "name": "PopulationManager.recalculate_and_normalize_entity",
+          "calls": 1,
+          "inclusive_seconds": 0.000011966999977630621,
+          "exclusive_instrumented_seconds": 0.000011966999977630621
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. Future method-identity fast paths require checking that wrappers do not force fallback."
+    },
+    {
+      "case": "aeonic-200",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "aeonic-200-w4-plain.json",
+      "boundary_file": "aeonic-200-w4-boundary.json",
+      "plain_median_seconds": 0.02872623799999019,
+      "boundary_seconds": 0.029770815999995648,
+      "boundary_to_plain_wall_ratio": 1.0363632021709843,
+      "plain_median_process_cpu_over_wall": 1.0002490514803195,
+      "boundary_process_cpu_over_wall": 1.0002754711192474,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.028648000000000007,
+          "ru_stime": 0,
+          "ru_minflt": 1,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.029093999999999953,
+          "ru_stime": 0,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.028747000000000078,
+          "ru_stime": 0,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        }
+      ],
+      "optimizer_steps": [
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15
+      ],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+          "calls": 2,
+          "inclusive_seconds": 0.02967271299999652,
+          "exclusive_instrumented_seconds": 0.0033905169998718065
+        },
+        {
+          "name": "AeonicCycleManager.aeonic_interaction",
+          "calls": 152,
+          "inclusive_seconds": 0.025592795000108026,
+          "exclusive_instrumented_seconds": 0.025592795000108026
+        },
+        {
+          "name": "PopulationManager.get_global_path_distribution",
+          "calls": 1,
+          "inclusive_seconds": 0.0006472889999997733,
+          "exclusive_instrumented_seconds": 0.00026985499997067564
+        },
+        {
+          "name": "Pathstrider.dominant_path_idx",
+          "calls": 200,
+          "inclusive_seconds": 0.00037743400002909766,
+          "exclusive_instrumented_seconds": 0.00037743400002909766
+        },
+        {
+          "name": "ParliamentManager.get_zeitgeist_multiplier",
+          "calls": 1,
+          "inclusive_seconds": 0.000027210000013155877,
+          "exclusive_instrumented_seconds": 0.000027210000013155877
+        },
+        {
+          "name": "PopulationManager.recalculate_and_normalize_entity",
+          "calls": 1,
+          "inclusive_seconds": 0.000014902000003758076,
+          "exclusive_instrumented_seconds": 0.000014902000003758076
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. Future method-identity fast paths require checking that wrappers do not force fallback."
+    },
+    {
+      "case": "aeonic-200",
+      "same_checked_state_and_rng_digest": true
+    }
+  ]
+}

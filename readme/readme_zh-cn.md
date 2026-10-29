@@ -23,7 +23,15 @@ python -m main --backend cpp --device cpu --disable-llm --no-interactive --seed 
 python -m pytest -q
 ```
 
-`pip install .` 才会编译、安装原生扩展；仅安装 `requirements.txt` 不会构建 C++。默认不安装 LLM 框架，不下载模型。开发时修改 C++ 后需要重新安装项目。
+`pip install .` 才会编译、安装 C++ 共享库；仅安装 `requirements.txt` 不会构建 C++。核心为独立 C++17，通过 C ABI 与薄层 `ctypes` 适配器连接，不依赖 pybind11、Python C API 或 NumPy 头文件。默认不安装 LLM 框架，不下载模型。开发时修改 C++ 后需要重新安装项目。
+
+核心也可独立构建，无需 Python 环境：
+
+```bash
+cmake -S . -B build/standalone -DCMAKE_BUILD_TYPE=Release
+cmake --build build/standalone --config Release
+ctest --test-dir build/standalone -C Release --output-on-failure
+```
 
 去掉 `--smoke-test` 才是原参数的完整模拟。烟测会缩短阶段并使用 24 个初始实体，不能用于衡量完整模拟结果。完整模拟默认阶段很长，先做烟测。
 
@@ -49,7 +57,7 @@ python -m main --backend cpp --device cpu --torch-threads 1 --native-threads 4 -
 
 嵌入 Python 使用模拟器时，在结束后调用 `sim.close()`；直接使用 `BatchEvaluator` 时调用其 `close()`。原生调用释放 GIL，调用期间不得从其它线程修改或 resize 输入数组。
 
-当前开发 Mac 暂时禁止本地高负荷；上述运行、构建和测试说明用于获准的目标机器，不能作为恢复本机运行的授权。C++ 源码改变后旧本地 `.so/.pyd` 不会自动更新，未重建前不要用旧扩展执行新分支。
+当前开发 Mac 暂时禁止本地高负荷；上述运行、构建和测试说明用于获准的目标机器，不能作为恢复本机运行的授权。C++ 源码改变后旧本地 `.so/.pyd` 不会自动更新，未重建前不要用旧扩展执行新分支。新适配器名称为 `_tiemu_ffi`，加载 `_tiemu_core` 共享库；遗留 `_tiemu_native` 扩展不会被选中。
 
 ## Apple Silicon：LLM 使用 MLX/Metal
 
