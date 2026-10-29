@@ -1,8 +1,9 @@
 """Remote-only diagnostic driver for one world's remaining CPU bottlenecks.
 
 The cases run sequentially and produce profiling evidence, not product-level
-multi-world scheduling. cProfile is observational and must preserve the checked
-state/RNG digest. Its time is reported separately from uninstrumented samples.
+multi-world scheduling. Explicit boundary timers must preserve the checked
+state/RNG digest. Optional cProfile data is marked incomplete because pybind11
+bound methods can lose caller frames on the current Python runtime.
 """
 import argparse
 import json
@@ -85,6 +86,8 @@ def main():
     parser.add_argument('--source-root', type=Path, required=True)
     parser.add_argument('--output-dir', type=Path, required=True)
     parser.add_argument('--probe-perf', action='store_true')
+    parser.add_argument('--include-cprofile', action='store_true',
+                        help='Retain known-incomplete cProfile evidence; never use its percentages.')
     args = parser.parse_args()
     root, output = args.source_root.resolve(), args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -96,12 +99,16 @@ def main():
              ('human', 1000, 6, True), ('aeonic', 200, 2, False)]
     report = {
         'source_root': str(root), 'environment': environment, 'cases': [],
+        'known_cprofile_issue': 'https://github.com/pybind/pybind11/issues/5600',
+        'cprofile_rejected_for_percentages': True,
         'scope': 'Sequential isolated processes on one checkout. Each configuration has three '
-                 'uninstrumented samples and one cProfile sample, after separate warmup worlds. '
+                 'uninstrumented samples and one explicit boundary-timer sample, after separate warmup worlds. '
+                 'An optional, separate cProfile sample is known incomplete and rejected for percentages. '
                  'First worker-pool startup is inside each measured stage if reached. '
                  'All samples share seed 731 and PYTHONHASHSEED=0. Profiler overhead is reported, '
-                 'not subtracted. Cumulative function times overlap; cProfile covers only the '
-                 'calling Python thread. Resource deltas cover the measured stage and process '
+                 'not subtracted. Inclusive boundary spans overlap; exclusive instrumented time '
+                 'subtracts only instrumented descendants, not every function. Resource deltas '
+                 'cover the measured stage and process '
                  'threads. Four-worker scoring is forced with threshold 1, but aeonic does not '
                  'use that human scoring pool. These short cases are hotspot diagnostics, not '
                  'stable speedup claims, a full-world run or a local-M1 measurement. '
@@ -118,7 +125,7 @@ def main():
         checked_digests = set()
         for workers in (1, 4):
             records = {}
-            for mode in ('plain', 'profile'):
+            for mode in (('plain', 'boundary', 'profile') if args.include_cprofile else ('plain', 'boundary')):
                 label = f'{name}-w{workers}-{mode}'
                 result_path = output/f'{label}.json'
                 command = [sys.executable, str(script), '--source-root', str(root),
@@ -130,33 +137,47 @@ def main():
                     command.append('--with-reincarnator')
                 if mode == 'profile':
                     command.extend(['--profile-output-dir', str(output/f'{label}-stats')])
+                if mode == 'boundary':
+                    command.append('--boundary-timers')
                 subprocess.run(command, check=True, timeout=180, stdout=subprocess.DEVNULL,
                                env={**os.environ, 'PYTHONHASHSEED': '0'})
                 records[mode] = json.loads(result_path.read_text(encoding='utf-8'))
                 for run in records[mode]['runs']:
                     checked_digests.add(run['state_digest'])
-            plain, profiled = records['plain'], records['profile']
-            profile_run = profiled['runs'][0]
-            profile = profile_run['profile']
+            plain, observed = records['plain'], records['boundary']
+            boundary_run = observed['runs'][0]
+            boundaries = boundary_run['boundaries']
+            if not boundaries['valid']:
+                raise SystemExit(f'{name}: explicit boundary integrity checks failed')
             item = {
                 'workers_requested': workers, 'native_min_rows': 1,
                 'plain_file': f'{name}-w{workers}-plain.json',
-                'profile_file': f'{name}-w{workers}-profile.json',
+                'boundary_file': f'{name}-w{workers}-boundary.json',
                 'plain_median_seconds': plain['median_seconds'],
-                'profile_seconds': profile_run['seconds'],
-                'profile_to_plain_wall_ratio': profile_run['seconds']/plain['median_seconds'],
+                'boundary_seconds': boundary_run['seconds'],
+                'boundary_to_plain_wall_ratio': boundary_run['seconds']/plain['median_seconds'],
                 'plain_median_process_cpu_over_wall': statistics.median(
                     run['cpu_seconds']/run['seconds'] for run in plain['runs']),
-                'profile_process_cpu_over_wall': profile_run['cpu_seconds']/profile_run['seconds'],
+                'boundary_process_cpu_over_wall': boundary_run['cpu_seconds']/boundary_run['seconds'],
                 'plain_resource_deltas': [run['resource_delta'] for run in plain['runs']],
-                'optimizer_steps': profile_run['optimizer_steps'],
-                'guide_optimizer_steps': profile_run['guide_optimizer_steps'],
-                'profile_total_self_seconds': profile['total_self_seconds'],
-                'profile_total_calls': profile['total_calls'],
-                'top_self': [compact_row(row) for row in profile['top_self'][:12]],
-                'top_cumulative': [compact_row(row) for row in profile['top_cumulative'][:12]],
-                'hotspots': [compact_row(row) for row in profile['hotspots']]
+                'optimizer_steps': boundary_run['optimizer_steps'],
+                'guide_optimizer_steps': boundary_run['guide_optimizer_steps'],
+                'boundary_integrity_valid': boundaries['valid'],
+                'boundary_spans': boundaries['spans'],
+                'boundary_scope': boundaries['scope'],
             }
+            if 'profile' in records:
+                profile_run = records['profile']['runs'][0]
+                profile = profile_run['profile']
+                item['rejected_cprofile'] = {
+                    'known_incomplete': True, 'rejected_for_percentages': True,
+                    'seconds': profile_run['seconds'],
+                    'wall_ratio_over_plain': profile_run['seconds']/plain['median_seconds'],
+                    'total_self_seconds': profile['total_self_seconds'],
+                    'total_calls': profile['total_calls'],
+                    'integrity_violations': profile['integrity_violations'],
+                    'hotspots': [compact_row(row) for row in profile['hotspots']],
+                }
             case['configurations'].append(item)
             print(json.dumps({'case': name, **item}), flush=True)
         case['same_checked_state_and_rng_digest'] = len(checked_digests) == 1

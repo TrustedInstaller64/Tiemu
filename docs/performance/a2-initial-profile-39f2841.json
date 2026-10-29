@@ -1,0 +1,2385 @@
+{
+  "workflow_run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/40959098678",
+  "source": "Completed GitHub Actions job log, job 123746860261",
+  "interpretation": "Checked state/RNG and plain timings are useful; human cProfile call counts/cumulative times are incomplete around pybind class methods, so do not use its percentages. Independent boundary instrumentation follows.",
+  "rows": [
+    {
+      "environment": {
+        "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.43",
+        "machine": "x86_64",
+        "logical_cpus": 4,
+        "allowed_cpu_affinity": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "cpu_models": [
+          "AMD EPYC 9V74 80-Core Processor"
+        ],
+        "cpu_mhz_snapshot": [
+          "2868.995",
+          "2596.138",
+          "2870.998",
+          "2879.565"
+        ],
+        "hypervisor_cpu_flag": true,
+        "proc_self_cgroup": "0::/system.slice/hosted-compute-agent.service\n",
+        "cgroup_root_cpu_max": null,
+        "cgroup_root_cpu_stat": "usage_usec 66145000\nuser_usec 47712000\nsystem_usec 18433000\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cgroup_root_cpuset_effective": "0-3\n",
+        "perf_event_paranoid": "4\n",
+        "scope": "Metadata snapshot outside measured stages. Exposed CPU model/MHz need not describe a dedicated host or sustained workload frequency. Cgroup root data is reported with proc_self_cgroup and is not assumed to be the effective quota. These fields do not establish IPC, memory bandwidth, cache misses or NUMA locality.",
+        "perf_probe": {
+          "requested": true,
+          "executable": "/usr/bin/perf",
+          "scope": "User-space event availability probe on the true utility only; not a project measurement. No hardware counts from this probe may be attributed to a simulation phase.",
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "Error:\nNo supported events found.\nAccess to performance monitoring and observability operations is limited.\nConsider adjusting /proc/sys/kernel/perf_event_paranoid setting to open\naccess to performance monitoring and observability operations for processes\nwithout CAP_PERFMON, CAP_SYS_PTRACE or CAP_SYS_ADMIN Linux capability.\nMore information can be found at 'Perf events and tool security' document:\nhttps://www.kernel.org/doc/html/latest/admin-guide/perf-security.html\nperf_event_paranoid setting is 4:\n  -1: Allow use of (almost) all events by all users\n      Ignore mlock limit after perf_event_mlock_kb without CAP_IPC_LOCK\n>= 0: Disallow raw and ftrace function tracepoint access\n>= 1: Disallow CPU event access\n>= 2: Disallow kernel profiling\nTo make the adjusted perf_event_paranoid setting permanent preserve it\nin /etc/sysctl.conf (e.g. kernel.perf_event_paranoid = <setting>)\n",
+          "command": [
+            "/usr/bin/perf",
+            "stat",
+            "-x,",
+            "-e",
+            "cycles:u,instructions:u,cache-misses:u",
+            "--",
+            "true"
+          ]
+        }
+      }
+    },
+    {
+      "case": "human-1000",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-w1-plain.json",
+      "profile_file": "human-1000-w1-profile.json",
+      "plain_median_seconds": 0.28373535999999433,
+      "profile_seconds": 0.46165565799999797,
+      "profile_to_plain_wall_ratio": 1.6270642404246238,
+      "plain_median_process_cpu_over_wall": 0.999894380453693,
+      "profile_process_cpu_over_wall": 0.9999949421176633,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.2876559999999999,
+          "ru_stime": 0.000018999999999991246,
+          "ru_minflt": 45,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 2
+        },
+        {
+          "ru_utime": 0.28370300000000004,
+          "ru_stime": 0.00001799999999996249,
+          "ru_minflt": 2,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 3
+        },
+        {
+          "ru_utime": 0.2829250000000001,
+          "ru_stime": 0.00003100000000000325,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 3
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "profile_total_self_seconds": 0.34070065200000016,
+      "profile_total_calls": 606275,
+      "top_self": [
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8032,
+          "self_seconds": 0.053000956,
+          "cumulative_seconds": 0.062267350000000006
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 37363,
+          "self_seconds": 0.030138383,
+          "cumulative_seconds": 0.128479134
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 37369,
+          "self_seconds": 0.029580767,
+          "cumulative_seconds": 0.074361994
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 37369,
+          "self_seconds": 0.022872138,
+          "cumulative_seconds": 0.022872138
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6070,
+          "self_seconds": 0.018576436,
+          "cumulative_seconds": 0.07105629000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 37381,
+          "self_seconds": 0.016143631000000002,
+          "cumulative_seconds": 0.044910159000000005
+        },
+        {
+          "file": "population_manager.py",
+          "line": 188,
+          "function": "_add_new_entities",
+          "calls": 6,
+          "self_seconds": 0.014077109,
+          "cumulative_seconds": 0.052996400000000006
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.normalize_pipeline>",
+          "calls": 8365,
+          "self_seconds": 0.010109418,
+          "cumulative_seconds": 0.010109418
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.path_affinities>",
+          "calls": 7966,
+          "self_seconds": 0.009987413,
+          "cumulative_seconds": 0.009987413
+        },
+        {
+          "file": "population_manager.py",
+          "line": 56,
+          "function": "recalculate_and_normalize_entity",
+          "calls": 8365,
+          "self_seconds": 0.007026287000000001,
+          "cumulative_seconds": 0.019111305000000002
+        },
+        {
+          "file": "entities.py",
+          "line": 34,
+          "function": "path_affinities",
+          "calls": 45401,
+          "self_seconds": 0.006853658,
+          "cumulative_seconds": 0.021216279
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "calls": 37400,
+          "self_seconds": 0.0058101,
+          "cumulative_seconds": 0.0058101
+        }
+      ],
+      "top_cumulative": [
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 37363,
+          "self_seconds": 0.030138383,
+          "cumulative_seconds": 0.128479134
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 37369,
+          "self_seconds": 0.029580767,
+          "cumulative_seconds": 0.074361994
+        },
+        {
+          "file": "simulation.py",
+          "line": 489,
+          "function": "_evolve_and_grow",
+          "calls": 6,
+          "self_seconds": 0.005033918,
+          "cumulative_seconds": 0.071288614
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6070,
+          "self_seconds": 0.018576436,
+          "cumulative_seconds": 0.07105629000000001
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8032,
+          "self_seconds": 0.053000956,
+          "cumulative_seconds": 0.062267350000000006
+        },
+        {
+          "file": "population_manager.py",
+          "line": 183,
+          "function": "replenish_population_by_growth",
+          "calls": 6,
+          "self_seconds": 0.000008312000000000001,
+          "cumulative_seconds": 0.053004712
+        },
+        {
+          "file": "population_manager.py",
+          "line": 188,
+          "function": "_add_new_entities",
+          "calls": 6,
+          "self_seconds": 0.014077109,
+          "cumulative_seconds": 0.052996400000000006
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 37381,
+          "self_seconds": 0.016143631000000002,
+          "cumulative_seconds": 0.044910159000000005
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 154,
+          "function": "_handle_synergy",
+          "calls": 3170,
+          "self_seconds": 0.00397826,
+          "cumulative_seconds": 0.023189208000000003
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 37369,
+          "self_seconds": 0.022872138,
+          "cumulative_seconds": 0.022872138
+        },
+        {
+          "file": "entities.py",
+          "line": 34,
+          "function": "path_affinities",
+          "calls": 45401,
+          "self_seconds": 0.006853658,
+          "cumulative_seconds": 0.021216279
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 17,
+          "function": "hold_election",
+          "calls": 6,
+          "self_seconds": 0.002023069,
+          "cumulative_seconds": 0.019756375
+        }
+      ],
+      "hotspots": [
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8032,
+          "self_seconds": 0.053000956,
+          "cumulative_seconds": 0.062267350000000006
+        },
+        {
+          "file": "population_manager.py",
+          "line": 114,
+          "function": "get_global_path_distribution",
+          "calls": 12,
+          "self_seconds": 0.002878975,
+          "cumulative_seconds": 0
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6070,
+          "self_seconds": 0.018576436,
+          "cumulative_seconds": 0.07105629000000001
+        },
+        {
+          "file": "population_manager.py",
+          "line": 110,
+          "function": "mark_paths_dirty",
+          "calls": 6070,
+          "self_seconds": 0.0034752340000000002,
+          "cumulative_seconds": 0.010534654000000001
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 37363,
+          "self_seconds": 0.030138383,
+          "cumulative_seconds": 0.128479134
+        }
+      ]
+    },
+    {
+      "case": "human-1000",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-w4-plain.json",
+      "profile_file": "human-1000-w4-profile.json",
+      "plain_median_seconds": 0.28114446299998974,
+      "profile_seconds": 0.4731699299999974,
+      "profile_to_plain_wall_ratio": 1.6830135118115936,
+      "plain_median_process_cpu_over_wall": 1.00192116542271,
+      "profile_process_cpu_over_wall": 0.9998786292273533,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.27712099999999973,
+          "ru_stime": 0.002130999999999994,
+          "ru_minflt": 47,
+          "ru_majflt": 0,
+          "ru_nvcsw": 26,
+          "ru_nivcsw": 2
+        },
+        {
+          "ru_utime": 0.2816480000000001,
+          "ru_stime": 0.000060000000000004494,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 26,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.28176500000000004,
+          "ru_stime": 0,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 26,
+          "ru_nivcsw": 2
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "profile_total_self_seconds": 0.34824678200000014,
+      "profile_total_calls": 606275,
+      "top_self": [
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8032,
+          "self_seconds": 0.054003785000000006,
+          "cumulative_seconds": 0.06303204700000001
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 37363,
+          "self_seconds": 0.030603533000000002,
+          "cumulative_seconds": 0.131660717
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 37369,
+          "self_seconds": 0.030037304,
+          "cumulative_seconds": 0.07677998400000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 37369,
+          "self_seconds": 0.023676125000000003,
+          "cumulative_seconds": 0.023676125000000003
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6070,
+          "self_seconds": 0.019065909000000002,
+          "cumulative_seconds": 0.073001091
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 37381,
+          "self_seconds": 0.017012695,
+          "cumulative_seconds": 0.046867415
+        },
+        {
+          "file": "population_manager.py",
+          "line": 188,
+          "function": "_add_new_entities",
+          "calls": 6,
+          "self_seconds": 0.014815973000000001,
+          "cumulative_seconds": 0.055114556
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.normalize_pipeline>",
+          "calls": 8365,
+          "self_seconds": 0.010622243,
+          "cumulative_seconds": 0.010622243
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.path_affinities>",
+          "calls": 7966,
+          "self_seconds": 0.010111358,
+          "cumulative_seconds": 0.010111358
+        },
+        {
+          "file": "population_manager.py",
+          "line": 56,
+          "function": "recalculate_and_normalize_entity",
+          "calls": 8365,
+          "self_seconds": 0.007249658000000001,
+          "cumulative_seconds": 0.01986138
+        },
+        {
+          "file": "entities.py",
+          "line": 34,
+          "function": "path_affinities",
+          "calls": 45401,
+          "self_seconds": 0.006968055000000001,
+          "cumulative_seconds": 0.021512283
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "calls": 37400,
+          "self_seconds": 0.006099408000000001,
+          "cumulative_seconds": 0.006099408000000001
+        }
+      ],
+      "top_cumulative": [
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 37363,
+          "self_seconds": 0.030603533000000002,
+          "cumulative_seconds": 0.131660717
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 37369,
+          "self_seconds": 0.030037304,
+          "cumulative_seconds": 0.07677998400000001
+        },
+        {
+          "file": "simulation.py",
+          "line": 489,
+          "function": "_evolve_and_grow",
+          "calls": 6,
+          "self_seconds": 0.0050752950000000005,
+          "cumulative_seconds": 0.073586578
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6070,
+          "self_seconds": 0.019065909000000002,
+          "cumulative_seconds": 0.073001091
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8032,
+          "self_seconds": 0.054003785000000006,
+          "cumulative_seconds": 0.06303204700000001
+        },
+        {
+          "file": "population_manager.py",
+          "line": 183,
+          "function": "replenish_population_by_growth",
+          "calls": 6,
+          "self_seconds": 0.000009056000000000001,
+          "cumulative_seconds": 0.055123612
+        },
+        {
+          "file": "population_manager.py",
+          "line": 188,
+          "function": "_add_new_entities",
+          "calls": 6,
+          "self_seconds": 0.014815973000000001,
+          "cumulative_seconds": 0.055114556
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 37381,
+          "self_seconds": 0.017012695,
+          "cumulative_seconds": 0.046867415
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 154,
+          "function": "_handle_synergy",
+          "calls": 3170,
+          "self_seconds": 0.0040726700000000005,
+          "cumulative_seconds": 0.023939480000000003
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 37369,
+          "self_seconds": 0.023676125000000003,
+          "cumulative_seconds": 0.023676125000000003
+        },
+        {
+          "file": "entities.py",
+          "line": 34,
+          "function": "path_affinities",
+          "calls": 45401,
+          "self_seconds": 0.006968055000000001,
+          "cumulative_seconds": 0.021512283
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 17,
+          "function": "hold_election",
+          "calls": 6,
+          "self_seconds": 0.002119721,
+          "cumulative_seconds": 0.020712951
+        }
+      ],
+      "hotspots": [
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8032,
+          "self_seconds": 0.054003785000000006,
+          "cumulative_seconds": 0.06303204700000001
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6070,
+          "self_seconds": 0.019065909000000002,
+          "cumulative_seconds": 0.073001091
+        },
+        {
+          "file": "population_manager.py",
+          "line": 114,
+          "function": "get_global_path_distribution",
+          "calls": 12,
+          "self_seconds": 0.002880127,
+          "cumulative_seconds": 0
+        },
+        {
+          "file": "population_manager.py",
+          "line": 110,
+          "function": "mark_paths_dirty",
+          "calls": 6070,
+          "self_seconds": 0.003461043,
+          "cumulative_seconds": 0.010528741000000001
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 37363,
+          "self_seconds": 0.030603533000000002,
+          "cumulative_seconds": 0.131660717
+        }
+      ]
+    },
+    {
+      "case": "human-1000",
+      "same_checked_state_and_rng_digest": true
+    },
+    {
+      "case": "human-10000",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "human-10000-w1-plain.json",
+      "profile_file": "human-10000-w1-profile.json",
+      "plain_median_seconds": 1.0344073649999928,
+      "profile_seconds": 1.685427312999991,
+      "profile_to_plain_wall_ratio": 1.6293651515135943,
+      "plain_median_process_cpu_over_wall": 0.9999151572166227,
+      "profile_process_cpu_over_wall": 0.9999486860101745,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 1.017408,
+          "ru_stime": 0.006041000000000019,
+          "ru_minflt": 2002,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 3
+        },
+        {
+          "ru_utime": 1.0343390000000001,
+          "ru_stime": 0,
+          "ru_minflt": 120,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 5
+        },
+        {
+          "ru_utime": 1.1257470000000005,
+          "ru_stime": 0.0019919999999999938,
+          "ru_minflt": 500,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 11
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "profile_total_self_seconds": 1.3896941280000006,
+      "profile_total_calls": 2555418,
+      "top_self": [
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 29476,
+          "self_seconds": 0.192796242,
+          "cumulative_seconds": 0.222747715
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 216333,
+          "self_seconds": 0.16412442400000002,
+          "cumulative_seconds": 0.672990775
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 216336,
+          "self_seconds": 0.163393283,
+          "cumulative_seconds": 0.417782633
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 216336,
+          "self_seconds": 0.13664237,
+          "cumulative_seconds": 0.13664237
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 216342,
+          "self_seconds": 0.08644852500000001,
+          "cumulative_seconds": 0.254482068
+        },
+        {
+          "file": "simulation.py",
+          "line": 489,
+          "function": "_evolve_and_grow",
+          "calls": 3,
+          "self_seconds": 0.049612188,
+          "cumulative_seconds": 0.313840577
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 14120,
+          "self_seconds": 0.046326847000000004,
+          "cumulative_seconds": 0.209893145
+        },
+        {
+          "file": "entities.py",
+          "line": 34,
+          "function": "path_affinities",
+          "calls": 245812,
+          "self_seconds": 0.03764387,
+          "cumulative_seconds": 0.075903937
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "calls": 216350,
+          "self_seconds": 0.031329821,
+          "cumulative_seconds": 0.031329821
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.normalize_pipeline>",
+          "calls": 23903,
+          "self_seconds": 0.026862184,
+          "cumulative_seconds": 0.026862184
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.path_affinities>",
+          "calls": 22872,
+          "self_seconds": 0.025975393000000003,
+          "cumulative_seconds": 0.025975393000000003
+        },
+        {
+          "file": "population_manager.py",
+          "line": 114,
+          "function": "get_global_path_distribution",
+          "calls": 6,
+          "self_seconds": 0.023413431000000002,
+          "cumulative_seconds": 0
+        }
+      ],
+      "top_cumulative": [
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 216333,
+          "self_seconds": 0.16412442400000002,
+          "cumulative_seconds": 0.672990775
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 216336,
+          "self_seconds": 0.163393283,
+          "cumulative_seconds": 0.417782633
+        },
+        {
+          "file": "simulation.py",
+          "line": 489,
+          "function": "_evolve_and_grow",
+          "calls": 3,
+          "self_seconds": 0.049612188,
+          "cumulative_seconds": 0.313840577
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 216342,
+          "self_seconds": 0.08644852500000001,
+          "cumulative_seconds": 0.254482068
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 29476,
+          "self_seconds": 0.192796242,
+          "cumulative_seconds": 0.222747715
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 14120,
+          "self_seconds": 0.046326847000000004,
+          "cumulative_seconds": 0.209893145
+        },
+        {
+          "file": "population_manager.py",
+          "line": 183,
+          "function": "replenish_population_by_growth",
+          "calls": 3,
+          "self_seconds": 0.0000064780000000000005,
+          "cumulative_seconds": 0.13711530800000002
+        },
+        {
+          "file": "population_manager.py",
+          "line": 188,
+          "function": "_add_new_entities",
+          "calls": 3,
+          "self_seconds": 0.016154217000000002,
+          "cumulative_seconds": 0.13710883000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 216336,
+          "self_seconds": 0.13664237,
+          "cumulative_seconds": 0.13664237
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 17,
+          "function": "hold_election",
+          "calls": 3,
+          "self_seconds": 0.009430283000000001,
+          "cumulative_seconds": 0.10267300800000001
+        },
+        {
+          "file": "diversity_manager.py",
+          "line": 38,
+          "function": "assess_and_intervene",
+          "calls": 3,
+          "self_seconds": 0.000018228000000000002,
+          "cumulative_seconds": 0.09756827300000001
+        },
+        {
+          "file": "diversity_manager.py",
+          "line": 27,
+          "function": "_calculate_diversity_index",
+          "calls": 3,
+          "self_seconds": 0.00002152,
+          "cumulative_seconds": 0.09754823300000001
+        }
+      ],
+      "hotspots": [
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 29476,
+          "self_seconds": 0.192796242,
+          "cumulative_seconds": 0.222747715
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 14120,
+          "self_seconds": 0.046326847000000004,
+          "cumulative_seconds": 0.209893145
+        },
+        {
+          "file": "population_manager.py",
+          "line": 114,
+          "function": "get_global_path_distribution",
+          "calls": 6,
+          "self_seconds": 0.023413431000000002,
+          "cumulative_seconds": 0
+        },
+        {
+          "file": "population_manager.py",
+          "line": 110,
+          "function": "mark_paths_dirty",
+          "calls": 14120,
+          "self_seconds": 0.008076826,
+          "cumulative_seconds": 0.025776959000000002
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 216333,
+          "self_seconds": 0.16412442400000002,
+          "cumulative_seconds": 0.672990775
+        }
+      ]
+    },
+    {
+      "case": "human-10000",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "human-10000-w4-plain.json",
+      "profile_file": "human-10000-w4-profile.json",
+      "plain_median_seconds": 1.0311012669999968,
+      "profile_seconds": 1.7024566830000083,
+      "profile_to_plain_wall_ratio": 1.6511052187466797,
+      "plain_median_process_cpu_over_wall": 1.0026062968653138,
+      "profile_process_cpu_over_wall": 1.0019115100151958,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 1.0246630000000003,
+          "ru_stime": 0.007338999999999984,
+          "ru_minflt": 2006,
+          "ru_majflt": 0,
+          "ru_nvcsw": 14,
+          "ru_nivcsw": 4
+        },
+        {
+          "ru_utime": 1.0338090000000002,
+          "ru_stime": 0,
+          "ru_minflt": 97,
+          "ru_majflt": 0,
+          "ru_nvcsw": 14,
+          "ru_nivcsw": 3
+        },
+        {
+          "ru_utime": 1.1324689999999995,
+          "ru_stime": 0,
+          "ru_minflt": 214,
+          "ru_majflt": 0,
+          "ru_nvcsw": 15,
+          "ru_nivcsw": 7
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "profile_total_self_seconds": 1.4100111000000004,
+      "profile_total_calls": 2555418,
+      "top_self": [
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 29476,
+          "self_seconds": 0.19427755100000002,
+          "cumulative_seconds": 0.22408855000000003
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 216336,
+          "self_seconds": 0.167175249,
+          "cumulative_seconds": 0.43037529300000005
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 216333,
+          "self_seconds": 0.167165965,
+          "cumulative_seconds": 0.6915857740000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 216336,
+          "self_seconds": 0.139115017,
+          "cumulative_seconds": 0.139115017
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 216342,
+          "self_seconds": 0.09126131300000001,
+          "cumulative_seconds": 0.263288745
+        },
+        {
+          "file": "simulation.py",
+          "line": 489,
+          "function": "_evolve_and_grow",
+          "calls": 3,
+          "self_seconds": 0.049322832000000004,
+          "cumulative_seconds": 0.316476556
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 14120,
+          "self_seconds": 0.044556558,
+          "cumulative_seconds": 0.2112419
+        },
+        {
+          "file": "entities.py",
+          "line": 34,
+          "function": "path_affinities",
+          "calls": 245812,
+          "self_seconds": 0.039712208000000006,
+          "cumulative_seconds": 0.078887713
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "calls": 216350,
+          "self_seconds": 0.032851483,
+          "cumulative_seconds": 0.032851483
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.normalize_pipeline>",
+          "calls": 23903,
+          "self_seconds": 0.027155363000000002,
+          "cumulative_seconds": 0.027155363000000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.path_affinities>",
+          "calls": 22872,
+          "self_seconds": 0.027000653000000003,
+          "cumulative_seconds": 0.027000653000000003
+        },
+        {
+          "file": "population_manager.py",
+          "line": 114,
+          "function": "get_global_path_distribution",
+          "calls": 6,
+          "self_seconds": 0.023529697000000002,
+          "cumulative_seconds": 0
+        }
+      ],
+      "top_cumulative": [
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 216333,
+          "self_seconds": 0.167165965,
+          "cumulative_seconds": 0.6915857740000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 216336,
+          "self_seconds": 0.167175249,
+          "cumulative_seconds": 0.43037529300000005
+        },
+        {
+          "file": "simulation.py",
+          "line": 489,
+          "function": "_evolve_and_grow",
+          "calls": 3,
+          "self_seconds": 0.049322832000000004,
+          "cumulative_seconds": 0.316476556
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 216342,
+          "self_seconds": 0.09126131300000001,
+          "cumulative_seconds": 0.263288745
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 29476,
+          "self_seconds": 0.19427755100000002,
+          "cumulative_seconds": 0.22408855000000003
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 14120,
+          "self_seconds": 0.044556558,
+          "cumulative_seconds": 0.2112419
+        },
+        {
+          "file": "population_manager.py",
+          "line": 183,
+          "function": "replenish_population_by_growth",
+          "calls": 3,
+          "self_seconds": 0.000006409000000000001,
+          "cumulative_seconds": 0.13962206200000002
+        },
+        {
+          "file": "population_manager.py",
+          "line": 188,
+          "function": "_add_new_entities",
+          "calls": 3,
+          "self_seconds": 0.016053896,
+          "cumulative_seconds": 0.139615653
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 216336,
+          "self_seconds": 0.139115017,
+          "cumulative_seconds": 0.139115017
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 17,
+          "function": "hold_election",
+          "calls": 3,
+          "self_seconds": 0.009387958,
+          "cumulative_seconds": 0.10514793600000001
+        },
+        {
+          "file": "diversity_manager.py",
+          "line": 38,
+          "function": "assess_and_intervene",
+          "calls": 3,
+          "self_seconds": 0.000017606,
+          "cumulative_seconds": 0.098857495
+        },
+        {
+          "file": "diversity_manager.py",
+          "line": 27,
+          "function": "_calculate_diversity_index",
+          "calls": 3,
+          "self_seconds": 0.000021723000000000002,
+          "cumulative_seconds": 0.09883786600000001
+        }
+      ],
+      "hotspots": [
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 29476,
+          "self_seconds": 0.19427755100000002,
+          "cumulative_seconds": 0.22408855000000003
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 14120,
+          "self_seconds": 0.044556558,
+          "cumulative_seconds": 0.2112419
+        },
+        {
+          "file": "population_manager.py",
+          "line": 114,
+          "function": "get_global_path_distribution",
+          "calls": 6,
+          "self_seconds": 0.023529697000000002,
+          "cumulative_seconds": 0
+        },
+        {
+          "file": "population_manager.py",
+          "line": 110,
+          "function": "mark_paths_dirty",
+          "calls": 14120,
+          "self_seconds": 0.007948905000000001,
+          "cumulative_seconds": 0.025627843
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 216333,
+          "self_seconds": 0.167165965,
+          "cumulative_seconds": 0.6915857740000001
+        }
+      ]
+    },
+    {
+      "case": "human-10000",
+      "same_checked_state_and_rng_digest": true
+    },
+    {
+      "case": "human-1000-reincarnator",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-reincarnator-w1-plain.json",
+      "profile_file": "human-1000-reincarnator-w1-profile.json",
+      "plain_median_seconds": 0.29607206800000085,
+      "profile_seconds": 0.49418854399999645,
+      "profile_to_plain_wall_ratio": 1.6691494991009925,
+      "plain_median_process_cpu_over_wall": 0.999989118905359,
+      "profile_process_cpu_over_wall": 0.999951214975966,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.2951490000000001,
+          "ru_stime": 0.0009210000000000051,
+          "ru_minflt": 145,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 2
+        },
+        {
+          "ru_utime": 0.2961100000000001,
+          "ru_stime": 0.000010999999999983245,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 1
+        },
+        {
+          "ru_utime": 0.29591499999999993,
+          "ru_stime": 0,
+          "ru_minflt": 224,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 1
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "profile_total_self_seconds": 0.37119433300000015,
+      "profile_total_calls": 632947,
+      "top_self": [
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8035,
+          "self_seconds": 0.05408299900000001,
+          "cumulative_seconds": 0.06297432700000001
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 40223,
+          "self_seconds": 0.032834344,
+          "cumulative_seconds": 0.13900537300000002
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 40229,
+          "self_seconds": 0.032055552,
+          "cumulative_seconds": 0.080883304
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 40229,
+          "self_seconds": 0.02495233,
+          "cumulative_seconds": 0.02495233
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6072,
+          "self_seconds": 0.021272247,
+          "cumulative_seconds": 0.07568267000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 40241,
+          "self_seconds": 0.017525583,
+          "cumulative_seconds": 0.048950453000000005
+        },
+        {
+          "file": "population_manager.py",
+          "line": 188,
+          "function": "_add_new_entities",
+          "calls": 6,
+          "self_seconds": 0.013902941,
+          "cumulative_seconds": 0.052348087
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.normalize_pipeline>",
+          "calls": 8441,
+          "self_seconds": 0.010516149,
+          "cumulative_seconds": 0.010516149
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.path_affinities>",
+          "calls": 8045,
+          "self_seconds": 0.010328622,
+          "cumulative_seconds": 0.010328622
+        },
+        {
+          "file": "entities.py",
+          "line": 34,
+          "function": "path_affinities",
+          "calls": 48266,
+          "self_seconds": 0.0072885680000000005,
+          "cumulative_seconds": 0.022106171
+        },
+        {
+          "file": "population_manager.py",
+          "line": 56,
+          "function": "recalculate_and_normalize_entity",
+          "calls": 8441,
+          "self_seconds": 0.007072035000000001,
+          "cumulative_seconds": 0.019586963000000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "calls": 40302,
+          "self_seconds": 0.0064202700000000005,
+          "cumulative_seconds": 0.0064202700000000005
+        }
+      ],
+      "top_cumulative": [
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 40223,
+          "self_seconds": 0.032834344,
+          "cumulative_seconds": 0.13900537300000002
+        },
+        {
+          "file": "simulation.py",
+          "line": 489,
+          "function": "_evolve_and_grow",
+          "calls": 6,
+          "self_seconds": 0.005421429,
+          "cumulative_seconds": 0.09452030900000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 40229,
+          "self_seconds": 0.032055552,
+          "cumulative_seconds": 0.080883304
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6072,
+          "self_seconds": 0.021272247,
+          "cumulative_seconds": 0.07568267000000001
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8035,
+          "self_seconds": 0.05408299900000001,
+          "cumulative_seconds": 0.06297432700000001
+        },
+        {
+          "file": "population_manager.py",
+          "line": 183,
+          "function": "replenish_population_by_growth",
+          "calls": 6,
+          "self_seconds": 0.000009433000000000001,
+          "cumulative_seconds": 0.052357520000000005
+        },
+        {
+          "file": "population_manager.py",
+          "line": 188,
+          "function": "_add_new_entities",
+          "calls": 6,
+          "self_seconds": 0.013902941,
+          "cumulative_seconds": 0.052348087
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 40241,
+          "self_seconds": 0.017525583,
+          "cumulative_seconds": 0.048950453000000005
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 40229,
+          "self_seconds": 0.02495233,
+          "cumulative_seconds": 0.02495233
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 154,
+          "function": "_handle_synergy",
+          "calls": 3212,
+          "self_seconds": 0.004210035,
+          "cumulative_seconds": 0.024377162
+        },
+        {
+          "file": "entities.py",
+          "line": 34,
+          "function": "path_affinities",
+          "calls": 48266,
+          "self_seconds": 0.0072885680000000005,
+          "cumulative_seconds": 0.022106171
+        },
+        {
+          "file": "simulation.py",
+          "line": 382,
+          "function": "_train_hybrid_guide_network",
+          "calls": 6,
+          "self_seconds": 0.000532832,
+          "cumulative_seconds": 0.021060414000000003
+        }
+      ],
+      "hotspots": [
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.concepts>",
+          "calls": 1,
+          "self_seconds": 0.000002363,
+          "cumulative_seconds": 0.000002363
+        },
+        {
+          "file": "entities.py",
+          "line": 50,
+          "function": "recalculate_concepts",
+          "calls": 1,
+          "self_seconds": 0.00000686,
+          "cumulative_seconds": 0.000019018
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8035,
+          "self_seconds": 0.05408299900000001,
+          "cumulative_seconds": 0.06297432700000001
+        },
+        {
+          "file": "population_manager.py",
+          "line": 114,
+          "function": "get_global_path_distribution",
+          "calls": 19,
+          "self_seconds": 0.004089944,
+          "cumulative_seconds": 0
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6072,
+          "self_seconds": 0.021272247,
+          "cumulative_seconds": 0.07568267000000001
+        },
+        {
+          "file": "population_manager.py",
+          "line": 110,
+          "function": "mark_paths_dirty",
+          "calls": 6072,
+          "self_seconds": 0.0035951060000000003,
+          "cumulative_seconds": 0.010751312
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 40223,
+          "self_seconds": 0.032834344,
+          "cumulative_seconds": 0.13900537300000002
+        }
+      ]
+    },
+    {
+      "case": "human-1000-reincarnator",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-reincarnator-w4-plain.json",
+      "profile_file": "human-1000-reincarnator-w4-profile.json",
+      "plain_median_seconds": 0.29919788300000505,
+      "profile_seconds": 0.4995832419999999,
+      "profile_to_plain_wall_ratio": 1.6697419012152286,
+      "plain_median_process_cpu_over_wall": 1.0018304338076607,
+      "profile_process_cpu_over_wall": 1.001099732644755,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.30028900000000025,
+          "ru_stime": 0.00004900000000002125,
+          "ru_minflt": 149,
+          "ru_majflt": 0,
+          "ru_nvcsw": 27,
+          "ru_nivcsw": 1
+        },
+        {
+          "ru_utime": 0.298686,
+          "ru_stime": 0,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 26,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.2978489999999998,
+          "ru_stime": 0.0019100000000000228,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 26,
+          "ru_nivcsw": 0
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "profile_total_self_seconds": 0.37285207100000006,
+      "profile_total_calls": 632947,
+      "top_self": [
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8035,
+          "self_seconds": 0.054030784000000005,
+          "cumulative_seconds": 0.063124997
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 40223,
+          "self_seconds": 0.032690643000000005,
+          "cumulative_seconds": 0.13957565700000002
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 40229,
+          "self_seconds": 0.032255723,
+          "cumulative_seconds": 0.081870012
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 40229,
+          "self_seconds": 0.025419127000000003,
+          "cumulative_seconds": 0.025419127000000003
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6072,
+          "self_seconds": 0.020205378,
+          "cumulative_seconds": 0.074430755
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 40241,
+          "self_seconds": 0.017672895,
+          "cumulative_seconds": 0.049746655
+        },
+        {
+          "file": "population_manager.py",
+          "line": 188,
+          "function": "_add_new_entities",
+          "calls": 6,
+          "self_seconds": 0.014023018000000002,
+          "cumulative_seconds": 0.053220794
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.normalize_pipeline>",
+          "calls": 8441,
+          "self_seconds": 0.010614698,
+          "cumulative_seconds": 0.010614698
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.path_affinities>",
+          "calls": 8045,
+          "self_seconds": 0.010272221,
+          "cumulative_seconds": 0.010272221
+        },
+        {
+          "file": "entities.py",
+          "line": 34,
+          "function": "path_affinities",
+          "calls": 48266,
+          "self_seconds": 0.007478709,
+          "cumulative_seconds": 0.022151836
+        },
+        {
+          "file": "population_manager.py",
+          "line": 56,
+          "function": "recalculate_and_normalize_entity",
+          "calls": 8441,
+          "self_seconds": 0.0071346460000000006,
+          "cumulative_seconds": 0.019734339
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.getattr>",
+          "calls": 40302,
+          "self_seconds": 0.006591245000000001,
+          "cumulative_seconds": 0.006591245000000001
+        }
+      ],
+      "top_cumulative": [
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 40223,
+          "self_seconds": 0.032690643000000005,
+          "cumulative_seconds": 0.13957565700000002
+        },
+        {
+          "file": "simulation.py",
+          "line": 489,
+          "function": "_evolve_and_grow",
+          "calls": 6,
+          "self_seconds": 0.005439045,
+          "cumulative_seconds": 0.09604386300000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 1251,
+          "function": "argmax",
+          "calls": 40229,
+          "self_seconds": 0.032255723,
+          "cumulative_seconds": 0.081870012
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6072,
+          "self_seconds": 0.020205378,
+          "cumulative_seconds": 0.074430755
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8035,
+          "self_seconds": 0.054030784000000005,
+          "cumulative_seconds": 0.063124997
+        },
+        {
+          "file": "population_manager.py",
+          "line": 183,
+          "function": "replenish_population_by_growth",
+          "calls": 6,
+          "self_seconds": 0.000009516,
+          "cumulative_seconds": 0.05323031
+        },
+        {
+          "file": "population_manager.py",
+          "line": 188,
+          "function": "_add_new_entities",
+          "calls": 6,
+          "self_seconds": 0.014023018000000002,
+          "cumulative_seconds": 0.053220794
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+          "line": 51,
+          "function": "_wrapfunc",
+          "calls": 40241,
+          "self_seconds": 0.017672895,
+          "cumulative_seconds": 0.049746655
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'argmax' of 'numpy.ndarray' objects>",
+          "calls": 40229,
+          "self_seconds": 0.025419127000000003,
+          "cumulative_seconds": 0.025419127000000003
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 154,
+          "function": "_handle_synergy",
+          "calls": 3212,
+          "self_seconds": 0.004145711,
+          "cumulative_seconds": 0.024201464000000002
+        },
+        {
+          "file": "entities.py",
+          "line": 34,
+          "function": "path_affinities",
+          "calls": 48266,
+          "self_seconds": 0.007478709,
+          "cumulative_seconds": 0.022151836
+        },
+        {
+          "file": "simulation.py",
+          "line": 382,
+          "function": "_train_hybrid_guide_network",
+          "calls": 6,
+          "self_seconds": 0.000533486,
+          "cumulative_seconds": 0.021448501000000002
+        }
+      ],
+      "hotspots": [
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.concepts>",
+          "calls": 1,
+          "self_seconds": 0.000002464,
+          "cumulative_seconds": 0.000002464
+        },
+        {
+          "file": "entities.py",
+          "line": 50,
+          "function": "recalculate_concepts",
+          "calls": 1,
+          "self_seconds": 0.000008203000000000001,
+          "cumulative_seconds": 0.000022093
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 8035,
+          "self_seconds": 0.054030784000000005,
+          "cumulative_seconds": 0.063124997
+        },
+        {
+          "file": "population_manager.py",
+          "line": 114,
+          "function": "get_global_path_distribution",
+          "calls": 19,
+          "self_seconds": 0.004211488,
+          "cumulative_seconds": 0
+        },
+        {
+          "file": "interaction_handler.py",
+          "line": 90,
+          "function": "entity_interaction",
+          "calls": 6072,
+          "self_seconds": 0.020205378,
+          "cumulative_seconds": 0.074430755
+        },
+        {
+          "file": "population_manager.py",
+          "line": 110,
+          "function": "mark_paths_dirty",
+          "calls": 6072,
+          "self_seconds": 0.0036009920000000003,
+          "cumulative_seconds": 0.010777387000000001
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 40223,
+          "self_seconds": 0.032690643000000005,
+          "cumulative_seconds": 0.13957565700000002
+        }
+      ]
+    },
+    {
+      "case": "human-1000-reincarnator",
+      "same_checked_state_and_rng_digest": true
+    },
+    {
+      "case": "aeonic-200",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "aeonic-200-w1-plain.json",
+      "profile_file": "aeonic-200-w1-profile.json",
+      "plain_median_seconds": 0.0281649259999881,
+      "profile_seconds": 0.03765240399999925,
+      "profile_to_plain_wall_ratio": 1.3368543556626125,
+      "plain_median_process_cpu_over_wall": 1.0001642534418682,
+      "profile_process_cpu_over_wall": 1.0001187440780912,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.028159000000000045,
+          "ru_stime": 0.000022999999999995246,
+          "ru_minflt": 4,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.028081000000000023,
+          "ru_stime": 0,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.02824699999999991,
+          "ru_stime": 0,
+          "ru_minflt": 2,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        }
+      ],
+      "optimizer_steps": [
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15
+      ],
+      "guide_optimizer_steps": [],
+      "profile_total_self_seconds": 0.037590473,
+      "profile_total_calls": 23496,
+      "top_self": [
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'run_backward' of 'torch._C._EngineBase' objects>",
+          "calls": 30,
+          "self_seconds": 0.004431132,
+          "cumulative_seconds": 0.004431132
+        },
+        {
+          "file": "aeonic_cycle_manager.py",
+          "line": 146,
+          "function": "select_aeonic_opponents",
+          "calls": 195,
+          "self_seconds": 0.0029900010000000004,
+          "cumulative_seconds": 0.003806471
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/adam.py",
+          "line": 347,
+          "function": "_single_tensor_adam",
+          "calls": 30,
+          "self_seconds": 0.002690389,
+          "cumulative_seconds": 0.006924275000000001
+        },
+        {
+          "file": "aeonic_cycle_manager.py",
+          "line": 175,
+          "function": "aeonic_interaction",
+          "calls": 152,
+          "self_seconds": 0.001421105,
+          "cumulative_seconds": 0.032242432
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method torch._C._nn.linear>",
+          "calls": 135,
+          "self_seconds": 0.0012284140000000002,
+          "cumulative_seconds": 0.0012284140000000002
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/distributions/constraints.py",
+          "line": 532,
+          "function": "check",
+          "calls": 30,
+          "self_seconds": 0.0009551620000000001,
+          "cumulative_seconds": 0.0013929930000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'mul_' of 'torch._C.TensorBase' objects>",
+          "calls": 180,
+          "self_seconds": 0.000753258,
+          "cumulative_seconds": 0.000753258
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method torch._ops.profiler._record_function_enter_new>",
+          "calls": 60,
+          "self_seconds": 0.0007253030000000001,
+          "cumulative_seconds": 0.0007253030000000001
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.isinstance>",
+          "calls": 2655,
+          "self_seconds": 0.0006838030000000001,
+          "cumulative_seconds": 0.001217647
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'add_' of 'torch._C.TensorBase' objects>",
+          "calls": 180,
+          "self_seconds": 0.0006598190000000001,
+          "cumulative_seconds": 0.0006598190000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/nn/modules/module.py",
+          "line": 1971,
+          "function": "__setattr__",
+          "calls": 270,
+          "self_seconds": 0.000644451,
+          "cumulative_seconds": 0.0017766050000000001
+        },
+        {
+          "file": "aeonic_cycle_manager.py",
+          "line": 297,
+          "function": "run_aeonic_cycle_generation",
+          "calls": 2,
+          "self_seconds": 0.0006270480000000001,
+          "cumulative_seconds": 0.037461201
+        }
+      ],
+      "top_cumulative": [
+        {
+          "file": "aeonic_cycle_manager.py",
+          "line": 297,
+          "function": "run_aeonic_cycle_generation",
+          "calls": 2,
+          "self_seconds": 0.0006270480000000001,
+          "cumulative_seconds": 0.037461201
+        },
+        {
+          "file": "aeonic_cycle_manager.py",
+          "line": 175,
+          "function": "aeonic_interaction",
+          "calls": 152,
+          "self_seconds": 0.001421105,
+          "cumulative_seconds": 0.032242432
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/optimizer.py",
+          "line": 514,
+          "function": "wrapper",
+          "calls": 30,
+          "self_seconds": 0.00039507800000000004,
+          "cumulative_seconds": 0.010809447000000002
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/optimizer.py",
+          "line": 60,
+          "function": "_use_grad",
+          "calls": 30,
+          "self_seconds": 0.00018946900000000003,
+          "cumulative_seconds": 0.009402355000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/adam.py",
+          "line": 214,
+          "function": "step",
+          "calls": 30,
+          "self_seconds": 0.00020553000000000002,
+          "cumulative_seconds": 0.009090104
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/optimizer.py",
+          "line": 131,
+          "function": "maybe_fallback",
+          "calls": 30,
+          "self_seconds": 0.00008034700000000001,
+          "cumulative_seconds": 0.007730290000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/adam.py",
+          "line": 902,
+          "function": "adam",
+          "calls": 30,
+          "self_seconds": 0.000189292,
+          "cumulative_seconds": 0.0076332760000000005
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/adam.py",
+          "line": 347,
+          "function": "_single_tensor_adam",
+          "calls": 30,
+          "self_seconds": 0.002690389,
+          "cumulative_seconds": 0.006924275000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/_tensor.py",
+          "line": 576,
+          "function": "backward",
+          "calls": 30,
+          "self_seconds": 0.000057270000000000006,
+          "cumulative_seconds": 0.005681506
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/autograd/__init__.py",
+          "line": 253,
+          "function": "backward",
+          "calls": 30,
+          "self_seconds": 0.000316687,
+          "cumulative_seconds": 0.005618247000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/autograd/graph.py",
+          "line": 869,
+          "function": "_engine_run_backward",
+          "calls": 30,
+          "self_seconds": 0.000154306,
+          "cumulative_seconds": 0.004719908
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'run_backward' of 'torch._C._EngineBase' objects>",
+          "calls": 30,
+          "self_seconds": 0.004431132,
+          "cumulative_seconds": 0.004431132
+        }
+      ],
+      "hotspots": [
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.concepts>",
+          "calls": 1,
+          "self_seconds": 0.000002284,
+          "cumulative_seconds": 0.000002284
+        },
+        {
+          "file": "entities.py",
+          "line": 50,
+          "function": "recalculate_concepts",
+          "calls": 1,
+          "self_seconds": 0.00000687,
+          "cumulative_seconds": 0.000028102000000000003
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 1,
+          "self_seconds": 0.000019149000000000002,
+          "cumulative_seconds": 0.000021782000000000003
+        },
+        {
+          "file": "population_manager.py",
+          "line": 114,
+          "function": "get_global_path_distribution",
+          "calls": 1,
+          "self_seconds": 0.000099293,
+          "cumulative_seconds": 0.0007053140000000001
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 200,
+          "self_seconds": 0.000156946,
+          "cumulative_seconds": 0.0006039890000000001
+        }
+      ]
+    },
+    {
+      "case": "aeonic-200",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "aeonic-200-w4-plain.json",
+      "profile_file": "aeonic-200-w4-profile.json",
+      "plain_median_seconds": 0.02806630699998891,
+      "profile_seconds": 0.03767317599999842,
+      "profile_to_plain_wall_ratio": 1.3422918804391795,
+      "plain_median_process_cpu_over_wall": 1.0001435529088651,
+      "profile_process_cpu_over_wall": 1.0000894004795762,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.028218000000000076,
+          "ru_stime": 0.000001000000000001,
+          "ru_minflt": 4,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 1
+        },
+        {
+          "ru_utime": 0.028073999999999932,
+          "ru_stime": 0.000008000000000008,
+          "ru_minflt": 1,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.027890999999999888,
+          "ru_stime": 0,
+          "ru_minflt": 1,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        }
+      ],
+      "optimizer_steps": [
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15
+      ],
+      "guide_optimizer_steps": [],
+      "profile_total_self_seconds": 0.037605005,
+      "profile_total_calls": 23496,
+      "top_self": [
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'run_backward' of 'torch._C._EngineBase' objects>",
+          "calls": 30,
+          "self_seconds": 0.004486199000000001,
+          "cumulative_seconds": 0.004486199000000001
+        },
+        {
+          "file": "aeonic_cycle_manager.py",
+          "line": 146,
+          "function": "select_aeonic_opponents",
+          "calls": 195,
+          "self_seconds": 0.0030106390000000003,
+          "cumulative_seconds": 0.0038196370000000003
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/adam.py",
+          "line": 347,
+          "function": "_single_tensor_adam",
+          "calls": 30,
+          "self_seconds": 0.002671833,
+          "cumulative_seconds": 0.006902114000000001
+        },
+        {
+          "file": "aeonic_cycle_manager.py",
+          "line": 175,
+          "function": "aeonic_interaction",
+          "calls": 152,
+          "self_seconds": 0.001353115,
+          "cumulative_seconds": 0.03223977
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method torch._C._nn.linear>",
+          "calls": 135,
+          "self_seconds": 0.001256676,
+          "cumulative_seconds": 0.001256676
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/distributions/constraints.py",
+          "line": 532,
+          "function": "check",
+          "calls": 30,
+          "self_seconds": 0.0008939970000000001,
+          "cumulative_seconds": 0.001325391
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'mul_' of 'torch._C.TensorBase' objects>",
+          "calls": 180,
+          "self_seconds": 0.00077536,
+          "cumulative_seconds": 0.00077536
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method torch._ops.profiler._record_function_enter_new>",
+          "calls": 60,
+          "self_seconds": 0.0007445290000000001,
+          "cumulative_seconds": 0.0007445290000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/nn/modules/module.py",
+          "line": 1971,
+          "function": "__setattr__",
+          "calls": 270,
+          "self_seconds": 0.000710249,
+          "cumulative_seconds": 0.0018773020000000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method builtins.isinstance>",
+          "calls": 2655,
+          "self_seconds": 0.000671879,
+          "cumulative_seconds": 0.0012097960000000002
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'add_' of 'torch._C.TensorBase' objects>",
+          "calls": 180,
+          "self_seconds": 0.0006632220000000001,
+          "cumulative_seconds": 0.0006632220000000001
+        },
+        {
+          "file": "aeonic_cycle_manager.py",
+          "line": 297,
+          "function": "run_aeonic_cycle_generation",
+          "calls": 2,
+          "self_seconds": 0.000619685,
+          "cumulative_seconds": 0.037483625
+        }
+      ],
+      "top_cumulative": [
+        {
+          "file": "aeonic_cycle_manager.py",
+          "line": 297,
+          "function": "run_aeonic_cycle_generation",
+          "calls": 2,
+          "self_seconds": 0.000619685,
+          "cumulative_seconds": 0.037483625
+        },
+        {
+          "file": "aeonic_cycle_manager.py",
+          "line": 175,
+          "function": "aeonic_interaction",
+          "calls": 152,
+          "self_seconds": 0.001353115,
+          "cumulative_seconds": 0.03223977
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/optimizer.py",
+          "line": 514,
+          "function": "wrapper",
+          "calls": 30,
+          "self_seconds": 0.00036268600000000003,
+          "cumulative_seconds": 0.010737598000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/optimizer.py",
+          "line": 60,
+          "function": "_use_grad",
+          "calls": 30,
+          "self_seconds": 0.00021235,
+          "cumulative_seconds": 0.00936169
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/adam.py",
+          "line": 214,
+          "function": "step",
+          "calls": 30,
+          "self_seconds": 0.000204386,
+          "cumulative_seconds": 0.009026073
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/optimizer.py",
+          "line": 131,
+          "function": "maybe_fallback",
+          "calls": 30,
+          "self_seconds": 0.000078743,
+          "cumulative_seconds": 0.007665226000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/adam.py",
+          "line": 902,
+          "function": "adam",
+          "calls": 30,
+          "self_seconds": 0.000186937,
+          "cumulative_seconds": 0.007570197000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/optim/adam.py",
+          "line": 347,
+          "function": "_single_tensor_adam",
+          "calls": 30,
+          "self_seconds": 0.002671833,
+          "cumulative_seconds": 0.006902114000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/_tensor.py",
+          "line": 576,
+          "function": "backward",
+          "calls": 30,
+          "self_seconds": 0.000076642,
+          "cumulative_seconds": 0.005734957000000001
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/autograd/__init__.py",
+          "line": 253,
+          "function": "backward",
+          "calls": 30,
+          "self_seconds": 0.00033345,
+          "cumulative_seconds": 0.005652988
+        },
+        {
+          "file": "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/torch/autograd/graph.py",
+          "line": 869,
+          "function": "_engine_run_backward",
+          "calls": 30,
+          "self_seconds": 0.000149187,
+          "cumulative_seconds": 0.0047698490000000005
+        },
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<method 'run_backward' of 'torch._C._EngineBase' objects>",
+          "calls": 30,
+          "self_seconds": 0.004486199000000001,
+          "cumulative_seconds": 0.004486199000000001
+        }
+      ],
+      "hotspots": [
+        {
+          "file": "~",
+          "line": 0,
+          "function": "<built-in method _tiemu_native.concepts>",
+          "calls": 1,
+          "self_seconds": 0.000002313,
+          "cumulative_seconds": 0.000002313
+        },
+        {
+          "file": "entities.py",
+          "line": 50,
+          "function": "recalculate_concepts",
+          "calls": 1,
+          "self_seconds": 0.00000715,
+          "cumulative_seconds": 0.000029203
+        },
+        {
+          "file": "parliament_manager.py",
+          "line": 68,
+          "function": "get_zeitgeist_multiplier",
+          "calls": 1,
+          "self_seconds": 0.000018185,
+          "cumulative_seconds": 0.00002057
+        },
+        {
+          "file": "population_manager.py",
+          "line": 114,
+          "function": "get_global_path_distribution",
+          "calls": 1,
+          "self_seconds": 0.000099825,
+          "cumulative_seconds": 0.0007235220000000001
+        },
+        {
+          "file": "entities.py",
+          "line": 40,
+          "function": "dominant_path_idx",
+          "calls": 200,
+          "self_seconds": 0.000166512,
+          "cumulative_seconds": 0.000621805
+        }
+      ]
+    },
+    {
+      "case": "aeonic-200",
+      "same_checked_state_and_rng_digest": true
+    }
+  ]
+}

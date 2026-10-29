@@ -12,6 +12,7 @@ os.environ.update(OMP_NUM_THREADS='1', MKL_NUM_THREADS='1', OPENBLAS_NUM_THREADS
                   PYTHONDONTWRITEBYTECODE='1')
 import argparse
 import cProfile
+import functools
 import hashlib
 import json
 import logging
@@ -43,7 +44,11 @@ parser.add_argument('--with-reincarnator', action='store_true',
 parser.add_argument('--output', type=Path, required=True)
 parser.add_argument('--profile-output-dir', type=Path,
                     help='Profile only measured phase loops; write one .prof per sample (remote use).')
+parser.add_argument('--boundary-timers', action='store_true',
+                    help='Use explicit call wrappers instead of cProfile (remote diagnostics only).')
 args = parser.parse_args()
+if args.boundary_timers and args.profile_output_dir:
+    parser.error('boundary timers and cProfile must run in separate samples')
 if min(args.population, args.generations, args.repeats, args.native_threads, args.native_min_rows) < 1:
     parser.error('counts must be positive')
 root = args.source_root.resolve()
@@ -137,6 +142,10 @@ def profile_summary(profiler, destination):
                      'dominant_path_idx', 'select_opponents', 'entity_interaction',
                      'evaluate_entities', 'concepts')
     return {'raw_stats': str(destination), 'total_self_seconds': stats.total_tt,
+            'known_incomplete': True, 'rejected_for_percentages': True,
+            'known_issue': 'https://github.com/pybind/pybind11/issues/5600',
+            'integrity_violations': [row for row in rows
+                                     if row['self_seconds'] > row['cumulative_seconds'] + 1e-9],
             'total_calls': stats.total_calls, 'primitive_calls': stats.prim_calls,
             'top_self': sorted(rows, key=lambda row: row['self_seconds'], reverse=True)[:50],
             'top_cumulative': sorted(rows, key=lambda row: row['cumulative_seconds'], reverse=True)[:50],
@@ -148,7 +157,114 @@ def profile_summary(profiler, destination):
                      'subtracted and can disproportionately inflate short Python calls.'}
 
 
-def sample(population, generations, profile_path=None):
+class BoundaryTimers:
+    """Explicit nested spans; independent of interpreter/C-extension profile events."""
+
+    def __init__(self):
+        self.stack = []
+        self.rows = {}
+        self.patches = []
+
+    def wrap(self, name, function):
+        @functools.wraps(function)
+        def measured(*positional, **keywords):
+            start = time.perf_counter()
+            frame = [name, 0.0]
+            self.stack.append(frame)
+            try:
+                return function(*positional, **keywords)
+            finally:
+                elapsed = time.perf_counter() - start
+                self.stack.pop()
+                row = self.rows.setdefault(name, {'name': name, 'calls': 0,
+                                                  'inclusive_seconds': 0.0,
+                                                  'exclusive_instrumented_seconds': 0.0})
+                row['calls'] += 1
+                row['inclusive_seconds'] += elapsed
+                row['exclusive_instrumented_seconds'] += elapsed - frame[1]
+                if self.stack:
+                    self.stack[-1][1] += elapsed
+        return measured
+
+    def replace(self, owner, name, value):
+        self.patches.append((owner, name, getattr(owner, name)))
+        setattr(owner, name, value)
+
+    def install(self):
+        from entities import Pathstrider
+        from interaction_handler import InteractionHandler
+        from parliament_manager import ParliamentManager
+        from population_manager import PopulationManager
+        from aeonic_cycle_manager import AeonicCycleManager
+        for owner, names in (
+            (AeonEvolution, ('_run_one_generation', '_evolve_and_grow', '_train_hybrid_guide_network')),
+            (InteractionHandler, ('select_opponents', 'entity_interaction', 'update_bins')),
+            (PopulationManager, ('get_global_path_distribution', 'mark_paths_dirty',
+                                 '_add_new_entities', 'recalculate_and_normalize_entity')),
+            (ParliamentManager, ('get_zeitgeist_multiplier', 'hold_election')),
+            (AeonicCycleManager, ('run_aeonic_cycle_generation', 'aeonic_interaction')),
+        ):
+            for name in names:
+                original = getattr(owner, name)
+                self.replace(owner, name, self.wrap(f'{owner.__name__}.{name}', original))
+        original_property = Pathstrider.dominant_path_idx
+        self.replace(Pathstrider, 'dominant_path_idx', property(
+            self.wrap('Pathstrider.dominant_path_idx', original_property.fget),
+            original_property.fset, original_property.fdel, original_property.__doc__))
+        simulation_module = sys.modules[AeonEvolution.__module__]
+        self.replace(simulation_module, 'evaluate_entities', self.wrap(
+            'evaluate_entities', simulation_module.evaluate_entities))
+        original_evaluator = AeonEvolution._get_native_evaluator
+        tracker = self
+
+        class EvaluatorProxy:
+            def __init__(self, target):
+                self.target = target
+                self.concepts = tracker.wrap('native.BatchEvaluator.concepts', target.concepts)
+
+            def __getattr__(self, name):
+                return getattr(self.target, name)
+
+        @functools.wraps(original_evaluator)
+        def get_evaluator(sim):
+            evaluator = original_evaluator(sim)
+            return None if evaluator is None else EvaluatorProxy(evaluator)
+
+        self.replace(AeonEvolution, '_get_native_evaluator', get_evaluator)
+
+    def restore(self):
+        for owner, name, original in reversed(self.patches):
+            setattr(owner, name, original)
+        self.patches.clear()
+
+    def summary(self, phase, generations):
+        errors = []
+        def count(name):
+            return self.rows.get(name, {}).get('calls', 0)
+        if self.stack:
+            errors.append('Unclosed boundary spans')
+        if phase == 'human':
+            for name in ('AeonEvolution._run_one_generation', 'AeonEvolution._evolve_and_grow'):
+                if count(name) != generations:
+                    errors.append(f'{name}: expected {generations}, got {count(name)}')
+            if count('PopulationManager.get_global_path_distribution') < count('InteractionHandler.entity_interaction'):
+                errors.append('Distribution call count is smaller than interaction count')
+        elif count('AeonicCycleManager.run_aeonic_cycle_generation') != generations:
+            errors.append('Aeonic generation span count differs from generation count')
+        if any(row['exclusive_instrumented_seconds'] < -1e-9 for row in self.rows.values()):
+            errors.append('Negative exclusive instrumented time')
+        return {'valid': not errors, 'integrity_errors': errors,
+                'spans': sorted(self.rows.values(), key=lambda row: row['inclusive_seconds'], reverse=True),
+                'scope': 'Explicit Python wrappers count calls and perf_counter spans without cProfile. '
+                         'Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped '
+                         'descendants and still includes unwrapped Python/native work and observer overhead; '
+                         'it is not pure Python interpreter time. Native scoring span includes conversion, '
+                         'worker startup/wait and computation. Wrappers are restored before state capture. '
+                         'Results must match plain state/RNG digests and call-count integrity gates. '
+                         'Future method-identity fast paths require checking that wrappers do not force fallback.'}
+
+
+def sample(population, generations, profile_path=None, boundary_timers=False):
     random.seed(731)
     np.random.seed(731)
     torch.manual_seed(731)
@@ -158,6 +274,7 @@ def sample(population, generations, profile_path=None):
                    population_hard_cap=2*population, bard_frequency=0, laertes_frequency=0,
                    kaoselanna_llm_enabled=False)
     sim = AeonEvolution(**options)
+    boundaries = None
     try:
         sim._create_initial_population(create_reincarnator=args.with_reincarnator)
         sim.legacy_manager.newborn_affinity_modifier = np.zeros(12)
@@ -173,6 +290,13 @@ def sample(population, generations, profile_path=None):
             sim.aeonic_cycle_manager.initialize_aeonic_cycle(sim.reincarnator, sim.population,
                                                             sim.cosmic_zeitgeist)
         profiler = cProfile.Profile() if profile_path is not None else None
+        boundaries = BoundaryTimers() if boundary_timers else None
+        if boundaries is not None:
+            try:
+                boundaries.install()
+            except BaseException:
+                boundaries.restore()
+                raise
         usage_before = usage_snapshot()
         start_cpu, start = time.process_time(), time.perf_counter()
         if profiler is not None:
@@ -207,6 +331,8 @@ def sample(population, generations, profile_path=None):
         seconds = time.perf_counter() - start
         cpu_seconds = time.process_time() - start_cpu
         usage_after = usage_snapshot()
+        if boundaries is not None:
+            boundaries.restore()
         usage_delta = ({name: usage_after[name] - usage_before[name] for name in usage_before}
                        if usage_before is not None else None)
         steps = [int(state['step'].item()) for optimizer in (sim.action_optimizer, sim.value_optimizer)
@@ -220,8 +346,12 @@ def sample(population, generations, profile_path=None):
                   'resource_delta': usage_delta}
         if profiler is not None:
             result['profile'] = profile_summary(profiler, profile_path)
+        if boundaries is not None:
+            result['boundaries'] = boundaries.summary(args.phase, generations)
         return result
     finally:
+        if boundaries is not None:
+            boundaries.restore()
         if hasattr(sim, 'close'):
             sim.close()
         else:
@@ -230,7 +360,8 @@ def sample(population, generations, profile_path=None):
 
 sample(max(100 if args.phase == 'aeonic' else 20, min(args.population, 100)), 2)
 runs = [sample(args.population, args.generations,
-               args.profile_output_dir/f'sample-{index}.prof' if args.profile_output_dir else None)
+               args.profile_output_dir/f'sample-{index}.prof' if args.profile_output_dir else None,
+               boundary_timers=args.boundary_timers)
         for index in range(args.repeats)]
 result = {'source_root': str(root),
           'commit': subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip(),
@@ -239,6 +370,7 @@ result = {'source_root': str(root),
           'torch_threads': 1, 'native_threads_requested': args.native_threads,
           'native_min_rows': args.native_min_rows, 'phase': args.phase,
           'profiled': args.profile_output_dir is not None,
+          'boundary_timers': args.boundary_timers,
           'initial_reincarnator': args.with_reincarnator,
           'initial_population': args.population, 'generations': args.generations,
           'runs': runs, 'median_seconds': statistics.median(r['seconds'] for r in runs),
@@ -251,3 +383,5 @@ result = {'source_root': str(root),
 args.output.parent.mkdir(parents=True, exist_ok=True)
 args.output.write_text(json.dumps(result, indent=2)+'\n', encoding='utf-8')
 print(json.dumps(result, indent=2))
+if any(not run.get('boundaries', {}).get('valid', True) for run in runs):
+    raise SystemExit('Boundary observer call-count/timing integrity failed; inspect result JSON')
