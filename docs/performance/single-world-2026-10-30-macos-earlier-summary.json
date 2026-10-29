@@ -1,0 +1,70 @@
+{
+  "workflow_run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/40953921045",
+  "job_id": 123728966379,
+  "source": "Summary rows from GitHub Actions job log; included to preserve evidence of cloud timing variability. Full samples remain in that run's artifacts.",
+  "cases": [
+    {
+      "phase": "human",
+      "population": 1000,
+      "generations": 6,
+      "median_seconds": {
+        "baseline": 0.387983792,
+        "a-1": 0.32161691600001063,
+        "a-4": 0.3515463749999981
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "a-1": 1.2063538100713185,
+        "a-4": 1.1036489623879697
+      },
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 0.9828925394778706,
+        "a-1": 0.9829186694542461,
+        "a-4": 0.9827295189717199
+      }
+    },
+    {
+      "phase": "human",
+      "population": 10000,
+      "generations": 3,
+      "median_seconds": {
+        "baseline": 1.2306885000000136,
+        "a-1": 0.7945708750000051,
+        "a-4": 0.771189832999994
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "a-1": 1.5488718989353916,
+        "a-4": 1.5958308153681575
+      },
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 0.9890228997072067,
+        "a-1": 0.9963138908155863,
+        "a-4": 0.9946414684597568
+      }
+    },
+    {
+      "phase": "aeonic",
+      "population": 200,
+      "generations": 2,
+      "median_seconds": {
+        "baseline": 0.020202541999992718,
+        "a-1": 0.01713204200001428,
+        "a-4": 0.025660334000008334
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "a-1": 1.1792255704238805,
+        "a-4": 0.7873062759037415
+      },
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 1.000230308917395,
+        "a-1": 1.0004645097172682,
+        "a-4": 0.9992075707195222
+      }
+    }
+  ]
+}

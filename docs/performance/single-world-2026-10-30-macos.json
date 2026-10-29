@@ -1,0 +1,1215 @@
+{
+  "workflow_run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/40954826586",
+  "artifact_id": 12933141469,
+  "artifact_name": "single-world-macos-latest",
+  "zip_sha256": "9ccee6c894318487908a84698068fdcdd1a5dd8918fa4c0e82f055606d1be2f1",
+  "files": {
+    "aeonic-200-a-1-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.016224084000043604,
+          "cpu_seconds": 0.016229999999999967,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.016224084000043604,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "aeonic-200-a-1-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.014700333999996928,
+          "cpu_seconds": 0.01469200000000015,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.014700333999996928,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "aeonic-200-a-1-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.02258283400004757,
+          "cpu_seconds": 0.022434999999999983,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.02258283400004757,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "aeonic-200-a-4-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 4096,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.01974908299996514,
+          "cpu_seconds": 0.019646000000000052,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.01974908299996514,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "aeonic-200-a-4-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 4096,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.014695874999972602,
+          "cpu_seconds": 0.014701000000000075,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.014695874999972602,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "aeonic-200-a-4-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 4096,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.025655083000003742,
+          "cpu_seconds": 0.025660999999999934,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.025655083000003742,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "aeonic-200-a-4-forced-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 1,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.018193875000008575,
+          "cpu_seconds": 0.018196999999999797,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.018193875000008575,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "aeonic-200-a-4-forced-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 1,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.019615625000028558,
+          "cpu_seconds": 0.01962699999999984,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.019615625000028558,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "aeonic-200-a-4-forced-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 1,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.016123832999994647,
+          "cpu_seconds": 0.01608199999999993,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.016123832999994647,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "aeonic-200-baseline-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/baseline",
+      "commit": "1ce39e00b8808564a331861ffcc799d4237ac324",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.024622292000003654,
+          "cpu_seconds": 0.024604999999999988,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.024622292000003654,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "aeonic-200-baseline-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/baseline",
+      "commit": "1ce39e00b8808564a331861ffcc799d4237ac324",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.03601866600001813,
+          "cpu_seconds": 0.03601499999999991,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.03601866600001813,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "aeonic-200-baseline-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/baseline",
+      "commit": "1ce39e00b8808564a331861ffcc799d4237ac324",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "aeonic",
+      "initial_population": 200,
+      "generations": 2,
+      "runs": [
+        {
+          "seconds": 0.016178458000013052,
+          "cpu_seconds": 0.016183999999999976,
+          "population": 181,
+          "state_digest": "dbf4350d653063b13c5295ac9c68d01d5d31816a60e370c48e12a75b3026bda4",
+          "optimizer_steps": [
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15,
+            15
+          ]
+        }
+      ],
+      "median_seconds": 0.016178458000013052,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-a-1-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.25794095800000605,
+          "cpu_seconds": 0.22785399999999978,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.25794095800000605,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-a-1-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.23852341700001034,
+          "cpu_seconds": 0.23824699999999988,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.23852341700001034,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-a-1-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.3093460829999799,
+          "cpu_seconds": 0.26096600000000025,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.3093460829999799,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-a-4-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.16797341599999527,
+          "cpu_seconds": 0.167902,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.16797341599999527,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-a-4-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.18989000000001965,
+          "cpu_seconds": 0.18978399999999995,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.18989000000001965,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-a-4-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.19642208299998742,
+          "cpu_seconds": 0.195878,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.19642208299998742,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-a-4-forced-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 1,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.24579424999998878,
+          "cpu_seconds": 0.24463500000000016,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.24579424999998878,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-a-4-forced-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 1,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.17123720800000797,
+          "cpu_seconds": 0.17139100000000007,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.17123720800000797,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-a-4-forced-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 1,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.19228462500001342,
+          "cpu_seconds": 0.190342,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.19228462500001342,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-baseline-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/baseline",
+      "commit": "1ce39e00b8808564a331861ffcc799d4237ac324",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.31489366700000687,
+          "cpu_seconds": 0.29784999999999995,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.31489366700000687,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-baseline-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/baseline",
+      "commit": "1ce39e00b8808564a331861ffcc799d4237ac324",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.21358225000000175,
+          "cpu_seconds": 0.21304600000000007,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.21358225000000175,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-1000-baseline-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/baseline",
+      "commit": "1ce39e00b8808564a331861ffcc799d4237ac324",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 1000,
+      "generations": 6,
+      "runs": [
+        {
+          "seconds": 0.3424580829999968,
+          "cpu_seconds": 0.3404410000000002,
+          "population": 601,
+          "state_digest": "31628c94003db47e761ba0733ef70a1aa46336b421f95123b45a37125fc5aef5",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.3424580829999968,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-a-1-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 1.1233518749999973,
+          "cpu_seconds": 1.1193430000000002,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 1.1233518749999973,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-a-1-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 0.8878763330000083,
+          "cpu_seconds": 0.8869059999999998,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.8878763330000083,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-a-1-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 1.2253622079999786,
+          "cpu_seconds": 1.2199599999999995,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 1.2253622079999786,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-a-4-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 1.1597774169999866,
+          "cpu_seconds": 1.1534500000000003,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 1.1597774169999866,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-a-4-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 1.580346167000016,
+          "cpu_seconds": 1.4095330000000001,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 1.580346167000016,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-a-4-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 1.1472569999999962,
+          "cpu_seconds": 0.939343,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 1.1472569999999962,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-a-4-forced-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 1,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 1.5284799169999985,
+          "cpu_seconds": 1.4033209999999996,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 1.5284799169999985,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-a-4-forced-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 1,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 1.1880798749999997,
+          "cpu_seconds": 1.0784219999999998,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 1.1880798749999997,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-a-4-forced-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 4,
+      "native_min_rows": 1,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 0.690373749999992,
+          "cpu_seconds": 0.6884490000000001,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 0.690373749999992,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-baseline-0.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/baseline",
+      "commit": "1ce39e00b8808564a331861ffcc799d4237ac324",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 1.15584666700002,
+          "cpu_seconds": 1.0973000000000002,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 1.15584666700002,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-baseline-1.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/baseline",
+      "commit": "1ce39e00b8808564a331861ffcc799d4237ac324",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 1.4136307910000028,
+          "cpu_seconds": 1.319527,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 1.4136307910000028,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "human-10000-baseline-2.json": {
+      "source_root": "/Users/runner/work/Tiemu/Tiemu/baseline",
+      "commit": "1ce39e00b8808564a331861ffcc799d4237ac324",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "logical_cpus": 3,
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "torch_threads": 1,
+      "native_threads_requested": 1,
+      "native_min_rows": 4096,
+      "phase": "human",
+      "initial_population": 10000,
+      "generations": 3,
+      "runs": [
+        {
+          "seconds": 1.1832504580000034,
+          "cpu_seconds": 1.177942,
+          "population": 8969,
+          "state_digest": "88d5a28cd5ec55ba1b134d6ec2c62a0ef10750af16682d68d287df2a0051b148",
+          "optimizer_steps": []
+        }
+      ],
+      "median_seconds": 1.1832504580000034,
+      "scope": "One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; aeonic has real ordered online training. Setup/warmup/state capture excluded. Not a complete-world or LLM latency measurement."
+    },
+    "summary.json": {
+      "baseline": "/Users/runner/work/Tiemu/Tiemu/baseline",
+      "candidate": "/Users/runner/work/Tiemu/Tiemu/candidate",
+      "scope": "Same runner, sequential isolated processes, 3 rotated repeats. No LLM/log/display/exports; actual online training only in aeonic case. Digest covers recorded entities, ordering, blueprint, seats, network weights, Adam state, and Python/NumPy/Torch RNG, not every internal manager field. Not a full-world or local-M1 performance claim.",
+      "cases": [
+        {
+          "phase": "human",
+          "population": 1000,
+          "generations": 6,
+          "median_seconds": {
+            "baseline": 0.31489366700000687,
+            "a-1": 0.25794095800000605,
+            "a-4": 0.18989000000001965,
+            "a-4-forced": 0.19228462500001342
+          },
+          "speedup_over_baseline": {
+            "baseline": 1.0,
+            "a-1": 1.2207974624952718,
+            "a-4": 1.6582951550896534,
+            "a-4-forced": 1.637643503738195
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9941099857175905,
+            "a-1": 0.8833571906017129,
+            "a-4": 0.9994417820842609,
+            "a-4-forced": 0.9952836569611019
+          }
+        },
+        {
+          "phase": "human",
+          "population": 10000,
+          "generations": 3,
+          "median_seconds": {
+            "baseline": 1.1832504580000034,
+            "a-1": 1.1233518749999973,
+            "a-4": 1.1597774169999866,
+            "a-4-forced": 1.1880798749999997
+          },
+          "speedup_over_baseline": {
+            "baseline": 1.0,
+            "a-1": 1.053321300594265,
+            "a-4": 1.020239263720736,
+            "a-4-forced": 0.9959351074775201
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9493473756757229,
+            "a-1": 0.9964313274502727,
+            "a-4": 0.8919140815051477,
+            "a-4-forced": 0.9181154324581164
+          }
+        },
+        {
+          "phase": "aeonic",
+          "population": 200,
+          "generations": 2,
+          "median_seconds": {
+            "baseline": 0.024622292000003654,
+            "a-1": 0.016224084000043604,
+            "a-4": 0.01974908299996514,
+            "a-4-forced": 0.018193875000008575
+          },
+          "speedup_over_baseline": {
+            "baseline": 1.0,
+            "a-1": 1.5176383455569806,
+            "a-4": 1.2467562164808925,
+            "a-4-forced": 1.3533286339491752
+          },
+          "same_checked_state_and_rng_digest": true,
+          "mean_cpu_cores": {
+            "baseline": 0.9998982194393813,
+            "a-1": 0.9994330741058821,
+            "a-4": 1.0002306365563578,
+            "a-4-forced": 1.0001717611004375
+          }
+        }
+      ]
+    }
+  }
+}

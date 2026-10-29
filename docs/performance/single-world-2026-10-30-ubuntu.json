@@ -1,0 +1,83 @@
+{
+  "workflow_run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/40954826586",
+  "job_id": 123732075928,
+  "source": "Summary rows read from the completed GitHub Actions job log.",
+  "baseline_commit": "1ce39e00b8808564a331861ffcc799d4237ac324",
+  "candidate_commit": "22b1620a7a0e4676831e14b209ba9e1227f0aac0",
+  "artifact_id": 12932218386,
+  "archive_retrieval_note": "The connector-provided download did not yield a valid ZIP and failed SHA-256 verification after retry; its payload was not retained. This file preserves verified job-log summaries only. Individual repetitions and machine metadata remain in the workflow artifact, not in this file.",
+  "cases": [
+    {
+      "phase": "human",
+      "population": 1000,
+      "generations": 6,
+      "median_seconds": {
+        "baseline": 0.3977251439999918,
+        "a-1": 0.2896323409999866,
+        "a-4": 0.2927649860000088,
+        "a-4-forced": 0.2916340900000023
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "a-1": 1.3732069513604845,
+        "a-4": 1.3585133571949068,
+        "a-4-forced": 1.3637813878342848
+      },
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 0.9999072092340302,
+        "a-1": 0.999969885903622,
+        "a-4": 0.999928957807518,
+        "a-4-forced": 1.0019768961841475
+      }
+    },
+    {
+      "phase": "human",
+      "population": 10000,
+      "generations": 3,
+      "median_seconds": {
+        "baseline": 1.410326246000011,
+        "a-1": 1.1108268430000123,
+        "a-4": 1.0770484249999868,
+        "a-4-forced": 1.057009254999997
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "a-1": 1.2696184422327605,
+        "a-4": 1.3094362456358712,
+        "a-4-forced": 1.3342610193134166
+      },
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 0.9999408287521324,
+        "a-1": 0.9999384623876103,
+        "a-4": 1.003013592930829,
+        "a-4-forced": 1.003138265397828
+      }
+    },
+    {
+      "phase": "aeonic",
+      "population": 200,
+      "generations": 2,
+      "median_seconds": {
+        "baseline": 0.029107468999995945,
+        "a-1": 0.02823545500001501,
+        "a-4": 0.02812712599995848,
+        "a-4-forced": 0.028197368000007828
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "a-1": 1.0308836531934928,
+        "a-4": 1.0348540053483926,
+        "a-4-forced": 1.0322760975417231
+      },
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 1.0001334684691183,
+        "a-1": 1.0001227395123495,
+        "a-4": 1.0001396706776742,
+        "a-4-forced": 1.0001553465930453
+      }
+    }
+  ]
+}

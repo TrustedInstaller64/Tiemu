@@ -3,6 +3,9 @@
 Each process measures one source checkout and one configuration. This is not a
 multi-world product runner. Setup, warm-up, final state capture and process
 startup are excluded from timings; the actual phase calls remain included.
+Each measured sample uses a fresh simulation: its native pool's first startup,
+if the scoring threshold is reached, is included. This is not steady-state pool
+throughput, and the aeonic case does not exercise the human batch-scoring pool.
 """
 import os
 os.environ.update(OMP_NUM_THREADS='1', MKL_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1',
@@ -163,6 +166,8 @@ result = {'source_root': str(root),
           'runs': runs, 'median_seconds': statistics.median(r['seconds'] for r in runs),
           'scope': 'One world; native CPU; seed 731; no LLM/log/console/export; human has no reincarnator; '
                    'aeonic has real ordered online training. Setup/warmup/state capture excluded. '
+                   'Each measured simulation is fresh; first native pool startup is timed if reached. '
+                   'Aeonic does not exercise the human batch-scoring pool. '
                    'Not a complete-world or LLM latency measurement.'}
 args.output.parent.mkdir(parents=True, exist_ok=True)
 args.output.write_text(json.dumps(result, indent=2)+'\n', encoding='utf-8')
