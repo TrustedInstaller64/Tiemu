@@ -11,6 +11,7 @@ import sys
 import torch
 import torch.optim as optim
 import time
+import threading
 import heapq 
 
 from parliament_manager import ParliamentManager
@@ -37,6 +38,8 @@ from config import config
 import logging 
 
 logger = logging.getLogger("OmphalosLogger") # 获取在 main.py 中配置的 logger 实例
+
+_STANDARD_RANDOM_FUNCTIONS = (random.random, random.uniform, random.getstate, random.setstate)
 
 class AeonEvolution:
     def __init__(self, 
@@ -588,7 +591,8 @@ class AeonEvolution:
         native = get_native()
         activity = np.array([cell['activity'] for cell in inorganic_pop], dtype=np.float64)
         stability = np.array([cell['stability'] for cell in inorganic_pop], dtype=np.float64)
-        for gen in range(num_generations + 1):
+        gen = 0
+        while gen <= num_generations:
             self.generation = gen
             if not self._control_checkpoint():
                 return None
@@ -599,10 +603,29 @@ class AeonEvolution:
             if gen == num_generations: break
 
             if native is not None:
-                # Keep Python random.uniform order: activity, stability, next cell.
-                noise = np.fromiter((random.uniform(-0.1, 0.1) for _ in range(2 * grid_size * grid_size)),
-                                    dtype=np.float64).reshape(-1, 2)
-                activity, stability = native.inorganic_step(activity, stability, noise, grid_size)
+                # Whole-stage state import/export must not overwrite another
+                # Python thread's global RNG draws or bypass a replaced RNG.
+                if (threading.active_count() != 1 or
+                        (random.random, random.uniform, random.getstate, random.setstate)
+                        != _STANDARD_RANDOM_FUNCTIONS):
+                    noise = np.fromiter((random.uniform(-0.1, 0.1)
+                                         for _ in range(2 * grid_size * grid_size)),
+                                        dtype=np.float64).reshape(-1, 2)
+                    activity, stability = native.inorganic_step(activity, stability, noise, grid_size)
+                    gen += 1
+                    continue
+                # Move the complete ordered grid segment, including its uniform
+                # RNG stream, across the C ABI once. Keep single-step debugging
+                # exact; headless execution checks stop signals every 100 steps.
+                chunk = 1
+                if (config.get('runtime', {}).get('interactive') is False
+                        and not getattr(self, '_step_pending', False)):
+                    chunk = min(100, num_generations - gen)
+                state = random.getstate()
+                activity, stability, mt = native.inorganic_run(
+                    activity, stability, np.asarray(state[1], dtype=np.uint32), chunk, grid_size)
+                random.setstate((state[0], tuple(map(int, mt)), state[2]))
+                gen += chunk
                 continue
             new_pop = list(inorganic_pop)
 
@@ -638,6 +661,7 @@ class AeonEvolution:
                     new_cell['score'] = new_cell['activity'] + new_cell['stability']
 
             inorganic_pop = new_pop
+            gen += 1
 
         self.display_manager.update_and_display_progress('inorganic', num_generations, num_generations)
         logger.warning("\n\033[91m!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")

@@ -6,14 +6,8 @@ import numpy as np
 import pytest
 
 
-# First remote commit deliberately exercises the old implementation. Remove this
-# marker with the C ABI implementation after observing missing-interface RED.
-pytestmark = pytest.mark.xfail(raises=AttributeError, strict=True,
-                              reason="Remote RED: pure C ABI/whole-phase engine is not implemented")
-
-
 def native():
-    return importlib.import_module("_tiemu_native")
+    return importlib.import_module("_tiemu_ffi")
 
 
 def test_native_core_uses_c_abi_without_a_python_extension_binding():
@@ -21,6 +15,25 @@ def test_native_core_uses_c_abi_without_a_python_extension_binding():
     assert module.__binding__ == "c-abi"
     assert module.ABI_VERSION == 1
     assert module.__file__.endswith(".py")
+
+
+def test_backend_ignores_old_inplace_extension_name(monkeypatch):
+    import native_backend
+    from types import SimpleNamespace
+    current = native()
+    old = SimpleNamespace(__file__="_tiemu_native.cpython-312.so")
+    real_import = importlib.import_module
+    def upgrade_environment(name):
+        if name == "_tiemu_native":
+            return old
+        if name == "_tiemu_ffi":
+            return current
+        return real_import(name)
+    monkeypatch.setattr(native_backend.importlib, "import_module", upgrade_environment)
+    try:
+        assert native_backend.configure_backend("cpp") is current
+    finally:
+        native_backend.configure_backend("python")
 
 
 def original_grid(activity, stability, rng, steps, grid):

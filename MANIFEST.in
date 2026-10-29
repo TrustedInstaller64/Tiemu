@@ -1,0 +1,3 @@
+include CMakeLists.txt
+recursive-include cpp *.h *.cpp
+include tests/core_c_abi_smoke.c

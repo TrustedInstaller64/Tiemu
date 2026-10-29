@@ -14,10 +14,12 @@ def configure_backend(backend="auto"):
     module = None
     if backend != "python":
         try:
-            module = importlib.import_module("_tiemu_native")
+            # A new adapter name prevents old in-place pybind extension files
+            # from shadowing the pure C ABI during upgrades.
+            module = importlib.import_module("_tiemu_ffi")
         except (ImportError, OSError) as exc:
             message = (
-                "Tiemu native C++ extension is unavailable. Build/install the project "
+                "Tiemu standalone C++ core is unavailable. Build/install the project "
                 "with a C++17 compiler, or select the python compute backend. "
                 f"Import error: {exc}"
             )

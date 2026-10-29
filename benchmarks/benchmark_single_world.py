@@ -66,6 +66,8 @@ config['runtime'].update(torch_device='cpu', interactive=False,
 native = configure_backend('cpp')
 if Path(native.__file__).resolve().parent != root:
     raise RuntimeError('Build the native extension in-place in each source root before comparing')
+if Path(getattr(native, '__core_file__', native.__file__)).resolve().parent != root:
+    raise RuntimeError('The shared numerical core must come from the measured source root')
 logging.disable(logging.CRITICAL)
 torch.set_num_threads(1)
 torch.set_num_interop_threads(1)

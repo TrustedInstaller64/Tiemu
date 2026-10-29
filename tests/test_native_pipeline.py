@@ -13,7 +13,7 @@ import pytest
 
 @pytest.fixture(scope="module")
 def native():
-    return importlib.import_module("_tiemu_native")
+    return importlib.import_module("_tiemu_ffi")
 
 
 def scalar_pipeline(native, values, factor, tide, limit):

@@ -4,9 +4,9 @@
 
 **Goal:** Locate A's remaining single-world CPU bottlenecks, migrate the measured safe boundary to C++, and explain the limits of clock-speed and multicore gains.
 
-**Architecture:** Keep the A world/RNG/optimizer ordering contract. Measure uninstrumented and profiled copies of the same deterministic stage, assert matching checked state, then select the smallest substantial state/operation boundary supported by evidence. Independent rows may run concurrently; dependent interactions remain ordered.
+**Architecture:** Keep the A world/RNG/optimizer ordering contract. Measure uninstrumented and profiled copies of the same deterministic stage, assert matching checked state, then select the smallest substantial state/operation boundary supported by evidence. Following the user's latest instruction, move numerical kernels/state containers into a standalone C++17 core with a C ABI, remove pybind11 from the production build, and move complete inorganic/encounter segments across that interface. Python retains model backends and phase orchestration. Independent rows may run concurrently; dependent interactions remain ordered.
 
-**Tech Stack:** Python 3.12, NumPy 2.2.2, PyTorch 2.12.0, C++17/pybind11, GitHub hosted Actions.
+**Tech Stack:** Python 3.12, NumPy 2.2.2, PyTorch 2.12.0, standalone C++17/C ABI, ctypes, GitHub hosted Actions.
 
 **Spec:** `docs/superpowers/specs/2026-10-30-single-world-design.md`, extended by the user's explicit request to continue A with cloud-first profiling. C is deferred and remains unchanged.
 
@@ -29,8 +29,8 @@
 
 ## Tasks
 
-- [ ] Add opt-in phase-only profiling, plain/profiled digest comparison, CPU/environment metadata, and bounded Linux cloud workflow. Keep the existing timing CLI compatible.
-- [ ] Run the unchanged A runtime remotely; record hotspots, invocation counts, profiling overhead and counter availability. Select migration scope from this evidence.
+- [x] Add opt-in phase-only profiling, plain/profiled digest comparison, CPU/environment metadata, and bounded Linux cloud workflow. Keep the existing timing CLI compatible.
+- [x] Run the unchanged A runtime remotely; record hotspots, invocation counts, profiling overhead and counter availability. Select migration scope from this evidence.
 - [ ] Write differential tests for that scope and observe their intended failures remotely before implementing the production API. Test array aliases, ordering, nonfinite/shape inputs, and RNG according to the selected seam.
 - [ ] Implement the ordered C++ boundary and Python integration/fallback. Avoid changing stochastic decisions or numerical reduction order.
 - [ ] Run Linux/Windows/macOS full suite and Docker remotely, plus same-runner baseline/candidate timing and checked-state comparison. Explore worker counts only for independent work.
@@ -41,3 +41,9 @@
 - User explicitly authorized this continuation and cloud verification. The existing A design is reused; no redundant design approval is required. Local prohibition overrides skill instructions that would otherwise run tests locally.
 - Initial A tree clean at `4a2311d`; no project-specific AGENTS.md/GLOSSARY.md/ADRs found. Static hotspot analysis, official CPU documentation research and profiling harness work are delegated independently.
 - Instrumentation is a bounded diagnostic tool verified by its own plain/profiled state comparison; production migration will retain remote RED/GREEN gates.
+- Initial profile at `39f2841` passed observer/state checks but exposed pybind11/cProfile frame loss (upstream issue #5600): missing Python calls and self time greater than cumulative time. Those percentages are rejected. Independent explicit boundary timers at `6badfd7`, run `40960718586`, passed call-count integrity and all four plain/boundary/worker state comparisons. PMU access was unavailable (`perf_event_paranoid=4`); frequency/IPC/cache causality remains unmeasured.
+- Measured scope: human 10,000 x 3 had 15,000 opponent selections, 14,120 applied interactions and 216,333 dominant-path queries. The native scoring call occupied milliseconds while the plain whole stage was about one second. Prioritize the complete encounter loop and cache state over adding workers to that small scoring region.
+- User explicitly changed the architecture to important computation modules fully in C++ without pybind11. Production core and headers will have no Python/NumPy/binding API dependency; a C-only smoke client proves standalone execution. Frozen A1 builds may still install pybind11 solely to provide the historical remote oracle.
+- C ABI/inorganic engine RED at `6badfd7`: Linux 245 passed, 18 intended xfails restricted to missing attributes; all platform/Docker jobs succeeded (`40960718719`). Core arithmetic/state handles, MT state import/export and whole inorganic grid segment implementation started only after this result.
+- Encounter RED contracts at `18d1466` compare frozen A1's per-attempt selections/culls, full Python/NumPy MT states, cache/array identities, logs and unsafe-input fallback. Await its remote result before implementing the new encounter API.
+- Static review found stale `_tiemu_native*.so` files could shadow the adapter. Production imports the new `_tiemu_ffi` name, with an upgrade regression test; old binary files cannot silently select the pybind backend.

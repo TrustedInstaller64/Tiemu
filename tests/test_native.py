@@ -7,7 +7,7 @@ import pytest
 @pytest.fixture(scope="module")
 def native():
     try:
-        return importlib.import_module("_tiemu_native")
+        return importlib.import_module("_tiemu_ffi")
     except ImportError as exc:
         pytest.fail(f"Build the native extension before running native tests: {exc}")
 
@@ -314,7 +314,7 @@ def test_backend_selection_is_explicit_and_missing_cpp_does_not_silently_fallbac
         pytest.fail(f"native_backend is not implemented: {exc}")
     real_import = importlib.import_module
     def missing_native(name, *args, **kwargs):
-        if name == "_tiemu_native":
+        if name == "_tiemu_ffi":
             raise ImportError("deliberately absent native extension")
         return real_import(name, *args, **kwargs)
     monkeypatch.setattr(importlib, "import_module", missing_native)

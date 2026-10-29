@@ -28,6 +28,7 @@ models/
 
 # Native builds and test artifacts
 /build/
+/cmake-build-*/
 /dist/
 *.egg-info/
 *.so

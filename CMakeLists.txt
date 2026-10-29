@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.16)
+project(TiemuCore VERSION 1.0 LANGUAGES C CXX)
+
+# Standalone build: no Python, NumPy, Torch or binding headers/libraries needed.
+find_package(Threads REQUIRED)
+add_library(tiemu_core SHARED cpp/tiemu_core.cpp cpp/tiemu_inorganic.cpp)
+target_compile_features(tiemu_core PRIVATE cxx_std_17)
+target_compile_definitions(tiemu_core PRIVATE TIEMU_CORE_BUILD=1)
+target_include_directories(tiemu_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cpp)
+target_link_libraries(tiemu_core PRIVATE Threads::Threads)
+if(MSVC)
+  target_compile_options(tiemu_core PRIVATE /fp:strict)
+else()
+  target_compile_options(tiemu_core PRIVATE -ffp-contract=off -fno-fast-math)
+endif()
+
+enable_testing()
+add_executable(tiemu_c_abi_smoke tests/core_c_abi_smoke.c)
+target_link_libraries(tiemu_c_abi_smoke PRIVATE tiemu_core)
+add_test(NAME pure_c_consumer COMMAND tiemu_c_abi_smoke)
