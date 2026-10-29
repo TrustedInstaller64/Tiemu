@@ -14,20 +14,23 @@ parser.add_argument('--output-dir', type=Path, required=True)
 args = parser.parse_args()
 args.output_dir.mkdir(parents=True, exist_ok=True)
 script = Path(__file__).with_name('benchmark_single_world.py').resolve()
-configurations = [('baseline', args.baseline.resolve(), 1),
-                  ('a-1', args.candidate.resolve(), 1), ('a-4', args.candidate.resolve(), 4)]
+configurations = [('baseline', args.baseline.resolve(), 1, 4096),
+                  ('a-1', args.candidate.resolve(), 1, 4096),
+                  ('a-4', args.candidate.resolve(), 4, 4096),
+                  ('a-4-forced', args.candidate.resolve(), 4, 1)]
 cases = [('human', 1000, 6), ('human', 10000, 3), ('aeonic', 200, 2)]
 summary = []
 for phase, population, generations in cases:
-    results = {name: [] for name, _, _ in configurations}
+    results = {name: [] for name, _, _, _ in configurations}
     for repeat in range(3):
         # Rotate execution order to avoid always giving one build the first run.
         order = configurations[repeat:] + configurations[:repeat]
-        for name, root, workers in order:
+        for name, root, workers, threshold in order:
             output = args.output_dir/f'{phase}-{population}-{name}-{repeat}.json'
             command = [sys.executable, str(script), '--source-root', str(root), '--phase', phase,
                        '--population', str(population), '--generations', str(generations),
-                       '--native-threads', str(workers), '--repeats', '1', '--output', str(output)]
+                       '--native-threads', str(workers), '--native-min-rows', str(threshold),
+                       '--repeats', '1', '--output', str(output)]
             subprocess.run(command, check=True, timeout=180,
                            env={**os.environ, 'PYTHONHASHSEED': '0'}, stdout=subprocess.DEVNULL)
             results[name].append(json.loads(output.read_text(encoding='utf-8')))
