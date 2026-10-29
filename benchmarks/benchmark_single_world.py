@@ -205,6 +205,7 @@ class BoundaryTimers:
         targets = [
             (AeonEvolution, ('_run_one_generation', '_evolve_and_grow', '_train_hybrid_guide_network')),
             (AeonicCycleManager, ('run_aeonic_cycle_generation', 'aeonic_interaction')),
+            (ParliamentManager, ('hold_election',)),
         ]
         if not self.native_encounter_entry:
             # A1's fine-grained spans are retained for its original loop. The
@@ -213,7 +214,7 @@ class BoundaryTimers:
                 (InteractionHandler, ('select_opponents', 'entity_interaction', 'update_bins')),
                 (PopulationManager, ('get_global_path_distribution', 'mark_paths_dirty',
                                      '_add_new_entities', 'recalculate_and_normalize_entity')),
-                (ParliamentManager, ('get_zeitgeist_multiplier', 'hold_election')),
+                (ParliamentManager, ('get_zeitgeist_multiplier',)),
             ])
         for owner, names in targets:
             for name in names:
