@@ -11,6 +11,8 @@ class ParliamentManager:
         self.seats = {name: 0 for name in PATH_NAMES}
         self.total_seats = 100
         self.suppression_factor = 1.0 # 默认为1.0，即无抑制
+        self._seat_cache_key = None
+        self._normalized_seat_vector = None
 
     def hold_election(self, population: list):
         """根据所有实体的投票，分配议会席位。"""
@@ -65,10 +67,20 @@ class ParliamentManager:
     
     def get_zeitgeist_multiplier(self, entity_path_affinities: np.ndarray) -> float:
         """根据实体命途与当前议会格局，计算思潮乘数。"""
-        if np.sum(list(self.seats.values())) == 0:
+        # seats is a public mutable dict. Include both its complete contents
+        # and total_seats so direct writes/replacement cannot stale this cache.
+        key = (tuple(self.seats.items()), self.total_seats)
+        if key != self._seat_cache_key:
+            if np.sum(list(self.seats.values())) == 0:
+                normalized = None
+            else:
+                seat_vector = np.array([self.seats[name] for name in PATH_NAMES])
+                normalized = seat_vector / self.total_seats
+            self._normalized_seat_vector = normalized
+            self._seat_cache_key = key
+        if self._normalized_seat_vector is None:
             return 1.0
-        seat_vector = np.array([self.seats[name] for name in PATH_NAMES])
-        normalized_seat_vector = seat_vector / self.total_seats
+        normalized_seat_vector = self._normalized_seat_vector
         alignment_score = np.dot(entity_path_affinities, normalized_seat_vector) - np.dot(1 - entity_path_affinities, normalized_seat_vector)
         
         # 将思潮带来的影响乘以抑制因子

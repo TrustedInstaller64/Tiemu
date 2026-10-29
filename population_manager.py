@@ -54,6 +54,16 @@ class PopulationManager:
             self.name_to_entity_map[name] = entity
         
     def recalculate_and_normalize_entity(self, entity: Pathstrider, path_distribution: np.ndarray, cosmic_zeitgeist: np.ndarray):
+        native = get_native()
+        if native is not None and not self.purity_factor <= 0 and len(entity.titan_affinities) >= 2:
+            entity.titan_affinities = native.normalize_pipeline(
+                entity.titan_affinities, self.purity_factor,
+                self.cosmic_tide_vector, self.max_affinity_norm)
+            entity._path_affinities = None
+            return
+        # If purification is skipped, the original += changes any existing
+        # aliases of the input array and leaves the path cache intact. Retain
+        # that branch rather than replacing it with a new fused output array.
         entity.internal_purification(self.purity_factor)
         entity.titan_affinities += self.cosmic_tide_vector
         entity.titan_affinities = entity.titan_affinities.clip(min=0)

@@ -19,6 +19,8 @@ config = {
         "compute_backend": "auto", # auto / cpp / python
         "torch_device": "cpu",    # 当前单样本小网络优先 CPU；可选 auto/cuda/mps
         "torch_threads": 1,
+        "native_threads": 1,       # 单世界独立评分；用户可显式试2/4，默认不抢占其它核心
+        "native_min_rows": 4096,   # 小批次避免线程调度成本
         "seed": None,
         "interactive": None,      # None: 仅在真实终端启用
         "output_dir": "runs",

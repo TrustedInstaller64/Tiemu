@@ -199,21 +199,23 @@ class AeonicCycleManager:
                     logger.warning(f"\033[93m(警告: 卡厄斯兰那-LLM出现波动(错误:{e})，决策回归本能...)\033[0m")
                     chosen_action = None
 
+            # The policy sample and both online updates use the same pre-action
+            # state. Neither sampling nor the current policy mutates this tensor.
+            state_np = np.concatenate([attacker.titan_affinities, defender.titan_affinities])
+            state = torch.from_numpy(state_np).float().unsqueeze(0).to(self.device)
             if chosen_action is None:
-                state_np = np.concatenate([attacker.titan_affinities, defender.titan_affinities])
-                state = torch.from_numpy(state_np).float().unsqueeze(0).to(self.device)
-                
                 self.action_policy_network.train()
-                action_logits = self.action_policy_network(state)
-                action_probs = torch.softmax(action_logits, dim=-1)
-                action_dist = torch.distributions.Categorical(action_probs)
-                chosen_action_idx = action_dist.sample()
+                # This forward selects an action; a fresh forward below builds
+                # the graph used by the actor update, after the value update.
+                with torch.no_grad():
+                    action_logits = self.action_policy_network(state)
+                    action_probs = torch.softmax(action_logits, dim=-1)
+                    action_dist = torch.distributions.Categorical(action_probs)
+                    chosen_action_idx = action_dist.sample()
                 action_list = ["谈判", "击杀"]
                 chosen_action = action_list[chosen_action_idx.item()]
             
             # --- 后续的交互逻辑 ---
-            state_np = np.concatenate([attacker.titan_affinities, defender.titan_affinities])
-            state = torch.from_numpy(state_np).float().unsqueeze(0).to(self.device)
             self.value_network.train()
             state_value = self.value_network(state)
 
@@ -261,7 +263,7 @@ class AeonicCycleManager:
             advantage = final_reward - state_value.item()
             self.value_optimizer.zero_grad()
             value_loss = self.value_loss_criterion(state_value, torch.tensor([[final_reward]], dtype=torch.float, device=self.device))
-            value_loss.backward(retain_graph=True)
+            value_loss.backward()
             self.value_optimizer.step()
             self.action_policy_network.train()
             action_logits = self.action_policy_network(state)

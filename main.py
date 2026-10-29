@@ -23,6 +23,9 @@ def build_parser():
     parser.add_argument('--backend', choices=['auto', 'python', 'cpp'], default=config.get('runtime', {}).get('compute_backend', 'auto'))
     parser.add_argument('--device', choices=['auto', 'cpu', 'cuda', 'mps'], default=config.get('runtime', {}).get('torch_device', 'auto'))
     parser.add_argument('--torch-threads', type=positive_int, default=config.get('runtime', {}).get('torch_threads', 1), help='PyTorch CPU 运算线程数；当前小网络默认 1')
+    parser.add_argument('--native-threads', type=positive_int, default=config.get('runtime', {}).get('native_threads', 1), help='单世界独立评分的 C++ 工作线程预算；不并行交互或训练更新')
+    parser.add_argument('--native-min-rows', type=positive_int, default=config.get('runtime', {}).get('native_min_rows', 4096), help='启用 C++ 并行评分的最小实体数；较小批次串行计算')
+    parser.add_argument('--compute-only', action='store_true', help='减少展示和日志写入，保留原演算、随机数和日志参数求值')
     parser.add_argument('--llm-backend', choices=['auto', 'mlx', 'llama_cpp', 'disabled'], default=config['llm'].get('backend', 'auto'))
     parser.add_argument('--llm-device', choices=['auto', 'cpu', 'cuda', 'metal'], default=config['llm'].get('device', 'auto'))
     parser.add_argument('--gguf-model', help='本地 GGUF 模型路径')
@@ -32,14 +35,16 @@ def build_parser():
     parser.add_argument('--smoke-test', action='store_true', help='缩短各阶段并使用 24 个实体做完整启动验证')
     return parser
 
-def configure_logging(output_dir, fast_forward):
-    logger.setLevel(logging.INFO)
+def configure_logging(output_dir, fast_forward, compute_only=False):
+    # Do not guard/remove f-string evaluations in simulation code: several
+    # messages intentionally consume RNG or populate lazy entity caches.
+    logger.setLevel(logging.WARNING if compute_only else logging.INFO)
     for handler in list(logger.handlers):
         handler.close()
         logger.removeHandler(handler)
     console = logging.StreamHandler(sys.stdout)
     console.setFormatter(logging.Formatter('[%(levelname)s] %(message)s'))
-    console.setLevel(logging.WARNING if fast_forward else logging.INFO)
+    console.setLevel(logging.WARNING if fast_forward or compute_only else logging.INFO)
     logger.addHandler(console)
     if config['log']['enable']:
         from pyclog import ClogFileHandler, constants
@@ -55,10 +60,11 @@ def run_simple(args):
 
     output_dir = Path(args.output_dir).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
-    configure_logging(output_dir, args.fast_forward)
+    configure_logging(output_dir, args.fast_forward, args.compute_only)
     runtime = config.setdefault('runtime', {})
     runtime.update(torch_device=args.device, interactive=False if args.no_interactive else None,
-                   output_dir=str(output_dir), seed=args.seed, torch_threads=args.torch_threads)
+                   output_dir=str(output_dir), seed=args.seed, torch_threads=args.torch_threads,
+                   native_threads=args.native_threads, native_min_rows=args.native_min_rows)
     torch.set_num_threads(args.torch_threads)
     config['llm'].update(backend=args.llm_backend, device=args.llm_device, seed=args.seed)
     if args.disable_llm or args.llm_backend == 'disabled':
@@ -91,10 +97,15 @@ def run_simple(args):
         device = resolve_torch_device(args.device)
         if args.seed is not None:
             seed_everything(args.seed)
-        logger.warning('计算后端: %s | 小网络设备: %s | 输出: %s', 'C++' if native is not None else 'Python', device, output_dir)
+        logger.warning('计算后端: %s | 小网络设备: %s | C++线程预算: %d (阈值 %d) | 输出: %s',
+                       'C++' if native is not None else 'Python', device, args.native_threads,
+                       args.native_min_rows, output_dir)
         kwargs = {k: v for k, v in config['simulation'].items() if k != 'elites_to_keep_in_cycle'}
         sim = AeonEvolution(**kwargs, kaoselanna_llm_enabled=config['llm']['kaoselanna_llm_enabled'],
                             fast_forward=args.fast_forward)
+        sim.compute_only = args.compute_only
+        if args.compute_only:
+            sim.display_manager.enabled = False
         if pending_signal is not None:
             sim.debugger.request_stop(pending_signal)
         sim.start(num_generations=config['simulation_phases']['TOTAL_SIMULATION_END'])
@@ -115,7 +126,7 @@ def run_simple(args):
                 logger.exception('退出时保存失败')
                 exit_code = 1
             finally:
-                sim.debugger.close()
+                sim.close()
         for number, previous in previous_handlers.items():
             signal.signal(number, previous)
         logging.shutdown()

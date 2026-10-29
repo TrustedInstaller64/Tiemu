@@ -14,6 +14,8 @@ parser.add_argument('--backend', default='python')
 parser.add_argument('--reincarnator', action='store_true')
 parser.add_argument('--population', type=int, default=40)
 parser.add_argument('--generations', type=int, default=3)
+parser.add_argument('--native-threads', type=int, default=1)
+parser.add_argument('--native-min-rows', type=int, default=4096)
 args = parser.parse_args()
 sys.path.insert(0, args.root)
 import numpy as np
@@ -24,6 +26,7 @@ from config import config
 config['llm']['enable_llm'] = False
 config.setdefault('runtime', {})['torch_device'] = 'cpu'
 config['runtime']['interactive'] = False
+config['runtime'].update(native_threads=args.native_threads, native_min_rows=args.native_min_rows)
 if (Path(args.root) / 'native_backend.py').exists():
     from native_backend import configure_backend
     configure_backend(args.backend)
@@ -69,3 +72,7 @@ result = {
     'torch_state': digest(torch.get_rng_state().numpy().tobytes()),
 }
 print(json.dumps(result, ensure_ascii=True, sort_keys=True))
+if hasattr(sim, 'close'):
+    sim.close()
+else:
+    sim.debugger.close()

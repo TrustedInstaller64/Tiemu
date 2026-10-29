@@ -1,5 +1,6 @@
 import numpy as np
 from native_backend import get_native
+from native_evaluation import evaluate_entities
 from device_utils import resolve_torch_device
 import torch.nn as nn
 import math
@@ -59,6 +60,7 @@ class AeonEvolution:
         self.laertes_frequency = laertes_frequency
         self.kaoselanna_llm_enabled = kaoselanna_llm_enabled
         self.fast_forward = fast_forward
+        self._native_evaluator = None
         
         # --- LLM 接口初始化 ---
         self.llm_interface = CpuLlmInterface()
@@ -182,6 +184,29 @@ class AeonEvolution:
         )
         self.reincarnator_name = None
         self.debugger = Debugger(self, interactive=config.get("runtime", {}).get("interactive"))
+
+    def _get_native_evaluator(self):
+        native = get_native()
+        if native is None:
+            return None
+        if self._native_evaluator is None:
+            runtime = config.get("runtime", {})
+            self._native_evaluator = native.BatchEvaluator(
+                workers=runtime.get("native_threads", 1),
+                min_rows=runtime.get("native_min_rows", 4096))
+        return self._native_evaluator
+
+    def close(self):
+        """Release native workers and the terminal; safe after partial setup."""
+        evaluator = getattr(self, "_native_evaluator", None)
+        self._native_evaluator = None
+        try:
+            if evaluator is not None:
+                evaluator.close()
+        finally:
+            debugger = getattr(self, "debugger", None)
+            if debugger is not None:
+                debugger.close()
 
     def _control_checkpoint(self):
         if getattr(self, '_step_pending', False):
@@ -450,10 +475,10 @@ class AeonEvolution:
         
         # 只为受影响的实体更新状态
         global_dist = self.population_manager.get_global_path_distribution(self.population)
-        for p in entities_to_update:
-            if p not in culled_this_gen: # 确保它还活着
-                multiplier = self.parliament_manager.get_zeitgeist_multiplier(p.path_affinities)
-                p.recalculate_concepts(zeitgeist_multiplier=multiplier, path_distribution=global_dist)
+        survivors_to_update = [p for p in entities_to_update if p not in culled_this_gen]
+        if survivors_to_update:
+            evaluate_entities(survivors_to_update, self.parliament_manager, global_dist,
+                              evaluator=self._get_native_evaluator())
                     
         logger.info(f"世代 {self.generation} 演算结束。")
         return culled_this_gen
@@ -663,7 +688,7 @@ class AeonEvolution:
             loss = loss_fn(output, dummy_target)
             loss.backward()
             optimizer.step()
-            if not self.fast_forward and sys.stdout.isatty():
+            if not self.fast_forward and not getattr(self, 'compute_only', False) and sys.stdout.isatty():
                 sys.stdout.write(f"\r模型训练中... {i}% (Loss: {loss.item():.4f})")
                 sys.stdout.flush()
                 time.sleep(0.02)

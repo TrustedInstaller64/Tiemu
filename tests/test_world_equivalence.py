@@ -8,10 +8,11 @@ from reference_upstream import reference_result, replay_environment
 
 ROOT = Path(__file__).resolve().parents[1]
 
-@pytest.mark.parametrize('backend', ['python', 'cpp'])
+@pytest.mark.parametrize('backend,native_threads', [('python', 1), ('cpp', 1), ('cpp', 4)])
 @pytest.mark.parametrize('reincarnator', [False, True])
-def test_world_matches_frozen_upstream(backend, reincarnator):
-    cmd = [sys.executable, str(ROOT/'tests/replay_world.py'), '--root', str(ROOT), '--backend', backend]
+def test_world_matches_frozen_upstream(backend, native_threads, reincarnator):
+    cmd = [sys.executable, str(ROOT/'tests/replay_world.py'), '--root', str(ROOT), '--backend', backend,
+           '--native-threads', str(native_threads), '--native-min-rows', '1']
     if reincarnator:
         cmd.append('--reincarnator')
     run = subprocess.run(cmd, cwd=ROOT, env=replay_environment(), capture_output=True,

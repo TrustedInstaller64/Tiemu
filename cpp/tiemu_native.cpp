@@ -4,10 +4,14 @@
 #include <pybind11/pybind11.h>
 #include <algorithm>
 #include <cmath>
+#include <condition_variable>
 #include <cstdint>
 #include <limits>
 #include <map>
+#include <mutex>
+#include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace py = pybind11;
@@ -31,6 +35,43 @@ Size first_argmax(const double *values, Size size) {
     return best;
 }
 
+// The scalar and batch entry points share the exact row operation order. SIMD
+// or threads may work on independent rows, never on a row's reductions.
+void map_path_row(const double *input, const double *weights, Size titans,
+                  Size paths, double *result, bool replace_with_ones = false) {
+    double total = 0.0;
+    for (Size path = 0; path < paths; ++path) {
+        double value = 0.0;
+        for (Size titan = 0; titan < titans; ++titan)
+            value += (replace_with_ones ? 1.0 : input[titan]) * weights[titan * paths + path];
+        value = value < 0.0 ? 0.0 : value; // preserve NaN, like np.maximum
+        result[path] = value;
+        total += value;
+    }
+    if (total > 0.0)
+        for (Size path = 0; path < paths; ++path) result[path] /= total;
+}
+
+void score_path_row(const double *values, Size count, double multiplier,
+                    const double *penalties, bool is_boss, double *result) {
+    double act_sq = 0.0, stab_sq = 0.0, total = 0.0;
+    for (Size i = 0; i < count; ++i) {
+        (i < 6 ? act_sq : stab_sq) += values[i] * values[i];
+        total += values[i];
+    }
+    const Size dominant = first_argmax(values, count);
+    const double activity = std::sqrt(act_sq) * 10.0;
+    const double stability = std::sqrt(stab_sq) * 10.0;
+    const double purity = total == 0.0 ? 0.0 : values[dominant] / total;
+    const double saturation = penalties ? 1.0 / (1.0 + 2.0 * penalties[dominant]) : 1.0;
+    double score = (activity + stability) * (1.0 + purity) * saturation * multiplier;
+    if (is_boss) score *= 5.0;
+    result[0] = activity;
+    result[1] = stability;
+    result[2] = purity;
+    result[3] = score;
+}
+
 py::array_t<double> path_affinities(const Doubles &values, const Doubles &matrix) {
     if ((values.ndim() != 1 && values.ndim() != 2) || matrix.ndim() != 2)
         throw py::value_error("values must be a vector or matrix and matrix must be two-dimensional");
@@ -45,19 +86,8 @@ py::array_t<double> path_affinities(const Doubles &values, const Doubles &matrix
     double *result = output.mutable_data();
     {
         py::gil_scoped_release release;
-        for (Size row = 0; row < rows; ++row) {
-            double total = 0.0;
-            for (Size path = 0; path < paths; ++path) {
-                double value = 0.0;
-                for (Size titan = 0; titan < titans; ++titan)
-                    value += input[row * titans + titan] * weights[titan * paths + path];
-                value = value < 0.0 ? 0.0 : value; // preserve NaN, like np.maximum
-                result[row * paths + path] = value;
-                total += value;
-            }
-            if (total > 0.0)
-                for (Size path = 0; path < paths; ++path) result[row * paths + path] /= total;
-        }
+        for (Size row = 0; row < rows; ++row)
+            map_path_row(input + row * titans, weights, titans, paths, result + row * paths);
     }
     return output;
 }
@@ -76,23 +106,12 @@ py::tuple concepts(const Doubles &paths, double multiplier, py::object distribut
         penalties = dist.data();
     }
     const double *values = paths.data();
-    double activity, stability, purity, score;
+    double result[4];
     {
         py::gil_scoped_release release;
-        double act_sq = 0.0, stab_sq = 0.0, total = 0.0;
-        for (Size i = 0; i < count; ++i) {
-            (i < 6 ? act_sq : stab_sq) += values[i] * values[i];
-            total += values[i];
-        }
-        const Size dominant = first_argmax(values, count);
-        activity = std::sqrt(act_sq) * 10.0;
-        stability = std::sqrt(stab_sq) * 10.0;
-        purity = total == 0.0 ? 0.0 : values[dominant] / total;
-        const double saturation = penalties ? 1.0 / (1.0 + 2.0 * penalties[dominant]) : 1.0;
-        score = (activity + stability) * (1.0 + purity) * saturation * multiplier;
-        if (is_boss) score *= 5.0;
+        score_path_row(values, count, multiplier, penalties, is_boss, result);
     }
-    return py::make_tuple(activity, stability, purity, score);
+    return py::make_tuple(result[0], result[1], result[2], result[3]);
 }
 
 py::array_t<double> purify(const Doubles &values, double factor) {
@@ -135,6 +154,189 @@ py::array_t<double> normalize(const Doubles &values, double max_norm) {
     }
     return output;
 }
+
+py::array_t<double> normalize_pipeline(const Doubles &values, double factor,
+                                       const Doubles &tide, double max_norm) {
+    require_vector(values, "values");
+    require_vector(tide, "tide");
+    if (values.size() != tide.size()) throw py::value_error("tide must match values");
+    const Size count = values.size();
+    py::array_t<double> output(count);
+    const double *input = values.data(), *changes = tide.data();
+    double *result = output.mutable_data();
+    {
+        py::gil_scoped_release release;
+        std::copy_n(input, count, result);
+        if (!(factor <= 0.0) && count >= 2) {
+            const Size dominant = first_argmax(input, count);
+            const double reduction = input[dominant] * factor;
+            for (Size i = 0; i < count; ++i) {
+                const double value = i == dominant ? input[i] : input[i] - reduction;
+                result[i] = value < 0.0 ? 0.0 : value;
+            }
+        }
+        for (Size i = 0; i < count; ++i) {
+            const double value = result[i] + changes[i];
+            result[i] = value < 0.0 ? 0.0 : value;
+        }
+        double squared = 0.0;
+        for (Size i = 0; i < count; ++i) squared += result[i] * result[i];
+        const double norm = std::sqrt(squared);
+        if (!std::isfinite(norm) || norm == 0.0 || norm > max_norm)
+            for (Size i = 0; i < count; ++i) result[i] = (result[i] / (norm + 1e-9)) * max_norm;
+    }
+    return output;
+}
+
+class BatchEvaluator {
+    struct Job {
+        const double *values = nullptr;
+        const double *matrix = nullptr;
+        const double *multipliers = nullptr;
+        const double *distribution = nullptr;
+        const std::int64_t *bosses = nullptr;
+        double *paths = nullptr;
+        double *stats = nullptr;
+        Size rows = 0, titans = 0, path_count = 0;
+    };
+
+    const Size workers_, min_rows_;
+    // All Python references and allocations stay on the calling thread. This
+    // lock also protects close against an outstanding call; callers release
+    // the GIL before waiting for it.
+    std::mutex request_mutex_;
+    std::mutex pool_mutex_;
+    std::condition_variable ready_, completed_;
+    std::vector<std::thread> threads_;
+    Job job_;
+    std::uint64_t generation_ = 0;
+    Size remaining_ = 0;
+    bool stopping_ = false, closed_ = false;
+
+    static void evaluate(const Job &job, Size begin, Size end) noexcept {
+        for (Size row = begin; row < end; ++row) {
+            const double *values = job.values + row * job.titans;
+            bool replace_with_ones = false;
+            for (Size titan = 0; titan < job.titans; ++titan)
+                if (!std::isfinite(values[titan])) { replace_with_ones = true; break; }
+            double *paths = job.paths + row * job.path_count;
+            map_path_row(values, job.matrix, job.titans, job.path_count, paths, replace_with_ones);
+            score_path_row(paths, job.path_count, job.multipliers[row], job.distribution,
+                           job.bosses[row] != 0, job.stats + row * 4);
+        }
+    }
+
+    void evaluate_partition(const Job &job, Size index) const noexcept {
+        // This formula avoids overflow from multiplying rows by worker index.
+        const Size quotient = job.rows / workers_, remainder = job.rows % workers_;
+        const Size begin = quotient * index + std::min(index, remainder);
+        const Size end = begin + quotient + (index < remainder ? 1 : 0);
+        evaluate(job, begin, end);
+    }
+
+    void worker(Size index) {
+        std::uint64_t observed_generation = 0;
+        std::unique_lock<std::mutex> lock(pool_mutex_);
+        for (;;) {
+            ready_.wait(lock, [&] { return stopping_ || generation_ != observed_generation; });
+            if (stopping_) return;
+            observed_generation = generation_;
+            const Job job = job_;
+            lock.unlock();
+            evaluate_partition(job, index);
+            lock.lock();
+            if (--remaining_ == 0) completed_.notify_one();
+        }
+    }
+
+    void stop_threads() noexcept {
+        {
+            std::lock_guard<std::mutex> lock(pool_mutex_);
+            stopping_ = true;
+        }
+        ready_.notify_all();
+        for (auto &thread : threads_)
+            if (thread.joinable()) thread.join();
+        threads_.clear();
+    }
+
+    void start_threads() {
+        if (!threads_.empty() || workers_ == 1) return;
+        // Idle/small workloads never create a pool. The caller is worker 0.
+        try {
+            threads_.reserve(static_cast<std::size_t>(workers_ - 1));
+            for (Size i = 1; i < workers_; ++i) threads_.emplace_back([this, i] { worker(i); });
+        } catch (...) {
+            stop_threads();
+            stopping_ = false;
+            throw;
+        }
+    }
+
+public:
+    BatchEvaluator(Size workers, Size min_rows) : workers_(workers), min_rows_(min_rows) {
+        if (workers < 1) throw py::value_error("workers must be positive");
+        if (min_rows < 1) throw py::value_error("min_rows must be positive");
+    }
+    BatchEvaluator(const BatchEvaluator &) = delete;
+    BatchEvaluator &operator=(const BatchEvaluator &) = delete;
+    ~BatchEvaluator() { close(); }
+
+    void close() {
+        std::lock_guard<std::mutex> request(request_mutex_);
+        if (closed_) return;
+        closed_ = true;
+        stop_threads();
+    }
+
+    py::tuple concepts(const Doubles &values, const Doubles &matrix,
+                        const Doubles &multipliers, py::object distribution,
+                        const Indices &bosses) {
+        if (values.ndim() != 2 || matrix.ndim() != 2)
+            throw py::value_error("values and matrix must be two-dimensional");
+        const Size rows = values.shape(0), titans = values.shape(1), paths = matrix.shape(1);
+        if (matrix.shape(0) != titans || paths == 0)
+            throw py::value_error("mapping matrix must match values and contain paths");
+        require_vector(multipliers, "multipliers");
+        require_vector(bosses, "bosses");
+        if (multipliers.size() != rows || bosses.size() != rows)
+            throw py::value_error("multipliers and bosses must match the row count");
+        Doubles dist;
+        const double *penalties = nullptr;
+        if (!distribution.is_none()) {
+            dist = Doubles::ensure(distribution);
+            if (!dist) throw py::value_error("distribution must be a numeric vector");
+            require_vector(dist, "distribution");
+            if (dist.size() != paths) throw py::value_error("distribution must match paths");
+            penalties = dist.data();
+        }
+        py::array_t<double> output_paths(std::vector<Size>{rows, paths});
+        py::array_t<double> output_stats(std::vector<Size>{rows, 4});
+        const Job job{values.data(), matrix.data(), multipliers.data(), penalties, bosses.data(),
+                      output_paths.mutable_data(), output_stats.mutable_data(), rows, titans, paths};
+        {
+            py::gil_scoped_release release;
+            std::lock_guard<std::mutex> request(request_mutex_);
+            if (closed_) throw std::runtime_error("batch evaluator is closed");
+            if (workers_ == 1 || rows < min_rows_) {
+                evaluate(job, 0, rows);
+            } else {
+                start_threads();
+                {
+                    std::lock_guard<std::mutex> lock(pool_mutex_);
+                    job_ = job;
+                    remaining_ = static_cast<Size>(threads_.size());
+                    ++generation_;
+                }
+                ready_.notify_all();
+                evaluate_partition(job, 0);
+                std::unique_lock<std::mutex> lock(pool_mutex_);
+                completed_.wait(lock, [&] { return remaining_ == 0; });
+            }
+        }
+        return py::make_tuple(output_paths, output_stats);
+    }
+};
 
 Size require_pair(const Doubles &first, const Doubles &second) {
     require_vector(first, "first vector");
@@ -224,17 +426,23 @@ py::array_t<double> vote_totals(const Indices &dominant, const Doubles &weights,
     {
         py::gil_scoped_release release;
         std::fill_n(result, paths, 0.0);
-        std::vector<double> proposal(static_cast<std::size_t>(paths));
-        for (Size i = 0; i < count; ++i) {
-            const double *row = matrix + indices[i] * paths;
+        // Compute each path's proposal once. Do not group or reorder entities:
+        // weighted votes can be signed/nonfinite, and ties depend on rounding.
+        std::vector<double> proposals(static_cast<std::size_t>(logits.size()));
+        for (Size index = 0; index < paths; ++index) {
+            const double *row = matrix + index * paths;
+            double *proposal = proposals.data() + index * paths;
             const double maximum = row[first_argmax(row, paths)];
             double sum = 0.0;
             for (Size path = 0; path < paths; ++path) {
                 proposal[path] = std::exp(row[path] - maximum);
                 sum += proposal[path];
             }
-            // Preserve even signed/nonfinite weights and accumulation order.
-            for (Size path = 0; path < paths; ++path) result[path] += (proposal[path] / sum) * scores[i];
+            for (Size path = 0; path < paths; ++path) proposal[path] /= sum;
+        }
+        for (Size i = 0; i < count; ++i) {
+            const double *proposal = proposals.data() + indices[i] * paths;
+            for (Size path = 0; path < paths; ++path) result[path] += proposal[path] * scores[i];
         }
     }
     return output;
@@ -415,6 +623,12 @@ PYBIND11_MODULE(_tiemu_native, module) {
     module.def("concepts", &concepts, py::arg("paths"), py::arg("multiplier"), py::arg("distribution") = py::none(), py::arg("is_boss") = false);
     module.def("purify", &purify, py::arg("values"), py::arg("factor"));
     module.def("normalize", &normalize, py::arg("values"), py::arg("max_norm"));
+    module.def("normalize_pipeline", &normalize_pipeline, py::arg("values"), py::arg("factor"), py::arg("tide"), py::arg("max_norm"));
+    py::class_<BatchEvaluator>(module, "BatchEvaluator")
+        .def(py::init<Size, Size>(), py::arg("workers") = 1, py::arg("min_rows") = 4096)
+        .def("concepts", &BatchEvaluator::concepts, py::arg("values"), py::arg("matrix"),
+             py::arg("multipliers"), py::arg("distribution"), py::arg("bosses"))
+        .def("close", &BatchEvaluator::close, py::call_guard<py::gil_scoped_release>());
     module.def("synergy", &synergy, py::arg("a"), py::arg("b"));
     module.def("clash", &clash, py::arg("winner"), py::arg("loser"), py::arg("modifier"));
     module.def("mentorship", &mentorship, py::arg("stronger"), py::arg("weaker"), py::arg("score_ratio"));

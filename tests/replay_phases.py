@@ -228,6 +228,10 @@ def main():
     result.update(baseline_commit=BASELINE_COMMIT, seed=SEED, phase=args.phase,
                   torch_threads=torch.get_num_threads())
     print(json.dumps(result, ensure_ascii=True, sort_keys=True, allow_nan=False))
+    if hasattr(sim, 'close'):
+        sim.close()
+    else:
+        sim.debugger.close()
 
 
 if __name__ == "__main__":
