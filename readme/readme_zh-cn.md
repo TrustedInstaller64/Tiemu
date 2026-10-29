@@ -9,7 +9,7 @@
 推荐 Python 3.12（包支持 3.11～3.13）。数值依赖固定为 NumPy 2.2.2 / PyTorch 2.12.0，以便复现测试。需要 C++17 编译器：Linux 使用 GCC/build-essential，macOS 安装 Xcode Command Line Tools，Windows 安装 Visual Studio Build Tools 的“使用 C++ 的桌面开发”。Mac 使用原生 arm64 Python。
 
 ```sh
-git clone git@github.com:TrustedInstaller64/Tiemu.git
+git clone --branch codex/single-world-a git@github.com:TrustedInstaller64/Tiemu.git
 cd Tiemu
 python -m venv .venv
 ```
@@ -32,6 +32,24 @@ python -m main --backend cpp --device cpu --torch-threads 1 --disable-llm --fast
 ```
 
 `--fast-forward` 减少终端输出和展示等待；文件日志仍受 `config.py` 中 `log.enable` 控制，大量日志会增加 I/O 成本。要测计算性能，可在配置中关闭文件日志。`--backend python` 保留参考路径；`auto` 在扩展缺失时会明确提示并回退，`cpp` 则明确报错。
+
+## A：单个世界的 C++ 批处理与多核
+
+`codex/single-world-a` 是保留原规则的主线；`codex/experimental-c` 是独立的长期算法实验分支。目前没有多世界、批量实验或参数搜索调度器。
+
+在允许负载的目标机器上安装/重建扩展后，可以启用同一世界内独立评分的并行计算：
+
+```sh
+python -m main --backend cpp --device cpu --torch-threads 1 --native-threads 4 --native-min-rows 4096 --compute-only --output-dir runs/single-world
+```
+
+此命令保持配置中的 LLM 设置；`--disable-llm` 只适合明确希望关闭 LLM 的场景，LLM 决策会影响演化结果。`--native-threads` 控制 C++ 独立实体评分的工作预算，包含调用线程，4 表示最多3个辅助线程；`--torch-threads` 控制 PyTorch，二者不能当作整个程序统一的线程上限。默认 C++ 1 线程，达到 `--native-min-rows`（默认4096）才启动辅助线程；小批次直接串行处理。它不会并行相互依赖的交互、随机抽样、投票求和或在线训练更新。
+
+`--compute-only` 抑制 INFO 文件/控制台日志和有机阶段的展示等待，保留警告、错误，以及原日志参数求值中的随机数和缓存副作用。暂停后仍能查看命令输出，继续后恢复安静。它不会隐式开启 `--fast-forward` 的额外状态摘要，因为该摘要也可能读取懒缓存。
+
+嵌入 Python 使用模拟器时，在结束后调用 `sim.close()`；直接使用 `BatchEvaluator` 时调用其 `close()`。原生调用释放 GIL，调用期间不得从其它线程修改或 resize 输入数组。
+
+当前开发 Mac 暂时禁止本地高负荷；上述运行、构建和测试说明用于获准的目标机器，不能作为恢复本机运行的授权。C++ 源码改变后旧本地 `.so/.pyd` 不会自动更新，未重建前不要用旧扩展执行新分支。
 
 ## Apple Silicon：LLM 使用 MLX/Metal
 
