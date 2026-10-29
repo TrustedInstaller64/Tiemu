@@ -215,7 +215,9 @@ class AeonEvolution:
         self.debugger.poll()
         if self.debugger.paused and not self.debugger.stop_requested:
             levels = [(handler, handler.level) for handler in logger.handlers]
+            logger_level = logger.level
             try:
+                logger.setLevel(min(logger_level, logging.INFO))
                 for handler, level in levels:
                     handler.setLevel(min(level, logging.INFO))
                 logger.info("模拟已暂停。输入 'help' 获取命令列表。")
@@ -223,6 +225,7 @@ class AeonEvolution:
             finally:
                 for handler, level in levels:
                     handler.setLevel(level)
+                logger.setLevel(logger_level)
         if self.debugger.last_command == 'next':
             self._step_pending = True
             self.debugger.last_command = ''

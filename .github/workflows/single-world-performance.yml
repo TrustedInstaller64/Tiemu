@@ -1,0 +1,49 @@
+name: Single-world paired CPU performance
+on:
+  push:
+    branches: [codex/single-world-a]
+    paths:
+      - '*.py'
+      - 'cpp/**'
+      - 'benchmarks/**'
+      - '.github/workflows/single-world-performance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: candidate
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          path: baseline
+          ref: 1ce39e00b8808564a331861ffcc799d4237ac324
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --upgrade pip setuptools wheel pybind11
+      - if: runner.os != 'macOS'
+        run: python -m pip install torch==2.12.0 --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install "./candidate[test]"
+      - name: Build isolated baseline native module
+        working-directory: baseline
+        run: python setup.py build_ext --inplace
+      - name: Build isolated candidate native module
+        working-directory: candidate
+        run: python setup.py build_ext --inplace
+      - name: Compare one world at a time with rotated run order
+        run: python candidate/benchmarks/compare_single_world.py --baseline baseline --candidate candidate --output-dir evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: single-world-${{ matrix.os }}
+          path: evidence/
