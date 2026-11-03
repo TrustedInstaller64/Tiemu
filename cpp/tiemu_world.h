@@ -15,7 +15,7 @@
  * to preserve a missing lazy cache. Invalid input is rejected before changing
  * the live world. Allocation failure may invalidate the previous borrowed view.
  *
- * view, births and scoring expose BORROWED, READ-ONLY native buffers. They are valid only
+ * view, births, scoring and golden plans expose BORROWED, READ-ONLY native buffers. They are valid only
  * until the next mutating call or destruction. The caller must hold its own
  * lifetime lock from obtaining a view through the last read, and must not pass
  * resident output pointers back as inputs to any resident operation. No escaping array view
@@ -31,10 +31,11 @@
  * A membership-only reconciliation preserves previous native values for retained
  * members; those values may lag public mirrors. It marks numeric state dirty:
  * view/run reject access until a complete sync. Scoring preparation also marks
- * numeric state dirty without replacing live population state or IDs. births
- * and scoring use independent inputs and remain available while numeric-dirty.
+ * numeric state dirty without replacing live population state or IDs. Golden
+ * identity plans also mark numeric state dirty. Births, scoring and golden plans
+ * use independent inputs and remain available while numeric-dirty.
  * An encounter-failure state is stricter: sync is required before
- * view/run/births/reconcile/scoring can be used again.
+ * view/run/births/reconcile/scoring/golden plans can be used again.
  * On a failed encounter the native scratch state/index is unspecified; do not
  * commit it to public state. A complete sync is required before reusing it.
  */
@@ -79,6 +80,19 @@ typedef struct tiemu_scoring_view {
     const double *paths;        /* rows * 12 fresh paths; NULL until finish */
     const double *stats;        /* rows * 4 batch stats; NULL until finish */
 } tiemu_scoring_view;
+
+typedef struct tiemu_golden_source {
+    double score;
+    int32_t trait; /* TIEMU_MORTAL, TIEMU_GOLDEN or TIEMU_REINCARNATOR */
+    uint8_t boss;  /* 0 or 1 */
+} tiemu_golden_source;
+
+typedef struct tiemu_golden_view {
+    size_t reset_count;
+    const size_t *reset_positions;
+    size_t selected_count;
+    const size_t *selected_positions;
+} tiemu_golden_view;
 
 TIEMU_API uint32_t tiemu_world_abi_version(void);
 TIEMU_API int tiemu_world_create(void **out_handle);
@@ -162,6 +176,26 @@ TIEMU_API int tiemu_world_scoring_finish(
     void *handle, uint64_t token, void *evaluator_handle,
     const double *multipliers, size_t multiplier_count,
     const double *distribution, size_t distribution_count, tiemu_scoring_view *output);
+
+/* Plan golden identity changes from independent CURRENT metadata, without
+ * importing titan/path vectors or relying on stale live rows. Sources need not
+ * match live membership. Scores must be finite, trait uses the encounter enum,
+ * and boss is 0/1. Reset positions contain every old GoldenOne in source order,
+ * including bosses. Candidates exclude bosses and Reincarnators; selected
+ * positions contain the first min(candidates, max(12, golden_cap)) candidates
+ * in descending score order, preserving source order for equal scores.
+ *
+ * The caller still performs identity writes and its original random shuffle.
+ * This operation consumes no RNG and retains no caller pointer. Its borrowed
+ * result follows the World lifetime-lock rules above. Invalid input leaves the
+ * previous plan, output, numeric-access state and scoring token unchanged.
+ * Success marks live numeric state dirty and invalidates prepared scoring,
+ * but never changes live membership/IDs. Membership-dirty worlds are allowed;
+ * failed encounters require a full sync first. Empty plans are valid.
+ */
+TIEMU_API int tiemu_world_golden_plan(
+    void *handle, const tiemu_golden_source *sources, size_t count,
+    int64_t golden_cap, tiemu_golden_view *output);
 TIEMU_API int tiemu_world_destroy(void **handle);
 
 #ifdef __cplusplus

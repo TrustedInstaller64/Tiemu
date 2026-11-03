@@ -165,6 +165,7 @@ def test_native_golden_plan_matches_frozen_identity_order_types_aliases_and_rng(
             assert entity.titan_affinities is titans and entity._path_affinities is cache
         if size:
             assert actual_manager._native_world is not None
+            assert actual_manager._native_world.golden_count == 1
             assert expected_rng != initial_rng, 'Nonempty input shuffles even with no candidates'
             assert actual[0].trait == 'Mortal' and actual[0].titan_aspect is None
             assert actual[0].data_modification_unlocked is False
@@ -368,3 +369,38 @@ def test_python_backend_keeps_golden_reference_path_without_resident_allocation(
         close(manager)
         close(expected_manager)
         configure_backend('python')
+
+
+def test_first_helper_import_with_custom_shuffle_keeps_original_failure_prefix(native, monkeypatch):
+    manager, population = make_world()
+    expected_manager, expected = make_world()
+    original_shuffle = random.shuffle
+    visits = []
+
+    def custom_shuffle(values):
+        visits.append(tuple(values))
+        original_shuffle(values)
+        raise RuntimeError('custom shuffle failed after its original draws')
+
+    monkeypatch.setattr(random, 'shuffle', custom_shuffle)
+    # Reproduce a fresh adapter import after a pre-existing module-level hook.
+    # The helper must reject a plain function before reading MethodType fields.
+    monkeypatch.delitem(sys.modules, 'native_lifecycle')
+    helper = lifecycle().try_update_golden_ones
+    seed()
+    expected_error = outcome(frozen_update(), expected_manager, expected)
+    expected_state, expected_rng, expected_visits = snapshot(expected_manager, expected), rng(), list(visits)
+    visits.clear()
+    seed()
+    before, before_rng = snapshot(manager, population), rng()
+    try:
+        assert helper(manager, population) is False
+        assert visits == [] and rng() == before_rng
+        assert snapshot(manager, population) == before
+        assert outcome(PopulationManager.update_golden_ones, manager, population) == expected_error
+        assert expected_error == (RuntimeError, 'custom shuffle failed after its original draws')
+        assert snapshot(manager, population) == expected_state
+        assert rng() == expected_rng and visits == expected_visits
+    finally:
+        close(manager)
+        close(expected_manager)

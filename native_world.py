@@ -87,6 +87,15 @@ class _ScoringView(ct.Structure):
                 ('paths', _D), ('stats', _D)]
 
 
+class _GoldenSource(ct.Structure):
+    _fields_ = [('score', _F), ('trait', ct.c_int32), ('boss', ct.c_uint8)]
+
+
+class _GoldenView(ct.Structure):
+    _fields_ = [('reset_count', _S), ('reset_positions', ct.POINTER(_S)),
+                ('selected_count', _S), ('selected_positions', ct.POINTER(_S))]
+
+
 @functools.lru_cache(maxsize=1)
 def _entry_points(library):
     def bind(name, arguments, result=ct.c_int):
@@ -108,6 +117,7 @@ def _entry_points(library):
                               _F, _F, _H, _H]),
         score_prepare=bind('scoring_prepare', [_H, _H, _S, _H, _S, _H]),
         score_finish=bind('scoring_finish', [_H, ct.c_uint64, _H, _H, _S, _H, _S, _H]),
+        golden_plan=bind('golden_plan', [_H, _H, _S, ct.c_int64, _H]),
         destroy=bind('destroy', [_H]))
 
 
@@ -173,6 +183,7 @@ class ResidentWorld:
         self.sync_count = self.encounter_count = self.birth_count = 0
         self.reconcile_count = 0
         self.scoring_count = 0
+        self.golden_count = 0
         self._native = get_native()
         if self._native is None or getattr(self._native, '__binding__', None) != 'c-abi':
             raise RuntimeError('Resident world requires the standalone C++ backend')

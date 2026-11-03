@@ -235,6 +235,9 @@ class PopulationManager:
         """
         更新黄金裔：将上一代泰坦黄金裔清除，并选举12名新的天选黄金裔。
         """
+        from native_lifecycle import try_update_golden_ones
+        if try_update_golden_ones(self, population):
+            return
         for p in population:
             if p.trait == "GoldenOne":
                 p.trait = "Mortal"
@@ -347,3 +350,8 @@ _BIRTH_RNG = [(owner, name, getattr(owner, name)) for owner, names in (
     (random, ('sample', 'randint')), (np.random, ('normal',))) for name in names]
 _BIRTH_RANDOM_METHODS = {name: getattr(random.Random, name) for name in (
     '__getattribute__', '_randbelow', 'getrandbits', 'random', 'randrange')}
+
+# Capture native lifecycle method/RNG identities when the defining classes are
+# loaded, before a caller can install callbacks ahead of the first golden update.
+# All classes above are complete; the reciprocal module import reads only them.
+import native_lifecycle

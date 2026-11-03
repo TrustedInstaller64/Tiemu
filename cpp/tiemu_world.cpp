@@ -136,6 +136,19 @@ struct ScoringRows {
     }
 };
 
+struct GoldenRows {
+    std::vector<std::size_t> reset, selected;
+
+    void swap(GoldenRows &other) noexcept {
+        reset.swap(other.reset);
+        selected.swap(other.selected);
+    }
+
+    tiemu_golden_view view() const {
+        return {reset.size(), reset.data(), selected.size(), selected.data()};
+    }
+};
+
 struct World : Rows {
     std::mutex mutex;
     std::size_t entities = 0;
@@ -146,6 +159,7 @@ struct World : Rows {
     std::unordered_map<std::uint64_t, std::size_t> live_ids, next_live_ids;
     Rows scratch;
     ScoringRows scoring, scoring_scratch;
+    GoldenRows golden, golden_scratch;
     std::uint64_t scoring_token = 0, next_scoring_token = 1;
     std::array<std::uint32_t, TIEMU_MT_STATE_WORDS> numpy_mt{}, python_mt{};
     std::vector<double> newborns;
@@ -165,7 +179,7 @@ struct World : Rows {
     void ready() const {
         nonfailed();
         if (membership_dirty)
-            throw std::runtime_error("resident world requires a complete sync after membership reconciliation or scoring preparation");
+            throw std::runtime_error("resident world requires a complete sync after membership reconciliation, scoring preparation or golden planning");
     }
 };
 
@@ -453,6 +467,53 @@ int tiemu_world_scoring_finish(void *handle, uint64_t token, void *evaluator_han
         std::lock_guard<std::mutex> lock(world.mutex);
         scoring_finish(world, token, evaluator_handle, multipliers, multiplier_count,
                        distribution, distribution_count, output);
+    });
+}
+
+int tiemu_world_golden_plan(void *handle, const tiemu_golden_source *sources, size_t count,
+        int64_t golden_cap, tiemu_golden_view *output) {
+    return tiemu_detail::guarded([&] {
+        auto &world = live(handle);
+        std::lock_guard<std::mutex> lock(world.mutex);
+        world.nonfailed();
+        vector_size(count); // Same supported population bound; no vectors imported.
+        required(sources, count, "golden metadata sources");
+        if (!output) throw std::invalid_argument("golden plan output is null");
+        for (std::size_t i = 0; i < count; ++i) {
+            const auto &row = sources[i];
+            if (!std::isfinite(row.score) || row.trait < TIEMU_MORTAL
+                    || row.trait > TIEMU_REINCARNATOR || row.boss > 1)
+                throw std::invalid_argument("golden metadata is invalid");
+        }
+        // Separate retained scratch makes failed validation/allocation preserve
+        // the previously published plan and every borrowed result pointer.
+        auto &next = world.golden_scratch;
+        next.reset.reserve(count);
+        next.selected.reserve(count);
+        next.reset.clear();
+        next.selected.clear();
+        for (std::size_t i = 0; i < count; ++i) {
+            if (sources[i].trait == TIEMU_GOLDEN) next.reset.push_back(i);
+            if (!sources[i].boss && sources[i].trait != TIEMU_REINCARNATOR)
+                next.selected.push_back(i);
+        }
+        const auto requested = static_cast<std::uint64_t>(std::max<std::int64_t>(12, golden_cap));
+        const auto selected = requested >= next.selected.size()
+            ? next.selected.size() : static_cast<std::size_t>(requested);
+        const auto before = [&](std::size_t first, std::size_t second) {
+            const double a = sources[first].score, b = sources[second].score;
+            return a > b || (a == b && first < second);
+        };
+        // Position is an explicit tie breaker, including +0/-0, so partial_sort
+        // returns exactly Python's stable descending prefix for finite scores.
+        if (selected)
+            std::partial_sort(next.selected.begin(), next.selected.begin() + selected,
+                              next.selected.end(), before);
+        next.selected.resize(selected);
+        world.golden.swap(next);
+        world.membership_dirty = true;
+        world.scoring_token = 0;
+        *output = world.golden.view();
     });
 }
 
