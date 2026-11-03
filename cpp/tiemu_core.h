@@ -164,6 +164,22 @@ TIEMU_API int tiemu_batch_concepts(
     double *out_paths, size_t out_paths_count,
     double *out_stats, size_t out_stats_count);
 
+/* C1 experimental scoring. old_paths (rows x paths) determines the multiplier;
+ * current values determine refreshed paths/stats. A null normalized_seats with
+ * count 0 means zero total seats and multiplier 1. Otherwise seats has paths
+ * values. Ordered scalar dot/std::tanh may round differently from NumPy/BLAS.
+ * Inputs are borrowed only until this synchronous call and all workers return. */
+TIEMU_API int tiemu_batch_concepts_zeitgeist(
+    void *handle,
+    const double *values, size_t values_count, size_t rows, size_t titans,
+    const double *matrix, size_t matrix_count, size_t paths,
+    const double *old_paths, size_t old_paths_count,
+    const double *normalized_seats, size_t seats_count, double suppression,
+    const double *distribution, size_t distribution_count,
+    const int64_t *bosses, size_t boss_count,
+    double *out_paths, size_t out_paths_count,
+    double *out_stats, size_t out_stats_count);
+
 TIEMU_API int tiemu_histogram_create(
     const int64_t *indices, size_t count, int64_t paths, void **out_handle);
 TIEMU_API int tiemu_histogram_update(void *handle, int64_t index, int64_t path);

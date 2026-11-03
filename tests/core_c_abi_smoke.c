@@ -24,6 +24,22 @@ int main(void) {
     if (tiemu_encounters_abi_version() != TIEMU_ENCOUNTERS_ABI_VERSION) return 12;
     if (tiemu_encounters_run(NULL, NULL, NULL) != TIEMU_VALUE_ERROR) return 13;
     if (strlen(tiemu_encounters_last_error()) == 0) return 14;
+    {
+        void *batch = NULL;
+        const int64_t bosses[1] = {0};
+        const double old_paths[3] = {0.5, 0.3, 0.2};
+        const double seats[3] = {0.2, 0.3, 0.5};
+        double stats[4], expected[4];
+        if (tiemu_batch_create(1, 1, &batch)) return 15;
+        if (tiemu_concepts(output, 3, 1.0, NULL, 0, 0, expected, 4)) return 16;
+        if (tiemu_batch_concepts_zeitgeist(batch, values, 3, 1, 3, matrix, 9, 3,
+                old_paths, 3, NULL, 0, 1.0, NULL, 0, bosses, 1, output, 3, stats, 4)) return 17;
+        if (stats[3] != expected[3] || output[0] != 0.2) return 18;
+        if (tiemu_batch_concepts_zeitgeist(batch, values, 3, 1, 3, matrix, 9, 3,
+                old_paths, 3, seats, 3, 0.0, NULL, 0, bosses, 1, output, 3, stats, 4)) return 19;
+        if (!(stats[3] > expected[3])) return 20;
+        if (tiemu_batch_destroy(&batch) || batch != NULL) return 21;
+    }
     puts("standalone C client: ABI, arithmetic, state handle and error contracts passed");
     return 0;
 }

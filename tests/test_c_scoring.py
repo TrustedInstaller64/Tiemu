@@ -5,9 +5,11 @@ Once the method exists, every assertion is mandatory. Local numerical tolerance
 is not a world-trajectory equivalence guarantee.
 """
 import copy
+import gc
 import importlib
 import pickle
 import random
+import weakref
 
 import numpy as np
 import pytest
@@ -95,6 +97,49 @@ def test_zero_seats_suppression_and_clamping(native, seats, suppression):
         evaluator.close()
     for value, expected in zip(actual, reference(native, args)):
         np.testing.assert_allclose(value, expected, rtol=2e-14, atol=2e-14)
+
+
+@pytest.mark.parametrize("value", [np.nan, np.inf, -np.inf])
+@pytest.mark.parametrize("field", ["old_paths", "suppression"])
+def test_nonfinite_multiplier_inputs_keep_python_clamp_semantics(native, value, field):
+    args = list(inputs())
+    if field == "old_paths":
+        args[2][0, 0] = value
+    else:
+        args[4] = value
+    evaluator = native.BatchEvaluator(4, 1)
+    try:
+        with np.errstate(all="ignore"):
+            actual = evaluator.concepts_zeitgeist(*args)
+            expected = reference(native, args)
+    finally:
+        evaluator.close()
+    for found, wanted in zip(actual, expected):
+        np.testing.assert_allclose(found, wanted, rtol=2e-14, atol=2e-14)
+
+
+def test_converted_input_owners_survive_until_native_workers_return(native, monkeypatch):
+    refs = []
+    convert, call = native._array, native._batch_concepts_zeitgeist
+    def observe(*args, **kwargs):
+        array = convert(*args, **kwargs)
+        refs.append(weakref.ref(array))
+        return array
+    def collect_at_call(*args):
+        gc.collect()
+        assert refs and all(ref() is not None for ref in refs)
+        return call(*args)
+    monkeypatch.setattr(native, "_array", observe)
+    monkeypatch.setattr(native, "_batch_concepts_zeitgeist", collect_at_call)
+    args = [value.tolist() if isinstance(value, np.ndarray) else value for value in inputs()]
+    evaluator = native.BatchEvaluator(4, 1)
+    try:
+        actual = evaluator.concepts_zeitgeist(*args)
+    finally:
+        evaluator.close()
+    gc.collect()
+    assert all(ref() is None for ref in refs)
+    assert actual[0].shape == (37, 12)
 
 
 def test_one_and_four_workers_are_bitwise_identical_and_results_survive_close(native):
@@ -192,3 +237,42 @@ def test_experiment_opt_out_keeps_reference_route(native, monkeypatch, case):
     finally:
         evaluator.close()
     assert_entities_equal(actual, expected)
+
+
+def test_custom_multiplier_keeps_ordered_reference_calls(native, monkeypatch):
+    from native_evaluation import evaluate_entities
+    from test_native_evaluation import assert_entities_equal
+    actual, manager = entities(), parliament()
+    expected = copy.deepcopy(actual)
+    calls = []
+    def custom(paths):
+        calls.append(paths.copy())
+        return .91 + len(calls) * .01
+    manager.get_zeitgeist_multiplier = custom
+    def forbidden(*args):
+        raise AssertionError("Custom methods require the reference route")
+    monkeypatch.setattr(native.BatchEvaluator, "concepts_zeitgeist", forbidden)
+    evaluator = native.BatchEvaluator(4, 1)
+    try:
+        with np.errstate(all="ignore"):
+            score_scalar(expected, manager, None)
+            expected_calls = list(calls)
+            calls.clear()
+            evaluate_entities(actual, manager, None, evaluator=evaluator)
+    finally:
+        evaluator.close()
+    assert_entities_equal(actual, expected)
+    assert len(calls) == len(expected_calls)
+    for found, wanted in zip(calls, expected_calls):
+        np.testing.assert_array_equal(found, wanted)
+
+
+def test_cli_scoring_experiment_is_explicit_and_defaults_off(native, monkeypatch):
+    import main
+    monkeypatch.setitem(config["runtime"], "experimental_c_scoring", False)
+    assert main.build_parser().parse_args([]).experimental_c_scoring is False
+    assert main.build_parser().parse_args(["--experimental-c-scoring"]).experimental_c_scoring is True
+    seen = []
+    monkeypatch.setattr(main, "run_simple", lambda args: seen.append(args.experimental_c_scoring) or 0)
+    assert main.main(["--experimental-c-scoring", "--disable-llm"]) == 0
+    assert seen == [True]

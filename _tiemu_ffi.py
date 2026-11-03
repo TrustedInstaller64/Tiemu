@@ -83,6 +83,9 @@ _batch_close = _bind("tiemu_batch_close", [_H])
 _batch_destroy = _bind("tiemu_batch_destroy", [_HP])
 _batch_concepts = _bind("tiemu_batch_concepts", [_H, _D, _S, _S, _S, _D, _S, _S,
                                                _D, _S, _D, _S, _I, _S, _D, _S, _D, _S])
+_batch_concepts_zeitgeist = _bind("tiemu_batch_concepts_zeitgeist", [
+    _H, _D, _S, _S, _S, _D, _S, _S, _D, _S, _D, _S, _F,
+    _D, _S, _I, _S, _D, _S, _D, _S])
 _hist_create = _bind("tiemu_histogram_create", [_I, _S, _L, _HP])
 _hist_update = _bind("tiemu_histogram_update", [_H, _L, _L])
 _hist_distribution = _bind("tiemu_histogram_distribution", [_H, _D, _S])
@@ -350,6 +353,35 @@ class BatchEvaluator(_Handle):
                                    _ptr(multipliers), multipliers.size, *_dist_args(distribution),
                                    _ptr(bosses, _I), bosses.size,
                                    _ptr(out_paths), out_paths.size, _ptr(out_stats), out_stats.size))
+        return out_paths, out_stats
+
+    def concepts_zeitgeist(self, values, matrix, old_paths, normalized_seats,
+                          suppression, distribution, bosses):
+        """C1: evaluate NumPy-compatible formulas with native rounding semantics."""
+        values = _float_array(values, "values", 2)
+        matrix = _float_array(matrix, "matrix", 2)
+        rows, titans = values.shape
+        paths = matrix.shape[1]
+        if matrix.shape[0] != titans or paths == 0:
+            raise ValueError("mapping matrix must match values and contain paths")
+        old_paths = _float_array(old_paths, "old paths", 2)
+        if old_paths.shape != (rows, paths):
+            raise ValueError("old paths must match batch dimensions")
+        normalized_seats = _distribution(normalized_seats, paths)
+        distribution = _distribution(distribution, paths)
+        bosses = _int_array(bosses, "bosses")
+        if bosses.size != rows:
+            raise ValueError("bosses must match the row count")
+        out_paths = np.empty((rows, paths), dtype=np.float64)
+        out_stats = np.empty((rows, 4), dtype=np.float64)
+        # Each converted ndarray remains owned locally through worker completion.
+        with self._lock:
+            _check(_batch_concepts_zeitgeist(
+                self._live(), _ptr(values), values.size, rows, titans,
+                _ptr(matrix), matrix.size, paths, _ptr(old_paths), old_paths.size,
+                *_dist_args(normalized_seats), suppression, *_dist_args(distribution),
+                _ptr(bosses, _I), bosses.size, _ptr(out_paths), out_paths.size,
+                _ptr(out_stats), out_stats.size))
         return out_paths, out_stats
 
 

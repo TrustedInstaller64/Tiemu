@@ -131,6 +131,22 @@ void score_path_row(const double *values, Size count, double multiplier,
     result[3] = score;
 }
 
+double zeitgeist_multiplier(const double *old_paths, const double *seats,
+                            Size count, double suppression) noexcept {
+    if (!seats) return 1.0;
+    // Keep both reductions: the algebraic 2*dot-sum rewrite changes rounding
+    // further. C1 deliberately replaces NumPy dot/tanh, so even this ordered
+    // implementation can differ in low bits from the Python reference.
+    double aligned = 0.0, opposed = 0.0;
+    for (Size i = 0; i < count; ++i) {
+        aligned += old_paths[i] * seats[i];
+        opposed += (1.0 - old_paths[i]) * seats[i];
+    }
+    const double value = 1.05 + (0.15 * std::tanh((aligned - opposed) * 3.0) * suppression);
+    // Preserve Python max(.9, min(1.2, NaN)) == 1.2, including argument order.
+    return std::max(0.9, std::min(1.2, value));
+}
+
 class BatchEvaluator {
     struct Job {
         const double *values;
@@ -141,6 +157,9 @@ class BatchEvaluator {
         double *paths;
         double *stats;
         Size rows, titans, path_count;
+        const double *old_paths;
+        const double *normalized_seats;
+        double suppression;
     };
     const Size workers_, min_rows_;
     std::mutex request_mutex_, pool_mutex_;
@@ -159,7 +178,10 @@ class BatchEvaluator {
                 if (!std::isfinite(values[titan])) { replace_with_ones = true; break; }
             double *paths = job.paths + row * job.path_count;
             map_path_row(values, job.matrix, job.titans, job.path_count, paths, replace_with_ones);
-            score_path_row(paths, job.path_count, job.multipliers[row], job.distribution,
+            const double multiplier = job.multipliers ? job.multipliers[row]
+                : zeitgeist_multiplier(offset(job.old_paths, row * job.path_count),
+                                       job.normalized_seats, job.path_count, job.suppression);
+            score_path_row(paths, job.path_count, multiplier, job.distribution,
                            job.bosses[row] != 0, job.stats + row * 4);
         }
     }
@@ -229,9 +251,11 @@ public:
 
     void concepts(const double *values, const double *matrix, const double *multipliers,
                   const double *distribution, const std::int64_t *bosses,
-                  double *paths, double *stats, Size rows, Size titans, Size path_count) {
+                  double *paths, double *stats, Size rows, Size titans, Size path_count,
+                  const double *old_paths = nullptr, const double *normalized_seats = nullptr,
+                  double suppression = 1.0) {
         const Job job{values, matrix, multipliers, distribution, bosses,
-                      paths, stats, rows, titans, path_count};
+                      paths, stats, rows, titans, path_count, old_paths, normalized_seats, suppression};
         std::lock_guard<std::mutex> request(request_mutex_);
         if (closed_) throw std::runtime_error("batch evaluator is closed");
         if (workers_ == 1 || rows < min_rows_) {
@@ -706,6 +730,31 @@ int tiemu_batch_concepts(void *handle, const double *values, size_t values_count
         output_buffer(out_stats, out_stats_count, product(rows, 4), "stats output is too small or null");
         evaluator.concepts(values, matrix, multipliers, distribution, bosses,
                            out_paths, out_stats, signed_size(rows), signed_size(titans), signed_size(paths));
+    });
+}
+
+int tiemu_batch_concepts_zeitgeist(
+        void *handle, const double *values, size_t values_count, size_t rows, size_t titans,
+        const double *matrix, size_t matrix_count, size_t paths,
+        const double *old_paths, size_t old_paths_count,
+        const double *normalized_seats, size_t seats_count, double suppression,
+        const double *distribution, size_t distribution_count,
+        const int64_t *bosses, size_t boss_count,
+        double *out_paths, size_t out_paths_count, double *out_stats, size_t out_stats_count) {
+    return guarded([&] {
+        auto &evaluator = object<BatchEvaluator>(handle);
+        mapping_buffers(values, values_count, rows, titans, matrix, matrix_count, paths,
+                        out_paths, out_paths_count);
+        if (old_paths_count != product(rows, paths) || boss_count != rows)
+            throw std::invalid_argument("old paths and bosses must match batch dimensions");
+        input_buffer(old_paths, old_paths_count, "old paths are null");
+        input_buffer(bosses, boss_count, "bosses are null");
+        distribution_buffer(normalized_seats, seats_count, paths);
+        distribution_buffer(distribution, distribution_count, paths);
+        output_buffer(out_stats, out_stats_count, product(rows, 4), "stats output is too small or null");
+        evaluator.concepts(values, matrix, nullptr, distribution, bosses,
+                           out_paths, out_stats, signed_size(rows), signed_size(titans), signed_size(paths),
+                           old_paths, normalized_seats, suppression);
     });
 }
 

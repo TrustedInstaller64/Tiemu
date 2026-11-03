@@ -123,3 +123,20 @@ def test_scalar_zero_reference_has_defined_scaled_error(compare):
     result = compare(a, b)
     assert result['final']['numeric']['score']['max_absolute_error'] == 1
     assert result['final']['numeric']['score']['relative_l2_error'] is None
+
+
+def test_first_numeric_report_is_censored_after_discrete_fork(compare):
+    a, b = run([state()]), run([state(('a', 'c'))])
+    result = compare(a, b)
+    assert result['first_numeric_difference'] is None
+    assert result['individual_first_numeric_location_censored'] is True
+    assert result['individual_numeric_comparison_stopped_at']['step'] == 0
+
+
+def test_reporting_dominant_path_is_separate_from_real_decisions(compare):
+    a, b = run([state()]), run([state()])
+    a['final_state']['population'][0]['reporting_dominant_idx'] = 0
+    b['final_state']['population'][0]['reporting_dominant_idx'] = 1
+    result = compare(a, b)
+    assert result['first_differences']['reporting_path']['step'] == 0
+    assert result['first_discrete_difference'] is None
