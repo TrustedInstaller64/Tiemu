@@ -1,0 +1,1496 @@
+{
+  "commit": "74e89b654fdab880c3325b23d7ba05bc32906d99",
+  "run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41636705659",
+  "job_id": 125919611023,
+  "source": "JSON records parsed from completed hosted job logs. Raw sample evidence remains in run artifacts; these are intermediate results, not final acceptance.",
+  "records": [
+    8,
+    1,
+    4,
+    1,
+    9,
+    4,
+    1,
+    9,
+    4,
+    1,
+    1,
+    1,
+    1,
+    1,
+    4,
+    4,
+    1,
+    4,
+    4,
+    4,
+    5,
+    2,
+    4,
+    4,
+    4,
+    4,
+    2,
+    2,
+    4,
+    4,
+    4,
+    4,
+    1,
+    1,
+    1,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    3,
+    1,
+    4,
+    4,
+    4,
+    4,
+    2,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    {
+      "population": 200,
+      "generations": 2,
+      "blocks": 3,
+      "samples_per_block": 7,
+      "process_medians_seconds": {
+        "A1": [
+          0.0314567349999777,
+          0.030853653999997732,
+          0.031009605999997802
+        ],
+        "A2": [
+          0.033125398999999334,
+          0.032553941000003306,
+          0.03278116799998543
+        ],
+        "A2-legacy-distribution": [
+          0.03271219600000563,
+          0.03299160300002768,
+          0.03323765199999684
+        ],
+        "A1-no-gc": [
+          0.03074706799998239,
+          0.03098425900000734,
+          0.03146703400000206
+        ],
+        "A2-no-gc": [
+          0.03265042600000356,
+          0.03271440299999995,
+          0.032863713000011785
+        ],
+        "A1-materialized-dicts": [
+          0.03268339799998898,
+          0.03255981399999541,
+          0.03275935700000332
+        ],
+        "A2-legacy-path-access": [
+          0.030845930000026556,
+          0.031215694000024996,
+          0.030877028000020346
+        ]
+      },
+      "median_seconds": {
+        "A1": 0.031009605999997802,
+        "A2": 0.03278116799998543,
+        "A2-legacy-distribution": 0.03299160300002768,
+        "A1-no-gc": 0.03098425900000734,
+        "A2-no-gc": 0.03271440299999995,
+        "A1-materialized-dicts": 0.03268339799998898,
+        "A2-legacy-path-access": 0.030877028000020346
+      },
+      "speedup_over_A1": {
+        "A1": 1,
+        "A2": 0.9459579353612899,
+        "A2-legacy-distribution": 0.9399241982868121,
+        "A1-no-gc": 1.000818060551019,
+        "A2-no-gc": 0.9478884881377126,
+        "A1-materialized-dicts": 0.9487876994922086,
+        "A2-legacy-path-access": 1.0042937422596945
+      },
+      "per_block_A2_over_A1_seconds": [
+        1.053046319016351,
+        1.055108124308573,
+        1.0571294585293265
+      ],
+      "ablation_wall_ratios": {
+        "A1_materialized_dicts_over_A1": 1.053976564552007,
+        "A2_legacy_path_access_over_A2": 0.9419136011271493
+      },
+      "same_checked_state_and_rng": true,
+      "optimizer_updates": 15,
+      "observations": {
+        "A1": {
+          "valid": true,
+          "errors": [],
+          "spans": [
+            {
+              "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+              "calls": 2,
+              "inclusive_seconds": 0.032384834000026785,
+              "exclusive_instrumented_seconds": 0.000603763000157187
+            },
+            {
+              "name": "interaction.reincarnator",
+              "calls": 15,
+              "inclusive_seconds": 0.027976871999982222,
+              "exclusive_instrumented_seconds": 0.008936009000080958
+            },
+            {
+              "name": "autograd.backward",
+              "calls": 30,
+              "inclusive_seconds": 0.005621372999939922,
+              "exclusive_instrumented_seconds": 0.005621372999939922
+            },
+            {
+              "name": "value.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004779962000014848,
+              "exclusive_instrumented_seconds": 0.004779962000014848
+            },
+            {
+              "name": "actor.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004636685000008356,
+              "exclusive_instrumented_seconds": 0.004636685000008356
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "calls": 195,
+              "inclusive_seconds": 0.002917867000036267,
+              "exclusive_instrumented_seconds": 0.002917867000036267
+            },
+            {
+              "name": "actor.forward",
+              "calls": 30,
+              "inclusive_seconds": 0.0018749469999477242,
+              "exclusive_instrumented_seconds": 0.0018749469999477242
+            },
+            {
+              "name": "value.forward",
+              "calls": 15,
+              "inclusive_seconds": 0.0009408930000347482,
+              "exclusive_instrumented_seconds": 0.0009408930000347482
+            },
+            {
+              "name": "value.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005986019999681957,
+              "exclusive_instrumented_seconds": 0.0005986019999681957
+            },
+            {
+              "name": "actor.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005884009999874706,
+              "exclusive_instrumented_seconds": 0.0005884009999874706
+            },
+            {
+              "name": "interaction.other",
+              "calls": 137,
+              "inclusive_seconds": 0.0004444209998837323,
+              "exclusive_instrumented_seconds": 0.0004444209998837323
+            },
+            {
+              "name": "PopulationManager.get_global_path_distribution",
+              "calls": 1,
+              "inclusive_seconds": 0.00038454099998830316,
+              "exclusive_instrumented_seconds": 0.00038454099998830316
+            },
+            {
+              "name": "PopulationManager.update_golden_ones",
+              "calls": 1,
+              "inclusive_seconds": 0.00005115599998362086,
+              "exclusive_instrumented_seconds": 0.00005115599998362086
+            },
+            {
+              "name": "Pathstrider.recalculate_concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.000024795999991056306,
+              "exclusive_instrumented_seconds": 0.000020707999965452473
+            },
+            {
+              "name": "ParliamentManager.get_zeitgeist_multiplier",
+              "calls": 1,
+              "inclusive_seconds": 0.000018404999991616933,
+              "exclusive_instrumented_seconds": 0.000018404999991616933
+            },
+            {
+              "name": "PopulationManager.recalculate_and_normalize_entity",
+              "calls": 1,
+              "inclusive_seconds": 0.000009718999990582233,
+              "exclusive_instrumented_seconds": 0.000004659999973455342
+            },
+            {
+              "name": "native.normalize_pipeline",
+              "calls": 1,
+              "inclusive_seconds": 0.000005059000017126891,
+              "exclusive_instrumented_seconds": 0.000005059000017126891
+            },
+            {
+              "name": "native.path_affinities",
+              "calls": 2,
+              "inclusive_seconds": 0.0000043100000084450585,
+              "exclusive_instrumented_seconds": 0.0000043100000084450585
+            },
+            {
+              "name": "PopulationManager.check_and_replenish_population",
+              "calls": 2,
+              "inclusive_seconds": 0.0000022950000015953265,
+              "exclusive_instrumented_seconds": 0.0000022950000015953265
+            },
+            {
+              "name": "native.concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.0000019330000213813037,
+              "exclusive_instrumented_seconds": 0.0000019330000213813037
+            }
+          ],
+          "scope": "Inclusive spans overlap. Exclusive values subtract only observed descendants; they include unobserved native/Python work and observer overhead. Observers are never used for speedup estimates. Lazy-path/model identities are untouched. Plain/observed full checked-state digests must match."
+        },
+        "A2": {
+          "valid": true,
+          "errors": [],
+          "spans": [
+            {
+              "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+              "calls": 2,
+              "inclusive_seconds": 0.03433504999998149,
+              "exclusive_instrumented_seconds": 0.0005845640000643471
+            },
+            {
+              "name": "interaction.reincarnator",
+              "calls": 15,
+              "inclusive_seconds": 0.028239061000022048,
+              "exclusive_instrumented_seconds": 0.008973856999944019
+            },
+            {
+              "name": "autograd.backward",
+              "calls": 30,
+              "inclusive_seconds": 0.006016403000074888,
+              "exclusive_instrumented_seconds": 0.006016403000074888
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "calls": 195,
+              "inclusive_seconds": 0.004677615999867157,
+              "exclusive_instrumented_seconds": 0.004677615999867157
+            },
+            {
+              "name": "actor.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004647233999975242,
+              "exclusive_instrumented_seconds": 0.004647233999975242
+            },
+            {
+              "name": "value.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004633257000051572,
+              "exclusive_instrumented_seconds": 0.004633257000051572
+            },
+            {
+              "name": "actor.forward",
+              "calls": 30,
+              "inclusive_seconds": 0.0017994399999565758,
+              "exclusive_instrumented_seconds": 0.0017994399999565758
+            },
+            {
+              "name": "value.forward",
+              "calls": 15,
+              "inclusive_seconds": 0.001030787999951599,
+              "exclusive_instrumented_seconds": 0.001030787999951599
+            },
+            {
+              "name": "value.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005745650000790192,
+              "exclusive_instrumented_seconds": 0.0005745650000790192
+            },
+            {
+              "name": "actor.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005635169999891332,
+              "exclusive_instrumented_seconds": 0.0005635169999891332
+            },
+            {
+              "name": "interaction.other",
+              "calls": 137,
+              "inclusive_seconds": 0.00044009100002995183,
+              "exclusive_instrumented_seconds": 0.00044009100002995183
+            },
+            {
+              "name": "PopulationManager.get_global_path_distribution",
+              "calls": 1,
+              "inclusive_seconds": 0.00029395100000328966,
+              "exclusive_instrumented_seconds": 0.00029395100000328966
+            },
+            {
+              "name": "PopulationManager.update_golden_ones",
+              "calls": 1,
+              "inclusive_seconds": 0.00006160499998486557,
+              "exclusive_instrumented_seconds": 0.00006160499998486557
+            },
+            {
+              "name": "Pathstrider.recalculate_concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.00005073500000207787,
+              "exclusive_instrumented_seconds": 0.000019336000008252086
+            },
+            {
+              "name": "native.path_affinities",
+              "calls": 2,
+              "inclusive_seconds": 0.000025218000018867315,
+              "exclusive_instrumented_seconds": 0.000025218000018867315
+            },
+            {
+              "name": "ParliamentManager.get_zeitgeist_multiplier",
+              "calls": 1,
+              "inclusive_seconds": 0.000018273999984330658,
+              "exclusive_instrumented_seconds": 0.000018273999984330658
+            },
+            {
+              "name": "native.concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.000018013999977029016,
+              "exclusive_instrumented_seconds": 0.000018013999977029016
+            },
+            {
+              "name": "PopulationManager.recalculate_and_normalize_entity",
+              "calls": 1,
+              "inclusive_seconds": 0.000016490999996676692,
+              "exclusive_instrumented_seconds": 0.00000405700001238074
+            },
+            {
+              "name": "native.normalize_pipeline",
+              "calls": 1,
+              "inclusive_seconds": 0.000012433999984295951,
+              "exclusive_instrumented_seconds": 0.000012433999984295951
+            },
+            {
+              "name": "PopulationManager.check_and_replenish_population",
+              "calls": 2,
+              "inclusive_seconds": 0.0000024340000095435244,
+              "exclusive_instrumented_seconds": 0.0000024340000095435244
+            }
+          ],
+          "scope": "Inclusive spans overlap. Exclusive values subtract only observed descendants; they include unobserved native/Python work and observer overhead. Observers are never used for speedup estimates. Lazy-path/model identities are untouched. Plain/observed full checked-state digests must match."
+        },
+        "A2-legacy-distribution": {
+          "valid": true,
+          "errors": [],
+          "spans": [
+            {
+              "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+              "calls": 2,
+              "inclusive_seconds": 0.03444182100000148,
+              "exclusive_instrumented_seconds": 0.0006279499998527172
+            },
+            {
+              "name": "interaction.reincarnator",
+              "calls": 15,
+              "inclusive_seconds": 0.0281243860000302,
+              "exclusive_instrumented_seconds": 0.009250709000184543
+            },
+            {
+              "name": "autograd.backward",
+              "calls": 30,
+              "inclusive_seconds": 0.005735198999872182,
+              "exclusive_instrumented_seconds": 0.005735198999872182
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "calls": 195,
+              "inclusive_seconds": 0.004705728000203635,
+              "exclusive_instrumented_seconds": 0.004705728000203635
+            },
+            {
+              "name": "actor.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004655606999989459,
+              "exclusive_instrumented_seconds": 0.004655606999989459
+            },
+            {
+              "name": "value.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004564418000029491,
+              "exclusive_instrumented_seconds": 0.004564418000029491
+            },
+            {
+              "name": "actor.forward",
+              "calls": 30,
+              "inclusive_seconds": 0.001777922999991688,
+              "exclusive_instrumented_seconds": 0.001777922999991688
+            },
+            {
+              "name": "value.forward",
+              "calls": 15,
+              "inclusive_seconds": 0.000982310999972924,
+              "exclusive_instrumented_seconds": 0.000982310999972924
+            },
+            {
+              "name": "value.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0006013970000537938,
+              "exclusive_instrumented_seconds": 0.0006013970000537938
+            },
+            {
+              "name": "actor.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.000556821999936119,
+              "exclusive_instrumented_seconds": 0.000556821999936119
+            },
+            {
+              "name": "interaction.other",
+              "calls": 137,
+              "inclusive_seconds": 0.0004543939999734903,
+              "exclusive_instrumented_seconds": 0.0004543939999734903
+            },
+            {
+              "name": "PopulationManager.get_global_path_distribution",
+              "calls": 1,
+              "inclusive_seconds": 0.0004061509999928603,
+              "exclusive_instrumented_seconds": 0.0004061509999928603
+            },
+            {
+              "name": "PopulationManager.update_golden_ones",
+              "calls": 1,
+              "inclusive_seconds": 0.00006313899999099704,
+              "exclusive_instrumented_seconds": 0.00006313899999099704
+            },
+            {
+              "name": "Pathstrider.recalculate_concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.00005664699997964817,
+              "exclusive_instrumented_seconds": 0.00002121199997873191
+            },
+            {
+              "name": "PopulationManager.recalculate_and_normalize_entity",
+              "calls": 1,
+              "inclusive_seconds": 0.00003171999998130559,
+              "exclusive_instrumented_seconds": 0.000005069999957640903
+            },
+            {
+              "name": "native.path_affinities",
+              "calls": 2,
+              "inclusive_seconds": 0.000027009999996607803,
+              "exclusive_instrumented_seconds": 0.000027009999996607803
+            },
+            {
+              "name": "native.normalize_pipeline",
+              "calls": 1,
+              "inclusive_seconds": 0.00002665000002366469,
+              "exclusive_instrumented_seconds": 0.00002665000002366469
+            },
+            {
+              "name": "native.concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.000021639999999933934,
+              "exclusive_instrumented_seconds": 0.000021639999999933934
+            },
+            {
+              "name": "ParliamentManager.get_zeitgeist_multiplier",
+              "calls": 1,
+              "inclusive_seconds": 0.00001911599997583835,
+              "exclusive_instrumented_seconds": 0.00001911599997583835
+            },
+            {
+              "name": "PopulationManager.check_and_replenish_population",
+              "calls": 2,
+              "inclusive_seconds": 0.000002514000016162754,
+              "exclusive_instrumented_seconds": 0.000002514000016162754
+            }
+          ],
+          "scope": "Inclusive spans overlap. Exclusive values subtract only observed descendants; they include unobserved native/Python work and observer overhead. Observers are never used for speedup estimates. Lazy-path/model identities are untouched. Plain/observed full checked-state digests must match."
+        },
+        "A1-materialized-dicts": {
+          "valid": true,
+          "errors": [],
+          "spans": [
+            {
+              "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+              "calls": 2,
+              "inclusive_seconds": 0.033917696999992586,
+              "exclusive_instrumented_seconds": 0.0005843779998713217
+            },
+            {
+              "name": "interaction.reincarnator",
+              "calls": 15,
+              "inclusive_seconds": 0.027844621000099323,
+              "exclusive_instrumented_seconds": 0.009219309000201292
+            },
+            {
+              "name": "autograd.backward",
+              "calls": 30,
+              "inclusive_seconds": 0.005513728000011042,
+              "exclusive_instrumented_seconds": 0.005513728000011042
+            },
+            {
+              "name": "value.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004654284999986658,
+              "exclusive_instrumented_seconds": 0.004654284999986658
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "calls": 195,
+              "inclusive_seconds": 0.004569329000020161,
+              "exclusive_instrumented_seconds": 0.004569329000020161
+            },
+            {
+              "name": "actor.step",
+              "calls": 15,
+              "inclusive_seconds": 0.0045414540000479064,
+              "exclusive_instrumented_seconds": 0.0045414540000479064
+            },
+            {
+              "name": "actor.forward",
+              "calls": 30,
+              "inclusive_seconds": 0.0017420870000250943,
+              "exclusive_instrumented_seconds": 0.0017420870000250943
+            },
+            {
+              "name": "value.forward",
+              "calls": 15,
+              "inclusive_seconds": 0.0009708609998995144,
+              "exclusive_instrumented_seconds": 0.0009708609998995144
+            },
+            {
+              "name": "actor.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0006120289999671513,
+              "exclusive_instrumented_seconds": 0.0006120289999671513
+            },
+            {
+              "name": "value.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005908679999606647,
+              "exclusive_instrumented_seconds": 0.0005908679999606647
+            },
+            {
+              "name": "interaction.other",
+              "calls": 137,
+              "inclusive_seconds": 0.00044786400002294613,
+              "exclusive_instrumented_seconds": 0.00044786400002294613
+            },
+            {
+              "name": "PopulationManager.get_global_path_distribution",
+              "calls": 1,
+              "inclusive_seconds": 0.00042015799999717274,
+              "exclusive_instrumented_seconds": 0.00042015799999717274
+            },
+            {
+              "name": "PopulationManager.update_golden_ones",
+              "calls": 1,
+              "inclusive_seconds": 0.00006092399999602094,
+              "exclusive_instrumented_seconds": 0.00006092399999602094
+            },
+            {
+              "name": "Pathstrider.recalculate_concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.000022413000010601536,
+              "exclusive_instrumented_seconds": 0.000018855999996958417
+            },
+            {
+              "name": "ParliamentManager.get_zeitgeist_multiplier",
+              "calls": 1,
+              "inclusive_seconds": 0.000016109999990021606,
+              "exclusive_instrumented_seconds": 0.000016109999990021606
+            },
+            {
+              "name": "PopulationManager.recalculate_and_normalize_entity",
+              "calls": 1,
+              "inclusive_seconds": 0.000008705999988478652,
+              "exclusive_instrumented_seconds": 0.000004326999999193504
+            },
+            {
+              "name": "native.normalize_pipeline",
+              "calls": 1,
+              "inclusive_seconds": 0.000004378999989285148,
+              "exclusive_instrumented_seconds": 0.000004378999989285148
+            },
+            {
+              "name": "native.path_affinities",
+              "calls": 2,
+              "inclusive_seconds": 0.000003808000002436529,
+              "exclusive_instrumented_seconds": 0.000003808000002436529
+            },
+            {
+              "name": "PopulationManager.check_and_replenish_population",
+              "calls": 2,
+              "inclusive_seconds": 0.0000021239999909994367,
+              "exclusive_instrumented_seconds": 0.0000021239999909994367
+            },
+            {
+              "name": "native.concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.0000017430000127660605,
+              "exclusive_instrumented_seconds": 0.0000017430000127660605
+            }
+          ],
+          "scope": "Inclusive spans overlap. Exclusive values subtract only observed descendants; they include unobserved native/Python work and observer overhead. Observers are never used for speedup estimates. Lazy-path/model identities are untouched. Plain/observed full checked-state digests must match."
+        },
+        "A2-legacy-path-access": {
+          "valid": true,
+          "errors": [],
+          "spans": [
+            {
+              "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+              "calls": 2,
+              "inclusive_seconds": 0.032810186999995494,
+              "exclusive_instrumented_seconds": 0.0005808349999369966
+            },
+            {
+              "name": "interaction.reincarnator",
+              "calls": 15,
+              "inclusive_seconds": 0.028356608000080996,
+              "exclusive_instrumented_seconds": 0.009184631999858084
+            },
+            {
+              "name": "autograd.backward",
+              "calls": 30,
+              "inclusive_seconds": 0.0057780310000907775,
+              "exclusive_instrumented_seconds": 0.0057780310000907775
+            },
+            {
+              "name": "value.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004791098000055172,
+              "exclusive_instrumented_seconds": 0.004791098000055172
+            },
+            {
+              "name": "actor.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004628590000066879,
+              "exclusive_instrumented_seconds": 0.004628590000066879
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "calls": 195,
+              "inclusive_seconds": 0.002913752000040404,
+              "exclusive_instrumented_seconds": 0.002913752000040404
+            },
+            {
+              "name": "actor.forward",
+              "calls": 30,
+              "inclusive_seconds": 0.0017838450000056127,
+              "exclusive_instrumented_seconds": 0.0017838450000056127
+            },
+            {
+              "name": "value.forward",
+              "calls": 15,
+              "inclusive_seconds": 0.000980606999974043,
+              "exclusive_instrumented_seconds": 0.000980606999974043
+            },
+            {
+              "name": "value.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0006107630000542486,
+              "exclusive_instrumented_seconds": 0.0006107630000542486
+            },
+            {
+              "name": "actor.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005990419999761798,
+              "exclusive_instrumented_seconds": 0.0005990419999761798
+            },
+            {
+              "name": "interaction.other",
+              "calls": 137,
+              "inclusive_seconds": 0.00041801799994800604,
+              "exclusive_instrumented_seconds": 0.00041801799994800604
+            },
+            {
+              "name": "PopulationManager.get_global_path_distribution",
+              "calls": 1,
+              "inclusive_seconds": 0.0003983670000025086,
+              "exclusive_instrumented_seconds": 0.0003983670000025086
+            },
+            {
+              "name": "Pathstrider.recalculate_concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.00005357000000572043,
+              "exclusive_instrumented_seconds": 0.000019908000012947014
+            },
+            {
+              "name": "native.path_affinities",
+              "calls": 2,
+              "inclusive_seconds": 0.000050213999998049985,
+              "exclusive_instrumented_seconds": 0.000050213999998049985
+            },
+            {
+              "name": "PopulationManager.update_golden_ones",
+              "calls": 1,
+              "inclusive_seconds": 0.000048630999998522384,
+              "exclusive_instrumented_seconds": 0.000048630999998522384
+            },
+            {
+              "name": "PopulationManager.recalculate_and_normalize_entity",
+              "calls": 1,
+              "inclusive_seconds": 0.000030367000022124557,
+              "exclusive_instrumented_seconds": 0.000004448000026968657
+            },
+            {
+              "name": "native.normalize_pipeline",
+              "calls": 1,
+              "inclusive_seconds": 0.0000259189999951559,
+              "exclusive_instrumented_seconds": 0.0000259189999951559
+            },
+            {
+              "name": "ParliamentManager.get_zeitgeist_multiplier",
+              "calls": 1,
+              "inclusive_seconds": 0.000019826999988481475,
+              "exclusive_instrumented_seconds": 0.000019826999988481475
+            },
+            {
+              "name": "native.concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.000019304999995028993,
+              "exclusive_instrumented_seconds": 0.000019304999995028993
+            },
+            {
+              "name": "PopulationManager.check_and_replenish_population",
+              "calls": 2,
+              "inclusive_seconds": 0.000002985999969951081,
+              "exclusive_instrumented_seconds": 0.000002985999969951081
+            }
+          ],
+          "scope": "Inclusive spans overlap. Exclusive values subtract only observed descendants; they include unobserved native/Python work and observer overhead. Observers are never used for speedup estimates. Lazy-path/model identities are untouched. Plain/observed full checked-state digests must match."
+        }
+      }
+    },
+    {
+      "population": 200,
+      "generations": 12,
+      "blocks": 3,
+      "samples_per_block": 7,
+      "process_medians_seconds": {
+        "A1": [
+          0.044758688999991136,
+          0.045110067999985404,
+          0.044482883000000584
+        ],
+        "A2": [
+          0.05400019600000405,
+          0.05426901900000303,
+          0.054316665999976976
+        ],
+        "A2-legacy-distribution": [
+          0.05461505300002045,
+          0.054347618000008424,
+          0.054565003999982764
+        ],
+        "A1-no-gc": [
+          0.04463071999998647,
+          0.04499299699995163,
+          0.04462609999995948
+        ],
+        "A2-no-gc": [
+          0.05488638699995363,
+          0.053961696999976994,
+          0.054170697999950335
+        ],
+        "A1-materialized-dicts": [
+          0.054126324000037584,
+          0.05437003300005472,
+          0.05601768099995752
+        ],
+        "A2-legacy-path-access": [
+          0.0450042599999847,
+          0.04529438399998753,
+          0.045411644000012075
+        ]
+      },
+      "median_seconds": {
+        "A1": 0.044758688999991136,
+        "A2": 0.05426901900000303,
+        "A2-legacy-distribution": 0.054565003999982764,
+        "A1-no-gc": 0.04463071999998647,
+        "A2-no-gc": 0.054170697999950335,
+        "A1-materialized-dicts": 0.05437003300005472,
+        "A2-legacy-path-access": 0.04529438399998753
+      },
+      "speedup_over_A1": {
+        "A1": 1,
+        "A2": 0.8247558150993781,
+        "A2-legacy-distribution": 0.8202819704733326,
+        "A1-no-gc": 1.0028672851346496,
+        "A2-no-gc": 0.8262527649178929,
+        "A1-materialized-dicts": 0.8232235025486575,
+        "A2-legacy-path-access": 0.9881730370812297
+      },
+      "per_block_A2_over_A1_seconds": [
+        1.2064740323384973,
+        1.2030356283218324,
+        1.2210689221734181
+      ],
+      "ablation_wall_ratios": {
+        "A1_materialized_dicts_over_A1": 1.2147369419168084,
+        "A2_legacy_path_access_over_A2": 0.8346269166941271
+      },
+      "same_checked_state_and_rng": true,
+      "optimizer_updates": 15,
+      "observations": {
+        "A1": {
+          "valid": true,
+          "errors": [],
+          "spans": [
+            {
+              "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+              "calls": 12,
+              "inclusive_seconds": 0.04790918900005181,
+              "exclusive_instrumented_seconds": 0.002758873998857325
+            },
+            {
+              "name": "interaction.reincarnator",
+              "calls": 15,
+              "inclusive_seconds": 0.027912449999917044,
+              "exclusive_instrumented_seconds": 0.009088530000269657
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "calls": 1095,
+              "inclusive_seconds": 0.014477501001124438,
+              "exclusive_instrumented_seconds": 0.014477501001124438
+            },
+            {
+              "name": "autograd.backward",
+              "calls": 30,
+              "inclusive_seconds": 0.00570809599992117,
+              "exclusive_instrumented_seconds": 0.00570809599992117
+            },
+            {
+              "name": "actor.step",
+              "calls": 15,
+              "inclusive_seconds": 0.0045690480000075695,
+              "exclusive_instrumented_seconds": 0.0045690480000075695
+            },
+            {
+              "name": "value.step",
+              "calls": 15,
+              "inclusive_seconds": 0.0045617429997832915,
+              "exclusive_instrumented_seconds": 0.0045617429997832915
+            },
+            {
+              "name": "interaction.other",
+              "calls": 1037,
+              "inclusive_seconds": 0.0023119210002846557,
+              "exclusive_instrumented_seconds": 0.0023119210002846557
+            },
+            {
+              "name": "actor.forward",
+              "calls": 30,
+              "inclusive_seconds": 0.0017944669999110374,
+              "exclusive_instrumented_seconds": 0.0017944669999110374
+            },
+            {
+              "name": "value.forward",
+              "calls": 15,
+              "inclusive_seconds": 0.0009981189999734852,
+              "exclusive_instrumented_seconds": 0.0009981189999734852
+            },
+            {
+              "name": "actor.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0006079699999759214,
+              "exclusive_instrumented_seconds": 0.0006079699999759214
+            },
+            {
+              "name": "value.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005844770000749122,
+              "exclusive_instrumented_seconds": 0.0005844770000749122
+            },
+            {
+              "name": "PopulationManager.get_global_path_distribution",
+              "calls": 1,
+              "inclusive_seconds": 0.0003872959999853265,
+              "exclusive_instrumented_seconds": 0.0003872959999853265
+            },
+            {
+              "name": "PopulationManager.update_golden_ones",
+              "calls": 11,
+              "inclusive_seconds": 0.0003376629998683711,
+              "exclusive_instrumented_seconds": 0.0003376629998683711
+            },
+            {
+              "name": "Pathstrider.recalculate_concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.000023865000002842862,
+              "exclusive_instrumented_seconds": 0.000020069000015610072
+            },
+            {
+              "name": "ParliamentManager.get_zeitgeist_multiplier",
+              "calls": 1,
+              "inclusive_seconds": 0.000018164999971759244,
+              "exclusive_instrumented_seconds": 0.000018164999971759244
+            },
+            {
+              "name": "PopulationManager.recalculate_and_normalize_entity",
+              "calls": 1,
+              "inclusive_seconds": 0.000008926000020892388,
+              "exclusive_instrumented_seconds": 0.0000041769999938878755
+            },
+            {
+              "name": "PopulationManager.check_and_replenish_population",
+              "calls": 12,
+              "inclusive_seconds": 0.000008166999919012596,
+              "exclusive_instrumented_seconds": 0.000008166999919012596
+            },
+            {
+              "name": "native.normalize_pipeline",
+              "calls": 1,
+              "inclusive_seconds": 0.000004749000027004513,
+              "exclusive_instrumented_seconds": 0.000004749000027004513
+            },
+            {
+              "name": "native.path_affinities",
+              "calls": 2,
+              "inclusive_seconds": 0.000003866999975343788,
+              "exclusive_instrumented_seconds": 0.000003866999975343788
+            },
+            {
+              "name": "native.concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.000001952999980403547,
+              "exclusive_instrumented_seconds": 0.000001952999980403547
+            }
+          ],
+          "scope": "Inclusive spans overlap. Exclusive values subtract only observed descendants; they include unobserved native/Python work and observer overhead. Observers are never used for speedup estimates. Lazy-path/model identities are untouched. Plain/observed full checked-state digests must match."
+        },
+        "A2": {
+          "valid": true,
+          "errors": [],
+          "spans": [
+            {
+              "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+              "calls": 12,
+              "inclusive_seconds": 0.057292026999959944,
+              "exclusive_instrumented_seconds": 0.002673499000593438
+            },
+            {
+              "name": "interaction.reincarnator",
+              "calls": 15,
+              "inclusive_seconds": 0.027805986999908328,
+              "exclusive_instrumented_seconds": 0.00890413399974932
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "calls": 1095,
+              "inclusive_seconds": 0.023872359998563297,
+              "exclusive_instrumented_seconds": 0.023872359998563297
+            },
+            {
+              "name": "autograd.backward",
+              "calls": 30,
+              "inclusive_seconds": 0.005574732000013682,
+              "exclusive_instrumented_seconds": 0.005574732000013682
+            },
+            {
+              "name": "value.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004715783000108331,
+              "exclusive_instrumented_seconds": 0.004715783000108331
+            },
+            {
+              "name": "actor.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004714821000050051,
+              "exclusive_instrumented_seconds": 0.004714821000050051
+            },
+            {
+              "name": "interaction.other",
+              "calls": 1037,
+              "inclusive_seconds": 0.002538277000951439,
+              "exclusive_instrumented_seconds": 0.002538277000951439
+            },
+            {
+              "name": "actor.forward",
+              "calls": 30,
+              "inclusive_seconds": 0.0017813289998116488,
+              "exclusive_instrumented_seconds": 0.0017813289998116488
+            },
+            {
+              "name": "value.forward",
+              "calls": 15,
+              "inclusive_seconds": 0.0009681259999752001,
+              "exclusive_instrumented_seconds": 0.0009681259999752001
+            },
+            {
+              "name": "value.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005814820000864529,
+              "exclusive_instrumented_seconds": 0.0005814820000864529
+            },
+            {
+              "name": "actor.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005655800001136413,
+              "exclusive_instrumented_seconds": 0.0005655800001136413
+            },
+            {
+              "name": "PopulationManager.update_golden_ones",
+              "calls": 11,
+              "inclusive_seconds": 0.00048048200000039287,
+              "exclusive_instrumented_seconds": 0.00048048200000039287
+            },
+            {
+              "name": "PopulationManager.get_global_path_distribution",
+              "calls": 1,
+              "inclusive_seconds": 0.0002935009999873728,
+              "exclusive_instrumented_seconds": 0.0002935009999873728
+            },
+            {
+              "name": "Pathstrider.recalculate_concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.000051375999987612886,
+              "exclusive_instrumented_seconds": 0.0000188549999506904
+            },
+            {
+              "name": "native.path_affinities",
+              "calls": 2,
+              "inclusive_seconds": 0.000026439999999183783,
+              "exclusive_instrumented_seconds": 0.000026439999999183783
+            },
+            {
+              "name": "ParliamentManager.get_zeitgeist_multiplier",
+              "calls": 1,
+              "inclusive_seconds": 0.00001970699997855263,
+              "exclusive_instrumented_seconds": 0.00001970699997855263
+            },
+            {
+              "name": "native.concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.00001806400001669317,
+              "exclusive_instrumented_seconds": 0.00001806400001669317
+            },
+            {
+              "name": "PopulationManager.recalculate_and_normalize_entity",
+              "calls": 1,
+              "inclusive_seconds": 0.00001755300002059812,
+              "exclusive_instrumented_seconds": 0.00000463899999658679
+            },
+            {
+              "name": "native.normalize_pipeline",
+              "calls": 1,
+              "inclusive_seconds": 0.00001291400002401133,
+              "exclusive_instrumented_seconds": 0.00001291400002401133
+            },
+            {
+              "name": "PopulationManager.check_and_replenish_population",
+              "calls": 12,
+              "inclusive_seconds": 0.000007783999990351731,
+              "exclusive_instrumented_seconds": 0.000007783999990351731
+            }
+          ],
+          "scope": "Inclusive spans overlap. Exclusive values subtract only observed descendants; they include unobserved native/Python work and observer overhead. Observers are never used for speedup estimates. Lazy-path/model identities are untouched. Plain/observed full checked-state digests must match."
+        },
+        "A2-legacy-distribution": {
+          "valid": true,
+          "errors": [],
+          "spans": [
+            {
+              "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+              "calls": 12,
+              "inclusive_seconds": 0.057833433000098466,
+              "exclusive_instrumented_seconds": 0.0027648049999697832
+            },
+            {
+              "name": "interaction.reincarnator",
+              "calls": 15,
+              "inclusive_seconds": 0.028144472999883874,
+              "exclusive_instrumented_seconds": 0.00927730799986648
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "calls": 1095,
+              "inclusive_seconds": 0.023740131000181464,
+              "exclusive_instrumented_seconds": 0.023740131000181464
+            },
+            {
+              "name": "autograd.backward",
+              "calls": 30,
+              "inclusive_seconds": 0.005713291000176923,
+              "exclusive_instrumented_seconds": 0.005713291000176923
+            },
+            {
+              "name": "value.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004546856999979809,
+              "exclusive_instrumented_seconds": 0.004546856999979809
+            },
+            {
+              "name": "actor.step",
+              "calls": 15,
+              "inclusive_seconds": 0.0044937389999972766,
+              "exclusive_instrumented_seconds": 0.0044937389999972766
+            },
+            {
+              "name": "interaction.other",
+              "calls": 1037,
+              "inclusive_seconds": 0.0025696600000060243,
+              "exclusive_instrumented_seconds": 0.0025696600000060243
+            },
+            {
+              "name": "actor.forward",
+              "calls": 30,
+              "inclusive_seconds": 0.0017473219999715184,
+              "exclusive_instrumented_seconds": 0.0017473219999715184
+            },
+            {
+              "name": "value.forward",
+              "calls": 15,
+              "inclusive_seconds": 0.0010607079999545022,
+              "exclusive_instrumented_seconds": 0.0010607079999545022
+            },
+            {
+              "name": "actor.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0006708189999358183,
+              "exclusive_instrumented_seconds": 0.0006708189999358183
+            },
+            {
+              "name": "value.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0006344290000015462,
+              "exclusive_instrumented_seconds": 0.0006344290000015462
+            },
+            {
+              "name": "PopulationManager.update_golden_ones",
+              "calls": 11,
+              "inclusive_seconds": 0.0005194229999574418,
+              "exclusive_instrumented_seconds": 0.0005194229999574418
+            },
+            {
+              "name": "PopulationManager.get_global_path_distribution",
+              "calls": 1,
+              "inclusive_seconds": 0.00042979599999171114,
+              "exclusive_instrumented_seconds": 0.00042979599999171114
+            },
+            {
+              "name": "Pathstrider.recalculate_concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.00009122199998046199,
+              "exclusive_instrumented_seconds": 0.00005027499997822815
+            },
+            {
+              "name": "PopulationManager.recalculate_and_normalize_entity",
+              "calls": 1,
+              "inclusive_seconds": 0.00004291099997999481,
+              "exclusive_instrumented_seconds": 0.000006362999954490078
+            },
+            {
+              "name": "native.normalize_pipeline",
+              "calls": 1,
+              "inclusive_seconds": 0.000036548000025504734,
+              "exclusive_instrumented_seconds": 0.000036548000025504734
+            },
+            {
+              "name": "native.path_affinities",
+              "calls": 2,
+              "inclusive_seconds": 0.000031840000019656145,
+              "exclusive_instrumented_seconds": 0.000031840000019656145
+            },
+            {
+              "name": "ParliamentManager.get_zeitgeist_multiplier",
+              "calls": 1,
+              "inclusive_seconds": 0.00002509699999109216,
+              "exclusive_instrumented_seconds": 0.00002509699999109216
+            },
+            {
+              "name": "native.concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.000023224000017307844,
+              "exclusive_instrumented_seconds": 0.000023224000017307844
+            },
+            {
+              "name": "PopulationManager.check_and_replenish_population",
+              "calls": 12,
+              "inclusive_seconds": 0.000011221000079331134,
+              "exclusive_instrumented_seconds": 0.000011221000079331134
+            }
+          ],
+          "scope": "Inclusive spans overlap. Exclusive values subtract only observed descendants; they include unobserved native/Python work and observer overhead. Observers are never used for speedup estimates. Lazy-path/model identities are untouched. Plain/observed full checked-state digests must match."
+        },
+        "A1-materialized-dicts": {
+          "valid": true,
+          "errors": [],
+          "spans": [
+            {
+              "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+              "calls": 12,
+              "inclusive_seconds": 0.05757276200006345,
+              "exclusive_instrumented_seconds": 0.002757984001789282
+            },
+            {
+              "name": "interaction.reincarnator",
+              "calls": 15,
+              "inclusive_seconds": 0.028121289000011984,
+              "exclusive_instrumented_seconds": 0.008796731999836993
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "calls": 1095,
+              "inclusive_seconds": 0.023566140999605523,
+              "exclusive_instrumented_seconds": 0.023566140999605523
+            },
+            {
+              "name": "autograd.backward",
+              "calls": 30,
+              "inclusive_seconds": 0.005758105000040814,
+              "exclusive_instrumented_seconds": 0.005758105000040814
+            },
+            {
+              "name": "value.step",
+              "calls": 15,
+              "inclusive_seconds": 0.0049593999999615335,
+              "exclusive_instrumented_seconds": 0.0049593999999615335
+            },
+            {
+              "name": "actor.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004720293000104903,
+              "exclusive_instrumented_seconds": 0.004720293000104903
+            },
+            {
+              "name": "interaction.other",
+              "calls": 1037,
+              "inclusive_seconds": 0.0026400549986647093,
+              "exclusive_instrumented_seconds": 0.0026400549986647093
+            },
+            {
+              "name": "actor.forward",
+              "calls": 30,
+              "inclusive_seconds": 0.0017501929999639287,
+              "exclusive_instrumented_seconds": 0.0017501929999639287
+            },
+            {
+              "name": "value.forward",
+              "calls": 15,
+              "inclusive_seconds": 0.0009582269999555137,
+              "exclusive_instrumented_seconds": 0.0009582269999555137
+            },
+            {
+              "name": "actor.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005968799999891417,
+              "exclusive_instrumented_seconds": 0.0005968799999891417
+            },
+            {
+              "name": "value.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005814590001591569,
+              "exclusive_instrumented_seconds": 0.0005814590001591569
+            },
+            {
+              "name": "PopulationManager.update_golden_ones",
+              "calls": 11,
+              "inclusive_seconds": 0.00048610300001428186,
+              "exclusive_instrumented_seconds": 0.00048610300001428186
+            },
+            {
+              "name": "PopulationManager.get_global_path_distribution",
+              "calls": 1,
+              "inclusive_seconds": 0.000427010999999311,
+              "exclusive_instrumented_seconds": 0.000427010999999311
+            },
+            {
+              "name": "Pathstrider.recalculate_concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.000023965000025327754,
+              "exclusive_instrumented_seconds": 0.000020228999972005113
+            },
+            {
+              "name": "ParliamentManager.get_zeitgeist_multiplier",
+              "calls": 1,
+              "inclusive_seconds": 0.000016942000002018176,
+              "exclusive_instrumented_seconds": 0.000016942000002018176
+            },
+            {
+              "name": "PopulationManager.recalculate_and_normalize_entity",
+              "calls": 1,
+              "inclusive_seconds": 0.000009397999974680715,
+              "exclusive_instrumented_seconds": 0.000004658999955609033
+            },
+            {
+              "name": "PopulationManager.check_and_replenish_population",
+              "calls": 12,
+              "inclusive_seconds": 0.000008052999987739895,
+              "exclusive_instrumented_seconds": 0.000008052999987739895
+            },
+            {
+              "name": "native.normalize_pipeline",
+              "calls": 1,
+              "inclusive_seconds": 0.000004739000019071682,
+              "exclusive_instrumented_seconds": 0.000004739000019071682
+            },
+            {
+              "name": "native.path_affinities",
+              "calls": 2,
+              "inclusive_seconds": 0.000003797000033500808,
+              "exclusive_instrumented_seconds": 0.000003797000033500808
+            },
+            {
+              "name": "native.concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.000001863000022694905,
+              "exclusive_instrumented_seconds": 0.000001863000022694905
+            }
+          ],
+          "scope": "Inclusive spans overlap. Exclusive values subtract only observed descendants; they include unobserved native/Python work and observer overhead. Observers are never used for speedup estimates. Lazy-path/model identities are untouched. Plain/observed full checked-state digests must match."
+        },
+        "A2-legacy-path-access": {
+          "valid": true,
+          "errors": [],
+          "spans": [
+            {
+              "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+              "calls": 12,
+              "inclusive_seconds": 0.04849828199996864,
+              "exclusive_instrumented_seconds": 0.0026940089992422145
+            },
+            {
+              "name": "interaction.reincarnator",
+              "calls": 15,
+              "inclusive_seconds": 0.02793365799999492,
+              "exclusive_instrumented_seconds": 0.009237040999892088
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "calls": 1095,
+              "inclusive_seconds": 0.015014944000711239,
+              "exclusive_instrumented_seconds": 0.015014944000711239
+            },
+            {
+              "name": "autograd.backward",
+              "calls": 30,
+              "inclusive_seconds": 0.005576917000041703,
+              "exclusive_instrumented_seconds": 0.005576917000041703
+            },
+            {
+              "name": "value.step",
+              "calls": 15,
+              "inclusive_seconds": 0.004586888000062572,
+              "exclusive_instrumented_seconds": 0.004586888000062572
+            },
+            {
+              "name": "actor.step",
+              "calls": 15,
+              "inclusive_seconds": 0.00453260800014732,
+              "exclusive_instrumented_seconds": 0.00453260800014732
+            },
+            {
+              "name": "interaction.other",
+              "calls": 1037,
+              "inclusive_seconds": 0.002348951999977089,
+              "exclusive_instrumented_seconds": 0.002348951999977089
+            },
+            {
+              "name": "actor.forward",
+              "calls": 30,
+              "inclusive_seconds": 0.001852165999821409,
+              "exclusive_instrumented_seconds": 0.001852165999821409
+            },
+            {
+              "name": "value.forward",
+              "calls": 15,
+              "inclusive_seconds": 0.0009571749998826817,
+              "exclusive_instrumented_seconds": 0.0009571749998826817
+            },
+            {
+              "name": "value.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0006004370000027848,
+              "exclusive_instrumented_seconds": 0.0006004370000027848
+            },
+            {
+              "name": "actor.zero_grad",
+              "calls": 15,
+              "inclusive_seconds": 0.0005904260001443618,
+              "exclusive_instrumented_seconds": 0.0005904260001443618
+            },
+            {
+              "name": "PopulationManager.get_global_path_distribution",
+              "calls": 1,
+              "inclusive_seconds": 0.00038572299996531,
+              "exclusive_instrumented_seconds": 0.00038572299996531
+            },
+            {
+              "name": "PopulationManager.update_golden_ones",
+              "calls": 11,
+              "inclusive_seconds": 0.00033282299989423336,
+              "exclusive_instrumented_seconds": 0.00033282299989423336
+            },
+            {
+              "name": "Pathstrider.recalculate_concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.00005291900004067429,
+              "exclusive_instrumented_seconds": 0.000018826000030003343
+            },
+            {
+              "name": "PopulationManager.recalculate_and_normalize_entity",
+              "calls": 1,
+              "inclusive_seconds": 0.000028172999975595303,
+              "exclusive_instrumented_seconds": 0.000004758999978093925
+            },
+            {
+              "name": "native.path_affinities",
+              "calls": 2,
+              "inclusive_seconds": 0.00002764199996363459,
+              "exclusive_instrumented_seconds": 0.00002764199996363459
+            },
+            {
+              "name": "native.normalize_pipeline",
+              "calls": 1,
+              "inclusive_seconds": 0.000023413999997501378,
+              "exclusive_instrumented_seconds": 0.000023413999997501378
+            },
+            {
+              "name": "native.concepts",
+              "calls": 1,
+              "inclusive_seconds": 0.00001978599999574726,
+              "exclusive_instrumented_seconds": 0.00001978599999574726
+            },
+            {
+              "name": "ParliamentManager.get_zeitgeist_multiplier",
+              "calls": 1,
+              "inclusive_seconds": 0.000018022999995537248,
+              "exclusive_instrumented_seconds": 0.000018022999995537248
+            },
+            {
+              "name": "PopulationManager.check_and_replenish_population",
+              "calls": 12,
+              "inclusive_seconds": 0.00000854600011734874,
+              "exclusive_instrumented_seconds": 0.00000854600011734874
+            }
+          ],
+          "scope": "Inclusive spans overlap. Exclusive values subtract only observed descendants; they include unobserved native/Python work and observer overhead. Observers are never used for speedup estimates. Lazy-path/model identities are untouched. Plain/observed full checked-state digests must match."
+        }
+      }
+    },
+    4,
+    6,
+    4,
+    4,
+    4,
+    4,
+    5,
+    8,
+    8,
+    8,
+    8
+  ]
+}

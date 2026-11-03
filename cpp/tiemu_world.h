@@ -28,6 +28,11 @@
  * run_encounters retains ordered RNG/arithmetic semantics of encounters_run.
  * Config reincarnator and result/trace entity indices remain current population
  * POSITIONS, not stable IDs. Config entities must match the synchronized size.
+ * A membership-only reconciliation preserves previous native values for retained
+ * members; those values may lag public mirrors. It marks numeric state dirty:
+ * view/run reject access until a complete sync. births uses independent inputs
+ * and remains available while membership-dirty. An encounter-failure state is
+ * stricter: sync is required before view/run/births/reconcile can be used again.
  * On a failed encounter the native scratch state/index is unspecified; do not
  * commit it to public state. A complete sync is required before reusing it.
  */
@@ -59,6 +64,19 @@ typedef struct tiemu_world_view {
 TIEMU_API uint32_t tiemu_world_abi_version(void);
 TIEMU_API int tiemu_world_create(void **out_handle);
 TIEMU_API int tiemu_world_sync(void *handle, const tiemu_world_source *sources, size_t count);
+/* Reconcile only membership/order and new rows. order has count IDs: nonzero
+ * entries are distinct current live IDs; each zero consumes one added source
+ * in order. Every added source must have stable_id == 0, and the zero count
+ * must equal added_count. Result IDs are copied to caller-owned out_ids with
+ * out_capacity >= count. Source/result buffers may not overlap resident or
+ * each other's storage. Invalid input leaves live membership, numeric access
+ * state and output unchanged. A successful call requires sync before numerical
+ * access, even if retained-row public values happen to remain unchanged.
+ */
+TIEMU_API int tiemu_world_reconcile(
+    void *handle, const uint64_t *order, size_t count,
+    const tiemu_world_source *added, size_t added_count,
+    uint64_t *out_ids, size_t out_capacity);
 TIEMU_API int tiemu_world_get_view(void *handle, tiemu_world_view *output);
 TIEMU_API int tiemu_world_run_encounters(
     void *handle, const tiemu_encounter_config *config,

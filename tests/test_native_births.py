@@ -125,6 +125,13 @@ def test_native_births_match_frozen_order_rng_types_and_lazy_caches(native, monk
         assert len(calls) == 1, 'Normal births must execute one whole native numerical segment'
         assert calls[0] is actual_manager._native_world
         assert len(calls[0].stable_ids()) == len(actual)
+        # Births reconcile membership without redundantly validating/uploading
+        # every old row. Numeric consumers must explicitly synchronize first.
+        with pytest.raises(RuntimeError, match='sync'):
+            calls[0].snapshot()
+        calls[0].sync(actual)
+        np.testing.assert_array_equal(calls[0].snapshot()['titans'],
+                                      np.stack([entity.titan_affinities for entity in actual]))
         assert all(entity.titan_affinities.flags.owndata for entity in actual)
     finally:
         world = getattr(actual_manager, '_native_world', None)
@@ -133,7 +140,10 @@ def test_native_births_match_frozen_order_rng_types_and_lazy_caches(native, monk
 
 
 @pytest.mark.parametrize('case', ['custom_name', 'nonpositive_purity', 'custom_constructor',
-                                  'large_finite', 'raise_on_overflow'])
+                                  'large_finite', 'raise_on_overflow', 'custom_new',
+                                  'model_getattribute', 'model_feedback_property',
+                                  'manager_data_property', 'random_class_randbelow',
+                                  'random_class_getrandbits'])
 def test_unsupported_birth_path_preserves_ordered_reference_side_effects(native, monkeypatch, case):
     cls = resident_type()
     native_calls = []
@@ -146,6 +156,8 @@ def test_unsupported_birth_path_preserves_ordered_reference_side_effects(native,
     monkeypatch.setattr(cls, 'births', counted)
     actual_manager, actual = fixture_world()
     expected_manager, expected = fixture_world()
+    modifier = None
+    active_manager = [expected_manager]
     if case == 'custom_name':
         for manager in (actual_manager, expected_manager):
             original_name = manager.generate_unique_name
@@ -164,13 +176,50 @@ def test_unsupported_birth_path_preserves_ordered_reference_side_effects(native,
     elif case == 'large_finite':
         actual_manager.base_titan_affinities[:] = 1e150
         expected_manager.base_titan_affinities[:] = 1e150
+    elif case == 'custom_new':
+        def create(entity_cls, *args, **kwargs):
+            np.random.random()
+            return object.__new__(entity_cls)
+        monkeypatch.setattr(Pathstrider, '__new__', staticmethod(create))
+    elif case == 'model_getattribute':
+        modifier = np.ones(12) * .01
+        def read(model, name):
+            if name == 'path_to_titan_feedback_matrix':
+                np.random.random()
+            return object.__getattribute__(model, name)
+        monkeypatch.setattr(TitanToPathModel, '__getattribute__', read)
+    elif case == 'model_feedback_property':
+        modifier = np.ones(12) * .01
+        def feedback(model):
+            np.random.random()
+            return model.__dict__['path_to_titan_feedback_matrix']
+        monkeypatch.setattr(TitanToPathModel, 'path_to_titan_feedback_matrix',
+                            property(feedback), raising=False)
+    elif case == 'manager_data_property':
+        def mutation(manager):
+            np.random.random()
+            return manager.__dict__['mutation_rate']
+        monkeypatch.setattr(PopulationManager, 'mutation_rate', property(mutation), raising=False)
+    elif case in ('random_class_randbelow', 'random_class_getrandbits'):
+        name = '_randbelow' if case == 'random_class_randbelow' else 'getrandbits'
+        original_random = getattr(random.Random, name)
+        def generate(owner, *args, **kwargs):
+            # Name generation can legally call through a class customization.
+            # Delaying every blueprint read until all names exist changes the
+            # first newborn if such a callback is accepted by the batch path.
+            active_manager[0].base_titan_affinities[:] += .01
+            return original_random(owner, *args, **kwargs)
+        monkeypatch.setattr(random.Random, name, generate)
     error_settings = np.seterr(over='raise') if case == 'raise_on_overflow' else None
     try:
         seed()
-        frozen_births()(expected_manager, expected, 5, expected_manager.base_titan_affinities, None)
+        frozen_births()(expected_manager, expected, 5, expected_manager.base_titan_affinities,
+                        None, modifier)
         expected_rng = capture_rng()
+        active_manager[0] = actual_manager
         seed()
-        actual_manager._add_new_entities(actual, 5, actual_manager.base_titan_affinities, None)
+        actual_manager._add_new_entities(actual, 5, actual_manager.base_titan_affinities,
+                                         None, modifier)
         assert capture_rng() == expected_rng
         assert_same(actual_manager, actual, expected_manager, expected)
         assert native_calls == []

@@ -1,5 +1,8 @@
 """Remote-only equivalence checks for batched election path selection."""
 import copy
+import gc
+import platform
+import sys
 
 import numpy as np
 import pytest
@@ -120,3 +123,64 @@ def test_unsupported_population_falls_back_before_any_cache_fill(native, monkeyp
     monkeypatch.setattr(native, 'path_affinities', lambda *_: pytest.fail('unexpected mapping'))
     assert election._native_dominant_paths(actual, native) is None
     assert all(p._path_affinities is old for p, old in zip(actual, aliases))
+
+
+@pytest.mark.skipif(platform.python_implementation() != 'CPython' or sys.version_info[:2] != (3, 12),
+                    reason='This mechanism contract targets CPython 3.12 managed instance dictionaries')
+def test_batch_path_access_does_not_materialize_entity_dictionaries(native):
+    # A2's entity.__dict__ reads changed later attribute-scan performance even
+    # though all numerical state stayed equal. Test the object-layout side
+    # effect directly, without a timing threshold or private CPython memory API.
+    def has_dict(entity):
+        return any(type(referent) is dict for referent in gc.get_referents(entity))
+
+    actual = population()
+    assert not any(has_dict(entity) for entity in actual)
+    control = Pathstrider('control', np.ones(12), titan_to_path_model=actual[0]._titan_to_path_model)
+    assert not has_dict(control)
+    control.__dict__  # Confirm the public GC observation detects materialization.
+    assert has_dict(control)
+    indices = election._native_dominant_paths(actual, native)
+    assert indices is not None and indices.shape == (len(actual),)
+    assert not any(has_dict(entity) for entity in actual)
+    # Already-populated caches must stay on the same safe access path too.
+    np.testing.assert_array_equal(election._native_dominant_paths(actual, native), indices)
+    assert not any(has_dict(entity) for entity in actual)
+
+
+@pytest.mark.parametrize('field', ['_titan_to_path_model', '_path_affinities', 'titan_affinities'])
+def test_batch_path_field_descriptors_fall_back_without_invoking_them(native, monkeypatch, field):
+    actual = population()
+    aliases = [entity._path_affinities for entity in actual]
+    accesses = []
+
+    class FieldDescriptor:
+        def __get__(self, instance, owner):
+            accesses.append(('get', instance))
+            raise AssertionError('native eligibility must not invoke a field descriptor')
+
+        def __set__(self, instance, value):
+            accesses.append(('set', instance))
+            raise AssertionError('native eligibility must not write through a field descriptor')
+
+    with monkeypatch.context() as patch:
+        patch.setattr(Pathstrider, field, FieldDescriptor(), raising=False)
+        assert election._native_dominant_paths(actual, native) is None
+    assert accesses == []
+    assert all(entity._path_affinities is old for entity, old in zip(actual, aliases))
+
+
+def test_missing_field_with_custom_getattr_falls_back_without_callback(native, monkeypatch):
+    actual = population()
+    aliases = [entity._path_affinities for entity in actual]
+    del actual[-1]._titan_to_path_model
+    visits = []
+
+    def custom_getattr(entity, name):
+        visits.append(name)
+        raise AssertionError('batch eligibility must not invoke custom fallback attribute access')
+
+    monkeypatch.setattr(Pathstrider, '__getattr__', custom_getattr, raising=False)
+    assert election._native_dominant_paths(actual, native) is None
+    assert visits == []
+    assert all(entity._path_affinities is old for entity, old in zip(actual, aliases))

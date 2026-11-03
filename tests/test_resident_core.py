@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from native_backend import configure_backend
-from native_encounters import _Config, _Event, _Result, _State
+from native_encounters import _Config, _Event, _Result, _State, _Trace
 
 
 class Source(ct.Structure):
@@ -296,6 +296,10 @@ def test_consecutive_resident_segments_refresh_original_array_alias_snapshot(abi
     native, library = abi
     source, titans, paths = rows(2)
     source[0].trait, source[1].trait = 2, 1  # Every encounter boosts the reincarnator.
+    # rows() also exercises boss metadata. Disable that here: otherwise the
+    # GoldenOne is also its own matching boss and the earlier battle branch wins.
+    source[0].boss = source[1].boss = 0
+    source[0].aspect = source[1].aspect = -1
     assert library.tiemu_world_sync(world, source, 2) == 0
     matrix, relations, modifiers, tide = np.eye(12), np.zeros((12, 12), dtype=np.int32), np.ones((12, 12)), np.zeros(12)
     np_mt, py_mt = np.zeros(625, dtype=np.uint32), np.zeros(625, dtype=np.uint32)
@@ -304,6 +308,7 @@ def test_consecutive_resident_segments_refresh_original_array_alias_snapshot(abi
         before = read(library, world)
         index = native.OpponentIndex(before['scores'], 10.0)
         culled, updated, events = np.empty(2, dtype=np.int64), np.empty(2, dtype=np.int64), (_Event * 3)()
+        trace = (_Trace * 1)()
         try:
             config = _Config(2, 1, index._live(), pointer(matrix), 144,
                              relations.ctypes.data_as(ct.POINTER(ct.c_int32)), 144,
@@ -314,9 +319,13 @@ def test_consecutive_resident_segments_refresh_original_array_alias_snapshot(abi
             result.updated_ids = updated.ctypes.data_as(ct.POINTER(ct.c_int64))
             result.updated_capacity = 2
             result.events, result.event_capacity = events, 3
+            result.trace, result.trace_capacity = trace, 1
             assert library.tiemu_world_run_encounters(world, ct.byref(config), np_mt.ctypes.data,
                 py_mt.ctypes.data, 625, ct.byref(result)) == 0
             assert result.applied_encounters == 1
+            assert result.trace_count == 1 and trace[0].applied == 1 and trace[0].culled == -1
+            assert {trace[0].first, trace[0].second} == {0, 1}
+            assert result.event_count == 0 and result.updated_count == 2
             view = View()
             assert library.tiemu_world_get_view(world, ct.byref(view)) == 0
             expected_alias = before['titans'].copy()
@@ -327,3 +336,92 @@ def test_consecutive_resident_segments_refresh_original_array_alias_snapshot(abi
             py_mt = np.ctypeslib.as_array(view.state.python_mt, shape=(625,)).copy()
         finally:
             index.close()
+
+
+def reconcile_function(library):
+    assert hasattr(library, 'tiemu_world_reconcile'), 'Resident membership reconciliation has not been implemented'
+    function = library.tiemu_world_reconcile
+    function.argtypes = [ct.c_void_p, ct.c_void_p, ct.c_size_t, ct.c_void_p,
+                         ct.c_size_t, ct.c_void_p, ct.c_size_t]
+    function.restype = ct.c_int
+    return function
+
+
+def test_membership_reconcile_preserves_ids_and_requires_full_sync_before_numeric_access(abi, world):
+    _, library = abi
+    reconcile = reconcile_function(library)
+    source, titans, paths = rows()
+    assert library.tiemu_world_sync(world, source, 3) == 0
+    before = read(library, world)
+    order = np.array([before['ids'][2], 0, before['ids'][0]], dtype=np.uint64)
+    added, added_titans, added_paths = rows(1)
+    assigned = np.full(3, 999, dtype=np.uint64)
+    assert reconcile(world, order.ctypes.data, 3, added, 1, assigned.ctypes.data, 3) == 0
+    assert assigned[0] == before['ids'][2] and assigned[2] == before['ids'][0]
+    assert assigned[1] > max(before['ids'])
+    view = View()
+    assert library.tiemu_world_get_view(world, ct.byref(view)) == 3
+    assert library.tiemu_world_run_encounters(world, None, None, None, 625, None) == 3
+    # Independent newborn arithmetic remains usable without touching stale rows.
+    values, zero = np.ones(12), np.zeros(12)
+    output, count = ct.POINTER(ct.c_double)(), ct.c_size_t()
+    assert library.tiemu_world_births(world, values.ctypes.data, 12, zero.ctypes.data,
+        12, 1, None, 0, zero.ctypes.data, 12, .01, 100., ct.byref(output), ct.byref(count)) == 0
+    replacement, replacement_titans, replacement_paths = rows(3, [int(i) for i in assigned])
+    replacement_titans[:] *= 4.0  # Import all intervening public writes explicitly.
+    assert library.tiemu_world_sync(world, replacement, 3) == 0
+    refreshed = read(library, world)
+    np.testing.assert_array_equal(refreshed['ids'], assigned)
+    np.testing.assert_array_equal(refreshed['titans'], replacement_titans)
+
+
+@pytest.mark.parametrize('invalid', ['duplicate', 'unknown', 'new-id', 'new-nan',
+                                    'missing-new', 'extra-new', 'small-output', 'null-output', 'overflow'])
+def test_invalid_reconcile_leaves_live_world_and_result_unchanged(abi, world, invalid):
+    _, library = abi
+    reconcile = reconcile_function(library)
+    source, titans, paths = rows()
+    assert library.tiemu_world_sync(world, source, 3) == 0
+    before = read(library, world)
+    order = np.array([before['ids'][0], 0, before['ids'][2]], dtype=np.uint64)
+    added, added_titans, added_paths = rows(1)
+    assigned = np.full(3, 999, dtype=np.uint64)
+    row_count, new_count, capacity, out_pointer = 3, 1, 3, assigned.ctypes.data
+    if invalid == 'duplicate':
+        order[2] = order[0]
+    elif invalid == 'unknown':
+        order[2] = 999999
+    elif invalid == 'new-id':
+        added[0].stable_id = int(before['ids'][1])
+    elif invalid == 'new-nan':
+        added_titans[0, 11] = np.nan
+    elif invalid == 'missing-new':
+        new_count = 0
+    elif invalid == 'extra-new':
+        order[1] = before['ids'][1]
+    elif invalid == 'small-output':
+        capacity = 2
+    elif invalid == 'null-output':
+        out_pointer = None
+    else:
+        row_count = capacity = ct.c_size_t(-1).value
+    assert reconcile(world, order.ctypes.data, row_count, added, new_count, out_pointer, capacity) == 1
+    same(read(library, world), before)
+    np.testing.assert_array_equal(assigned, [999, 999, 999])
+
+
+def test_multiple_reconciliations_and_clear_never_reuse_removed_ids(abi, world):
+    _, library = abi
+    reconcile = reconcile_function(library)
+    source, titans, paths = rows(1)
+    assert library.tiemu_world_sync(world, source, 1) == 0
+    first_id = read(library, world)['ids'][0]
+    order, assigned = np.array([0], dtype=np.uint64), np.empty(1, dtype=np.uint64)
+    assert reconcile(world, order.ctypes.data, 1, source, 1, assigned.ctypes.data, 1) == 0
+    second_id = int(assigned[0])
+    assert second_id > first_id
+    assert reconcile(world, order.ctypes.data, 1, source, 1, assigned.ctypes.data, 1) == 0
+    assert assigned[0] > second_id
+    assert reconcile(world, None, 0, None, 0, None, 0) == 0
+    assert library.tiemu_world_sync(world, None, 0) == 0
+    assert read(library, world)['ids'].size == 0

@@ -98,6 +98,66 @@ def test_sync_observes_inplace_array_scalar_and_stale_cache_changes(native):
         world.close()
 
 
+def test_reconcile_updates_live_ids_but_requires_full_sync_before_numeric_use(native):
+    from native_encounters import _Config, _Result
+    world = resident_type()()
+    entities = population()
+    newcomer = population(1)[0]
+    try:
+        world.sync(entities)
+        previous_ids = world.stable_ids()
+        entities[2].titan_affinities[:] *= 7.
+        entities[2].score = 199.0
+        current = [entities[2], newcomer, entities[0]]
+        assert hasattr(world, 'reconcile'), 'Native lifecycle reconciliation is not implemented'
+        world.reconcile(current)
+        ids = world.stable_ids()
+        assert ids[0] == previous_ids[2] and ids[2] == previous_ids[0]
+        assert ids[1] > max(previous_ids)
+        with pytest.raises(RuntimeError, match='sync'):
+            world.snapshot()
+        numpy_state = np.random.get_state()
+        numpy_mt = np.array([*numpy_state[1], numpy_state[2]], dtype=np.uint32)
+        python_mt = np.array(random.getstate()[1], dtype=np.uint32)
+        with pytest.raises(RuntimeError, match='sync'):
+            world.run_encounters(_Config(), _Result(), numpy_mt, python_mt)
+        # Birth arithmetic has no dependency on the stale prior population.
+        output = world.births(np.ones(12), np.zeros((2, 12)), None, np.zeros(12), .01, 4.)
+        assert output.shape == (2, 12)
+        with pytest.raises(RuntimeError, match='sync'):
+            world.snapshot()
+        world.sync(current)
+        assert world.stable_ids() == ids
+        saved = world.snapshot()
+        np.testing.assert_array_equal(saved['titans'], np.stack([p.titan_affinities for p in current]))
+        np.testing.assert_array_equal(saved['scores'], [p.score for p in current])
+    finally:
+        world.close()
+
+
+@pytest.mark.parametrize('case', ['duplicate_member', 'nonfinite_newborn'])
+def test_failed_reconcile_preserves_live_population_and_clean_snapshot(native, case):
+    world = resident_type()()
+    entities = population()
+    try:
+        world.sync(entities)
+        before = world.snapshot()
+        previous_ids = world.stable_ids()
+        assert hasattr(world, 'reconcile'), 'Native lifecycle reconciliation is not implemented'
+        if case == 'duplicate_member':
+            current = [entities[0], entities[0]]
+        else:
+            newcomer = population(1)[0]
+            newcomer.titan_affinities[3] = np.nan
+            current = [entities[1], newcomer]
+        with pytest.raises(ValueError):
+            world.reconcile(current)
+        assert world.stable_ids() == previous_ids
+        assert_snapshot_equal(world.snapshot(), before)
+    finally:
+        world.close()
+
+
 @pytest.mark.parametrize('case', ['duplicate', 'wrong_shape', 'nonfinite', 'shared', 'readonly'])
 def test_invalid_sync_keeps_last_committed_resident_state(native, case):
     world = resident_type()()
