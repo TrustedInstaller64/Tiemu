@@ -2,6 +2,7 @@ import numpy as np
 from contextlib import contextmanager
 from native_backend import get_native
 from native_paths import _native_dominant_paths
+from native_births import try_create_newborns, _register_population_manager
 import random
 from collections import Counter
 
@@ -17,7 +18,8 @@ class PopulationManager:
                  base_titan_affinities: np.ndarray, mutation_rate: float, 
                  purity_factor: float, golden_one_cap: int, 
                  golden_one_reversion_prob: float, titan_to_path_model: TitanToPathModel,
-                 max_affinity_norm: float, min_norm: float, max_norm: float):
+                 max_affinity_norm: float, min_norm: float, max_norm: float,
+                 native_evaluator_factory=None):
         
         self.existing_names = existing_names
         self.name_to_entity_map = name_to_entity_map
@@ -30,6 +32,7 @@ class PopulationManager:
         self.max_affinity_norm = max_affinity_norm
         self.min_norm = min_norm
         self.max_norm = max_norm
+        self._native_evaluator_factory = native_evaluator_factory
         self._tracked_population = None
         self._path_histogram = None
         self._tracked_indices = {}
@@ -47,6 +50,8 @@ class PopulationManager:
 
     def create_initial_population(self, num_entities: int, population: list, 
                                   cosmic_zeitgeist: np.ndarray):
+        if try_create_newborns(self, population, num_entities, self.base_titan_affinities):
+            return
         for _ in range(num_entities):
             name = self.generate_unique_name()
             entity = Pathstrider(name, self.base_titan_affinities + np.random.normal(0, self.mutation_rate, self.base_titan_affinities.shape), titan_to_path_model=self.titan_to_path_model)
@@ -197,6 +202,8 @@ class PopulationManager:
     def _add_new_entities(self, population: list, num_to_add: int, blueprint: np.ndarray, 
                           cosmic_zeitgeist: np.ndarray, legacy_modifier: np.ndarray = None): # 新增参数
         dist_newborns = self.get_global_path_distribution(population)
+        if try_create_newborns(self, population, num_to_add, blueprint, legacy_modifier):
+            return
         for _ in range(num_to_add):
             name = self.generate_unique_name()
             new_affinities = blueprint + np.random.normal(0, self.mutation_rate, self.base_titan_affinities.shape)
@@ -212,3 +219,8 @@ class PopulationManager:
             self.recalculate_and_normalize_entity(entity, dist_newborns, cosmic_zeitgeist)
             population.append(entity)
             self.name_to_entity_map[name] = entity
+
+
+# Eager registration after class creation avoids both circular imports and a
+# first-call snapshot that could mistake an already patched callback as original.
+_register_population_manager(PopulationManager)

@@ -86,6 +86,8 @@ _batch_concepts = _bind("tiemu_batch_concepts", [_H, _D, _S, _S, _S, _D, _S, _S,
 _batch_concepts_zeitgeist = _bind("tiemu_batch_concepts_zeitgeist", [
     _H, _D, _S, _S, _S, _D, _S, _S, _D, _S, _D, _S, _F,
     _D, _S, _I, _S, _D, _S, _D, _S])
+_batch_newborn_affinities = _bind("tiemu_batch_newborn_affinities", [
+    _H, _D, _S, _D, _S, _S, _S, _D, _S, _F, _D, _S, _F, _D, _S])
 _hist_create = _bind("tiemu_histogram_create", [_I, _S, _L, _HP])
 _hist_update = _bind("tiemu_histogram_update", [_H, _L, _L])
 _hist_distribution = _bind("tiemu_histogram_distribution", [_H, _D, _S])
@@ -324,6 +326,7 @@ class _Handle:
 class BatchEvaluator(_Handle):
     def __init__(self, workers=1, min_rows=4096):
         self._initialize(_batch_destroy)
+        self._closed = False
         workers = _integer(workers, "workers")
         min_rows = _integer(min_rows, "min_rows")
         _check(_batch_create(workers, min_rows, _ct.byref(self._handle)))
@@ -332,6 +335,7 @@ class BatchEvaluator(_Handle):
         with self._lock:
             if self._handle.value:
                 _check(_batch_close(self._handle))
+            self._closed = True
 
     def concepts(self, values, matrix, multipliers, distribution, bosses):
         values = _float_array(values, "values", 2)
@@ -383,6 +387,28 @@ class BatchEvaluator(_Handle):
                 _ptr(bosses, _I), bosses.size, _ptr(out_paths), out_paths.size,
                 _ptr(out_stats), out_stats.size))
         return out_paths, out_stats
+
+    def newborn_affinities(self, blueprint, noise, legacy_titan_modifier,
+                           purity_factor, tide, max_norm):
+        """C2: initialize independent rows from already ordered random draws."""
+        blueprint = _float_array(blueprint, "blueprint", 1)
+        noise = _float_array(noise, "noise", 2)
+        rows, titans = noise.shape
+        if titans == 0 or blueprint.size != titans:
+            raise ValueError("newborn blueprint must match noise columns")
+        tide = _float_array(tide, "tide", 1)
+        if tide.size != titans:
+            raise ValueError("newborn tide must match noise columns")
+        legacy_titan_modifier = _distribution(legacy_titan_modifier, titans)
+        output = np.empty(noise.shape, dtype=np.float64)
+        with self._lock:
+            if self._closed:
+                raise RuntimeError('batch evaluator is closed')
+            _check(_batch_newborn_affinities(
+                self._live(), _ptr(blueprint), blueprint.size, _ptr(noise), noise.size,
+                rows, titans, *_dist_args(legacy_titan_modifier), purity_factor,
+                _ptr(tide), tide.size, max_norm, _ptr(output), output.size))
+        return output
 
 
 class PathHistogram(_Handle):

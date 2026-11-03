@@ -96,6 +96,28 @@ Size first_argmax(const double *values, Size count) {
     return best;
 }
 
+void normalize_pipeline_row(const double *values, Size n, double factor,
+                            const double *tide, double max_norm, double *output) noexcept {
+    for (Size i = 0; i < n; ++i) output[i] = values[i];
+    if (!(factor <= 0.0) && n >= 2) {
+        const Size dominant = first_argmax(values, n);
+        const double reduction = values[dominant] * factor;
+        for (Size i = 0; i < n; ++i) {
+            const double value = i == dominant ? values[i] : values[i] - reduction;
+            output[i] = value < 0.0 ? 0.0 : value;
+        }
+    }
+    for (Size i = 0; i < n; ++i) {
+        const double value = output[i] + tide[i];
+        output[i] = value < 0.0 ? 0.0 : value;
+    }
+    double squared = 0.0;
+    for (Size i = 0; i < n; ++i) squared += output[i] * output[i];
+    const double norm = std::sqrt(squared);
+    if (!std::isfinite(norm) || norm == 0.0 || norm > max_norm)
+        for (Size i = 0; i < n; ++i) output[i] = (output[i] / (norm + 1e-9)) * max_norm;
+}
+
 void map_path_row(const double *input, const double *weights, Size titans,
                   Size paths, double *result, bool replace_with_ones = false) {
     double total = 0.0;
@@ -160,6 +182,11 @@ class BatchEvaluator {
         const double *old_paths;
         const double *normalized_seats;
         double suppression;
+        bool newborn = false;
+        const double *blueprint = nullptr;
+        const double *legacy = nullptr;
+        const double *tide = nullptr;
+        double purity = 0.0, max_norm = 0.0;
     };
     const Size workers_, min_rows_;
     std::mutex request_mutex_, pool_mutex_;
@@ -173,6 +200,17 @@ class BatchEvaluator {
     static void evaluate(const Job &job, Size begin, Size end) noexcept {
         for (Size row = begin; row < end; ++row) {
             const double *values = offset(job.values, row * job.titans);
+            if (job.newborn) {
+                double *output = offset(job.paths, row * job.titans);
+                for (Size i = 0; i < job.titans; ++i) {
+                    const double value = job.blueprint[i] + values[i];
+                    output[i] = value < 0.0 ? 0.0 : value;
+                }
+                if (job.legacy)
+                    for (Size i = 0; i < job.titans; ++i) output[i] += job.legacy[i] * 50.0;
+                normalize_pipeline_row(output, job.titans, job.purity, job.tide, job.max_norm, output);
+                continue;
+            }
             bool replace_with_ones = false;
             for (Size titan = 0; titan < job.titans; ++titan)
                 if (!std::isfinite(values[titan])) { replace_with_ones = true; break; }
@@ -256,10 +294,32 @@ public:
                   double suppression = 1.0) {
         const Job job{values, matrix, multipliers, distribution, bosses,
                       paths, stats, rows, titans, path_count, old_paths, normalized_seats, suppression};
+        run_job(job);
+    }
+
+    void newborn_affinities(const double *blueprint, const double *noise, const double *legacy,
+                            double purity, const double *tide, double max_norm,
+                            double *output, Size rows, Size titans) {
+        Job job{};
+        job.values = noise;
+        job.paths = output;
+        job.rows = rows;
+        job.titans = titans;
+        job.newborn = true;
+        job.blueprint = blueprint;
+        job.legacy = legacy;
+        job.tide = tide;
+        job.purity = purity;
+        job.max_norm = max_norm;
+        run_job(job);
+    }
+
+private:
+    void run_job(const Job &job) {
         std::lock_guard<std::mutex> request(request_mutex_);
         if (closed_) throw std::runtime_error("batch evaluator is closed");
-        if (workers_ == 1 || rows < min_rows_) {
-            evaluate(job, 0, rows);
+        if (workers_ == 1 || job.rows < min_rows_) {
+            evaluate(job, 0, job.rows);
         } else {
             start_threads();
             {
@@ -536,25 +596,7 @@ int tiemu_normalize_pipeline(const double *values, size_t count, double factor,
         input_buffer(values, count, "values buffer is null");
         input_buffer(tide, tide_count, "tide buffer is null");
         output_buffer(output, output_count, count, "pipeline output is too small or null");
-        const Size n = signed_size(count);
-        for (Size i = 0; i < n; ++i) output[i] = values[i];
-        if (!(factor <= 0.0) && n >= 2) {
-            const Size dominant = first_argmax(values, n);
-            const double reduction = values[dominant] * factor;
-            for (Size i = 0; i < n; ++i) {
-                const double value = i == dominant ? values[i] : values[i] - reduction;
-                output[i] = value < 0.0 ? 0.0 : value;
-            }
-        }
-        for (Size i = 0; i < n; ++i) {
-            const double value = output[i] + tide[i];
-            output[i] = value < 0.0 ? 0.0 : value;
-        }
-        double squared = 0.0;
-        for (Size i = 0; i < n; ++i) squared += output[i] * output[i];
-        const double norm = std::sqrt(squared);
-        if (!std::isfinite(norm) || norm == 0.0 || norm > max_norm)
-            for (Size i = 0; i < n; ++i) output[i] = (output[i] / (norm + 1e-9)) * max_norm;
+        normalize_pipeline_row(values, signed_size(count), factor, tide, max_norm, output);
     });
 }
 
@@ -755,6 +797,27 @@ int tiemu_batch_concepts_zeitgeist(
         evaluator.concepts(values, matrix, nullptr, distribution, bosses,
                            out_paths, out_stats, signed_size(rows), signed_size(titans), signed_size(paths),
                            old_paths, normalized_seats, suppression);
+    });
+}
+
+int tiemu_batch_newborn_affinities(
+        void *handle, const double *blueprint, size_t blueprint_count,
+        const double *noise, size_t noise_count, size_t rows, size_t titans,
+        const double *legacy, size_t legacy_count, double purity,
+        const double *tide, size_t tide_count, double max_norm,
+        double *output, size_t output_count) {
+    return guarded([&] {
+        auto &evaluator = object<BatchEvaluator>(handle);
+        if (!titans || blueprint_count != titans || tide_count != titans
+            || noise_count != product(rows, titans))
+            throw std::invalid_argument("newborn blueprint/noise/tide dimensions do not match");
+        input_buffer(blueprint, blueprint_count, "blueprint is null");
+        input_buffer(noise, noise_count, "noise is null");
+        input_buffer(tide, tide_count, "tide is null");
+        distribution_buffer(legacy, legacy_count, titans);
+        output_buffer(output, output_count, noise_count, "newborn output is too small or null");
+        evaluator.newborn_affinities(blueprint, noise, legacy, purity, tide, max_norm,
+                                     output, signed_size(rows), signed_size(titans));
     });
 }
 

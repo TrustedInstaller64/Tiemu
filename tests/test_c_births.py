@@ -113,6 +113,22 @@ def test_parallel_birth_rows_and_reuse_are_bitwise_identical(native):
         four.newborn_affinities(*args)
 
 
+def test_shared_pool_switches_between_births_and_scoring_without_stale_job_fields(native):
+    evaluator = native.BatchEvaluator(4, 1)
+    args = numerical_inputs(37)
+    try:
+        expected = evaluator.newborn_affinities(*args)
+        paths, stats = evaluator.concepts_zeitgeist(
+            np.ones((37, 12)), np.eye(12), np.full((37, 12), 1/12),
+            None, 1., None, np.zeros(37, dtype=np.int64))
+        actual = evaluator.newborn_affinities(*args)
+    finally:
+        evaluator.close()
+    np.testing.assert_array_equal(actual, expected)
+    np.testing.assert_array_equal(paths, np.full((37, 12), 1/12))
+    assert np.isfinite(stats).all()
+
+
 @pytest.mark.parametrize("index,bad", [(0, np.ones((1, 12))), (1, np.ones(12)),
                                       (1, np.ones((37, 11))), (2, np.ones(11)),
                                       (4, np.ones(11))])
@@ -260,11 +276,14 @@ def test_application_preserves_names_collision_rng_fields_and_array_ownership(na
             assert current.held_fire_seeds is not other.held_fire_seeds
 
 
-@pytest.mark.parametrize("case", ["flag_off", "no_factory", "custom_normalizer", "custom_rng"])
+@pytest.mark.parametrize("case", ["flag_off", "no_factory", "custom_normalizer", "custom_rng",
+                                  "custom_purification", "custom_constructor",
+                                  "custom_array", "custom_dot"])
 def test_birth_unsupported_or_disabled_routes_retain_scalar_calls(native, monkeypatch, case):
     evaluator = native.BatchEvaluator(1, 1)
     manager = make_manager(None if case == "no_factory" else lambda: evaluator)
     calls = []
+    legacy = None
     def forbidden(*args):
         raise AssertionError("Unsupported birth route must stay scalar")
     monkeypatch.setattr(native.BatchEvaluator, "newborn_affinities", forbidden)
@@ -282,13 +301,35 @@ def test_birth_unsupported_or_disabled_routes_retain_scalar_calls(native, monkey
             calls.append(1)
             return original(*args, **kwargs)
         monkeypatch.setattr(np.random, "normal", normal)
+    elif case == "custom_purification":
+        manager.purity_factor = 0.
+        original = Pathstrider.internal_purification
+        def purify(self, factor):
+            calls.append(1)
+            return original(self, factor)
+        monkeypatch.setattr(Pathstrider, "internal_purification", purify)
+    elif case == "custom_constructor":
+        def create(cls, *args, **kwargs):
+            calls.append(1)
+            return object.__new__(cls)
+        monkeypatch.setattr(Pathstrider, "__new__", staticmethod(create))
+    elif case in ("custom_array", "custom_dot"):
+        name = "array" if case == "custom_array" else "dot"
+        original = getattr(np, name)
+        def callback(*args, **kwargs):
+            calls.append(1)
+            return original(*args, **kwargs)
+        monkeypatch.setattr(np, name, callback)
+        if case == "custom_dot":
+            legacy = np.ones(12)
     population = []
     try:
-        manager._add_new_entities(population, 3, manager.base_titan_affinities, None)
+        manager._add_new_entities(population, 3, manager.base_titan_affinities, None, legacy)
     finally:
         evaluator.close()
     assert len(population) == 3
-    if case in ("custom_normalizer", "custom_rng"):
+    if case in ("custom_normalizer", "custom_rng", "custom_purification", "custom_constructor",
+                "custom_array", "custom_dot"):
         assert calls == [1, 1, 1]
 
 
@@ -300,6 +341,18 @@ def test_zero_growth_keeps_distribution_read_but_initial_population_does_not(nat
     assert calls == [1]
     manager.create_initial_population(0, [], None)
     assert calls == [1]
+
+
+def test_closed_birth_provider_rejects_before_names_or_rng_are_consumed(native):
+    evaluator = native.BatchEvaluator(1, 1)
+    manager = make_manager(lambda: evaluator)
+    evaluator.close()
+    before = snapshot_rng()
+    population = []
+    with pytest.raises(RuntimeError, match='closed'):
+        manager._add_new_entities(population, 3, manager.base_titan_affinities, None)
+    assert snapshot_rng() == before
+    assert population == [] and not manager.existing_names and not manager.name_to_entity_map
 
 
 def test_simulation_newborn_factory_reuses_pool_and_close_lifecycle(native, monkeypatch):

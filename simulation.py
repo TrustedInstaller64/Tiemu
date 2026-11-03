@@ -143,7 +143,8 @@ class AeonEvolution:
             titan_to_path_model=self.titan_to_path_model_instance,
             max_affinity_norm=self.max_affinity_norm,
             min_norm=self.min_norm,
-            max_norm=self.max_norm
+            max_norm=self.max_norm,
+            native_evaluator_factory=self._get_native_evaluator
         )
         # 在PopulationManager之后实例化
         self.diversity_manager = DiversityInterventionManager(

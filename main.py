@@ -23,9 +23,10 @@ def build_parser():
     parser.add_argument('--backend', choices=['auto', 'python', 'cpp'], default=config.get('runtime', {}).get('compute_backend', 'auto'))
     parser.add_argument('--device', choices=['auto', 'cpu', 'cuda', 'mps'], default=config.get('runtime', {}).get('torch_device', 'auto'))
     parser.add_argument('--torch-threads', type=positive_int, default=config.get('runtime', {}).get('torch_threads', 1), help='PyTorch CPU 运算线程数；当前小网络默认 1')
-    parser.add_argument('--native-threads', type=positive_int, default=config.get('runtime', {}).get('native_threads', 1), help='单世界独立评分的 C++ 工作线程预算；不并行交互或训练更新')
-    parser.add_argument('--native-min-rows', type=positive_int, default=config.get('runtime', {}).get('native_min_rows', 4096), help='启用 C++ 并行评分的最小实体数；较小批次串行计算')
+    parser.add_argument('--native-threads', type=positive_int, default=config.get('runtime', {}).get('native_threads', 1), help='单世界评分与实验性出生初始化共享的 C++ 工作线程预算')
+    parser.add_argument('--native-min-rows', type=positive_int, default=config.get('runtime', {}).get('native_min_rows', 4096), help='启用 C++ 并行行计算的最小实体数；较小批次串行计算')
     parser.add_argument('--experimental-c-scoring', action='store_true', default=config.get('runtime', {}).get('experimental_c_scoring', False), help='启用 C1 批量思潮评分实验；浮点舍入可能使演化轨迹不同')
+    parser.add_argument('--experimental-c-newborns', action='store_true', default=config.get('runtime', {}).get('experimental_c_newborns', False), help='启用 C2 批量出生实验；保留姓名和随机抽样顺序，数值初始化交由 C++')
     parser.add_argument('--compute-only', action='store_true', help='减少展示和日志写入，保留原演算、随机数和日志参数求值')
     parser.add_argument('--llm-backend', choices=['auto', 'mlx', 'llama_cpp', 'disabled'], default=config['llm'].get('backend', 'auto'))
     parser.add_argument('--llm-device', choices=['auto', 'cpu', 'cuda', 'metal'], default=config['llm'].get('device', 'auto'))
@@ -66,7 +67,8 @@ def run_simple(args):
     runtime.update(torch_device=args.device, interactive=False if args.no_interactive else None,
                    output_dir=str(output_dir), seed=args.seed, torch_threads=args.torch_threads,
                    native_threads=args.native_threads, native_min_rows=args.native_min_rows,
-                   experimental_c_scoring=args.experimental_c_scoring)
+                   experimental_c_scoring=args.experimental_c_scoring,
+                   experimental_c_newborns=args.experimental_c_newborns)
     torch.set_num_threads(args.torch_threads)
     config['llm'].update(backend=args.llm_backend, device=args.llm_device, seed=args.seed)
     if args.disable_llm or args.llm_backend == 'disabled':
@@ -98,6 +100,9 @@ def run_simple(args):
         native = configure_backend(args.backend)
         if args.experimental_c_scoring:
             logger.warning('C1 批量思潮评分实验: %s；结果可能出现浮点及演化轨迹差异。',
+                           '已启用' if native is not None else 'Python 后端不启用')
+        if args.experimental_c_newborns:
+            logger.warning('C2 批量出生实验: %s；姓名与随机抽样保序，独立数值行共享 C++ 线程预算。',
                            '已启用' if native is not None else 'Python 后端不启用')
         device = resolve_torch_device(args.device)
         if args.seed is not None:

@@ -51,6 +51,24 @@ def rng_state():
             'torch': hashlib.sha256(torch.get_rng_state().numpy().tobytes()).hexdigest()}
 
 
+def cpu_metadata():
+    try:
+        affinity = sorted(os.sched_getaffinity(0))
+    except (AttributeError, OSError):
+        affinity = None
+    models = []
+    try:
+        for line in Path('/proc/cpuinfo').read_text(encoding='utf-8').splitlines():
+            if line.startswith('model name'):
+                models.append(line.split(':', 1)[1].strip())
+    except OSError:
+        pass
+    return {'logical_cpus': os.cpu_count(), 'cpu_affinity': affinity,
+            'affinity_count': None if affinity is None else len(affinity),
+            'processor': platform.processor(), 'cpu_models': sorted(set(models)),
+            'scope': 'Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota.'}
+
+
 def networks(sim, values=False):
     result = {}
     for name, model, optimizer in (
@@ -154,9 +172,13 @@ def main():
     parser.add_argument('--reincarnator', action='store_true')
     parser.add_argument('--native-threads', type=int, default=1)
     parser.add_argument('--native-min-rows', type=int, default=4096)
+    parser.add_argument('--experimental-c-newborns', action='store_true',
+                        help='Orthogonal C2 experiment; mode=c alone remains C1 scoring only')
     args = parser.parse_args()
     if min(args.population, args.generations, args.native_threads, args.native_min_rows) < 1:
         parser.error('counts must be positive')
+    if args.experimental_c_newborns and args.mode == 'original':
+        parser.error('The frozen original does not implement C2 newborns')
     root = args.root.resolve()
     sys.path.insert(0, str(root))
     from config import config
@@ -166,8 +188,10 @@ def main():
     config.setdefault('runtime', {}).update(
         torch_device='cpu', interactive=False, cpu_threads=1,
         native_threads=args.native_threads, native_min_rows=args.native_min_rows,
-        experimental_c_scoring=args.mode == 'c')
+        experimental_c_scoring=args.mode == 'c',
+        experimental_c_newborns=args.experimental_c_newborns)
     experimental_calls = {'count': 0}
+    newborn_calls = {'count': 0, 'rows': 0, 'parallel_eligible_batches': 0}
     if args.mode != 'original':
         from native_backend import configure_backend
         native = configure_backend('cpp')
@@ -181,6 +205,18 @@ def main():
             native.BatchEvaluator.concepts_zeitgeist = counted_scoring
         elif args.mode == 'c':
             raise AssertionError('Experimental C scoring method is absent')
+        newborns = getattr(native.BatchEvaluator, 'newborn_affinities', None)
+        if newborns is not None:
+            def counted_newborns(self, blueprint, noise, *positional, **keywords):
+                rows = len(noise)
+                newborn_calls['count'] += 1
+                newborn_calls['rows'] += rows
+                newborn_calls['parallel_eligible_batches'] += (
+                    args.native_threads > 1 and rows > 1 and rows >= args.native_min_rows)
+                return newborns(self, blueprint, noise, *positional, **keywords)
+            native.BatchEvaluator.newborn_affinities = counted_newborns
+        elif args.experimental_c_newborns:
+            raise AssertionError('Experimental C newborn method is absent')
     logging.disable(logging.CRITICAL)
     torch.set_num_threads(1)
     torch.set_num_interop_threads(1)
@@ -188,7 +224,17 @@ def main():
     console.Debugger = QuietDebugger
     sys.modules['debugger'] = console
     import simulation
+    from population_manager import PopulationManager
     AeonEvolution = simulation.AeonEvolution
+    # This outer entry is not a protected numerical/RNG method. Keep the same
+    # counting wrapper in original/A/C runs; never wrap name generation/draws.
+    birth_requests = {'calls': 0, 'rows': 0}
+    original_add_new = PopulationManager._add_new_entities
+    def counted_add_new(self, population, num_to_add, *positional, **keywords):
+        birth_requests['calls'] += 1
+        birth_requests['rows'] += max(0, int(num_to_add))
+        return original_add_new(self, population, num_to_add, *positional, **keywords)
+    PopulationManager._add_new_entities = counted_add_new
     entry_counts = {'calls': 0, 'successes': 0}
     if args.mode != 'original':
         original_entry = simulation.try_run_encounters
@@ -210,6 +256,8 @@ def main():
     sim = AeonEvolution(**options)
     try:
         sim._create_initial_population(create_reincarnator=args.reincarnator)
+        initial_newborn_calls = newborn_calls.copy()
+        initial_birth_requests = birth_requests.copy()
         sim.legacy_manager.newborn_affinity_modifier = np.zeros(12)
         sim.generation, sim.total_generations = 176200, 335503360
         snapshots = []
@@ -217,7 +265,9 @@ def main():
             snapshots.append({'step': 0, 'stage': 'initial', 'state': snapshot(sim)})
         wall_seconds = cpu_seconds = 0.0
         culled_names = []
+        phase_birth_events = []
         for step in range(1, args.generations+1):
+            requested_before, native_before = birth_requests.copy(), newborn_calls.copy()
             cpu_start, wall_start = time.process_time(), time.perf_counter()
             culled = sim._run_one_generation()
             wall_seconds += time.perf_counter()-wall_start
@@ -231,6 +281,11 @@ def main():
             sim.generation += 1
             wall_seconds += time.perf_counter()-wall_start
             cpu_seconds += time.process_time()-cpu_start
+            phase_birth_events.append({'step': step,
+                'requested_rows': birth_requests['rows']-requested_before['rows'],
+                'requested_calls': birth_requests['calls']-requested_before['calls'],
+                'native_rows': newborn_calls['rows']-native_before['rows'],
+                'native_calls': newborn_calls['count']-native_before['count']})
             if args.observe:
                 snapshots.append({'step': step, 'stage': 'after_growth',
                                   'state': snapshot(sim, culled_names)})
@@ -240,6 +295,11 @@ def main():
             raise AssertionError(f'Native encounter fallback invalidated measurement: {entry_counts}')
         if args.mode == 'c' and not experimental_calls['count']:
             raise AssertionError('Experimental C scoring was not executed')
+        phase_newborn_calls = {key: newborn_calls[key]-initial_newborn_calls[key] for key in newborn_calls}
+        phase_birth_requests = {key: birth_requests[key]-initial_birth_requests[key] for key in birth_requests}
+        if args.experimental_c_newborns and (not phase_birth_requests['rows'] or
+                any(row['requested_rows'] != row['native_rows'] for row in phase_birth_events)):
+            raise AssertionError(f'C2 measured-stage coverage failed: {phase_birth_events}')
         result = {
             'schema_version': 1,
             'meta': {'commit': subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'],
@@ -247,10 +307,20 @@ def main():
                      'mode': args.mode, 'seed': args.seed, 'population': args.population,
                      'generations': args.generations, 'reincarnator': args.reincarnator,
                      'observed': args.observe, 'native_threads': args.native_threads,
+                     'native_min_rows': args.native_min_rows,
+                     'experimental_c_scoring': args.mode == 'c',
+                     'experimental_c_newborns': args.experimental_c_newborns,
                      'platform': platform.platform(), 'machine': platform.machine(),
+                     'cpu': cpu_metadata(),
                      'python': platform.python_version(), 'numpy': np.__version__,
                      'torch': torch.__version__, 'native_encounters': entry_counts,
-                     'experimental_calls': experimental_calls['count']},
+                     'experimental_calls': experimental_calls['count'],
+                     'newborn_calls': newborn_calls,
+                     'initial_newborn_calls': initial_newborn_calls,
+                     'phase_newborn_calls': phase_newborn_calls,
+                     'phase_birth_requests': phase_birth_requests,
+                     'phase_birth_events': phase_birth_events,
+                     'parallel_count_scope': 'Threshold-eligible batches, not measured worker occupancy.'},
             'timing': {'wall_seconds': wall_seconds, 'cpu_seconds': cpu_seconds,
                        'usable_for_performance': not args.observe},
             'snapshots': snapshots, 'final_state': final_state,

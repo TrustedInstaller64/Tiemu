@@ -33,6 +33,8 @@ jobs:
       - run: python -m main --disable-llm --no-interactive --compute-only --device cpu --backend cpp --native-threads 4 --native-min-rows 1 --seed 42 --smoke-test --output-dir runs/ci-parallel
       - name: Exercise the opt-in C1 CLI with four native workers
         run: python -m main --disable-llm --no-interactive --compute-only --device cpu --backend cpp --experimental-c-scoring --native-threads 4 --native-min-rows 1 --seed 42 --smoke-test --output-dir runs/ci-c1
+      - name: Exercise C2 birth initialization and scoring with a shared four-worker pool
+        run: python -m main --disable-llm --no-interactive --compute-only --device cpu --backend cpp --experimental-c-scoring --experimental-c-newborns --native-threads 4 --native-min-rows 1 --seed 42 --smoke-test --output-dir runs/ci-c2
   docker:
     timeout-minutes: 15
     runs-on: ubuntu-latest
@@ -41,3 +43,4 @@ jobs:
       - run: docker build -t tiemu:cpu .
       - run: docker run --rm tiemu:cpu --disable-llm --no-interactive --device cpu --llm-device cpu --backend cpp --seed 42 --smoke-test --output-dir /data
       - run: docker run --rm tiemu:cpu --disable-llm --no-interactive --device cpu --llm-device cpu --backend cpp --experimental-c-scoring --seed 42 --smoke-test --output-dir /data
+      - run: docker run --rm tiemu:cpu --disable-llm --no-interactive --device cpu --llm-device cpu --backend cpp --experimental-c-scoring --experimental-c-newborns --native-threads 4 --native-min-rows 1 --seed 42 --smoke-test --output-dir /data

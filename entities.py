@@ -9,6 +9,10 @@ class Pathstrider:
         self.name = name
         self._titan_to_path_model = titan_to_path_model if titan_to_path_model is not None else TitanToPathModel()
         self.titan_affinities = np.array(titan_affinities).clip(min=0)
+        self._initialize_lifecycle(entity_trait)
+
+    def _initialize_lifecycle(self, entity_trait):
+        """Shared initial fields for the normal and precomputed newborn paths."""
         self.trait = entity_trait
         self.golden_one_tenure = 0
         self.heroic_tendency = 0
@@ -29,6 +33,18 @@ class Pathstrider:
         else:
             self.is_titan_form = None  
         self.held_fire_seeds = set() 
+
+    @classmethod
+    def _from_native_affinities(cls, name, affinities, titan_to_path_model):
+        """Internal C2 factory; the caller supplies an already finalized row."""
+        entity = cls.__new__(cls)
+        entity.name = name
+        entity._titan_to_path_model = titan_to_path_model
+        # An owned row is essential: encounter eligibility rejects row views,
+        # and a survivor must not retain the entire obsolete newborn matrix.
+        entity.titan_affinities = affinities.copy()
+        entity._initialize_lifecycle("Mortal")
+        return entity
 
 
     @property

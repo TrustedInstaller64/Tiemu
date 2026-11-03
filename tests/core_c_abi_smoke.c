@@ -38,6 +38,16 @@ int main(void) {
         if (tiemu_batch_concepts_zeitgeist(batch, values, 3, 1, 3, matrix, 9, 3,
                 old_paths, 3, seats, 3, 0.0, NULL, 0, bosses, 1, output, 3, stats, 4)) return 19;
         if (!(stats[3] > expected[3])) return 20;
+        {
+            const double noise[6] = {0, 0, 0, 0, 0, 0};
+            const double tide[3] = {0, 0, 0};
+            double newborns[6];
+            if (tiemu_batch_newborn_affinities(batch, values, 3, noise, 6, 2, 3,
+                    NULL, 0, 0.0, tide, 3, 100.0, newborns, 6)) return 22;
+            if (newborns[0] != 2.0 || newborns[2] != 5.0 || newborns[5] != 5.0) return 23;
+            if (tiemu_batch_newborn_affinities(batch, values, 3, noise, 6, 2, 3,
+                    NULL, 0, 0.0, tide, 3, 100.0, newborns, 5) != TIEMU_VALUE_ERROR) return 24;
+        }
         if (tiemu_batch_destroy(&batch) || batch != NULL) return 21;
     }
     puts("standalone C client: ABI, arithmetic, state handle and error contracts passed");

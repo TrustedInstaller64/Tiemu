@@ -180,6 +180,17 @@ TIEMU_API int tiemu_batch_concepts_zeitgeist(
     double *out_paths, size_t out_paths_count,
     double *out_stats, size_t out_stats_count);
 
+/* C2 independent newborn rows, no random-number generation inside the core.
+ * noise/output: rows x titans; blueprint/tide/optional legacy: titans.
+ * Order: blueprint+noise, clip, optional legacy*50, purity, tide, clip, norm.
+ * legacy NULL/count 0 omits the addition. Caller owns all buffers until return. */
+TIEMU_API int tiemu_batch_newborn_affinities(
+    void *handle, const double *blueprint, size_t blueprint_count,
+    const double *noise, size_t noise_count, size_t rows, size_t titans,
+    const double *legacy, size_t legacy_count, double purity,
+    const double *tide, size_t tide_count, double max_norm,
+    double *output, size_t output_count);
+
 TIEMU_API int tiemu_histogram_create(
     const int64_t *indices, size_t count, int64_t paths, void **out_handle);
 TIEMU_API int tiemu_histogram_update(void *handle, int64_t index, int64_t path);
