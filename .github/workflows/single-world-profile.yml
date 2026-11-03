@@ -5,6 +5,11 @@ on:
     paths:
       - 'benchmarks/benchmark_single_world.py'
       - 'benchmarks/profile_single_world.py'
+      - 'native_world.py'
+      - 'native_encounters.py'
+      - 'native_evaluation.py'
+      - 'population_manager.py'
+      - 'cpp/tiemu_world.*'
       - '.github/workflows/single-world-profile.yml'
   workflow_dispatch:
 permissions:

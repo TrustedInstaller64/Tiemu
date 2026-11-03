@@ -36,6 +36,35 @@ class _Source(ct.Structure):
                 ('aspect', ct.c_int32), ('boss', ct.c_uint8), ('unlocked', ct.c_uint8)]
 
 
+_SOURCE_DTYPE = None
+
+
+def _source_view(sources):
+    """Temporary structured view of the C source table, with checked ABI layout."""
+    global _SOURCE_DTYPE
+    dtype = _SOURCE_DTYPE
+    if dtype is None:
+        dtype = np.dtype([
+            ('stable_id', np.uint64), ('titans', np.uintp), ('paths', np.uintp),
+            ('score', np.float64), ('hit_points', np.float64), ('trait', np.int32),
+            ('aspect', np.int32), ('boss', np.uint8), ('unlocked', np.uint8)], align=True)
+        if (dtype.itemsize != ct.sizeof(_Source) or dtype.alignment != ct.alignment(_Source)
+                or any(dtype.fields[name][1] != getattr(_Source, name).offset
+                       for name, _ in _Source._fields_)):
+            raise RuntimeError('NumPy resident source layout does not match the C ABI')
+        _SOURCE_DTYPE = dtype
+    # Do not store this view on sources: that would make a strong owner cycle.
+    return np.ndarray((len(sources),), dtype=dtype, buffer=sources)
+
+
+def _pack_sources(sources, rows, owners):
+    """Convert already-validated metadata once instead of boxing C structs per row."""
+    if len(sources):
+        _source_view(sources)[:] = rows
+    sources._owners = tuple(owners)
+    return sources
+
+
 class _State(ct.Structure):
     _fields_ = [('entity_capacity', _S), ('vector_capacity', _S), ('titans', _D), ('paths', _D),
                 ('scores', _D), ('hit_points', _D), ('traits', _I32), ('aspects', _I32),
@@ -83,7 +112,8 @@ def _sources(population):
     output = (_Source * len(population))()
     arrays = set()
     owners = []
-    for index, entity in enumerate(population):
+    rows = []
+    for entity in population:
         if type(entity) is not Pathstrider:
             raise ValueError('Resident state supports built-in entities only')
         values, paths = entity.titan_affinities, entity._path_affinities
@@ -109,10 +139,9 @@ def _sources(population):
                 or (aspect is not None and (type(aspect) is not str or aspect not in _ASPECTS))
                 or type(boss) is not bool or type(unlocked) is not bool):
             raise ValueError('Unsupported resident entity scalar fields')
-        output[index] = _Source(0, *addresses, score, hp, _TRAITS[trait],
-                                -1 if aspect is None else _ASPECTS[aspect], boss, unlocked)
-    output._owners = tuple(owners)
-    return output
+        rows.append((0, addresses[0], addresses[1] or 0, score, hp, _TRAITS[trait],
+                     -1 if aspect is None else _ASPECTS[aspect], boss, unlocked))
+    return _pack_sources(output, rows, owners)
 
 
 def _copy(pointer, shape, dtype=np.float64):
@@ -173,14 +202,16 @@ class ResidentWorld:
             owners = tuple(population)
             if len(owners) != len(sources):
                 raise ValueError('Resident source count does not match population')
-            for index, entity in enumerate(owners):
-                sources[index].stable_id = self._by_identity.get(id(entity), 0)
+            identities = [id(entity) for entity in owners]
+            _source_view(sources)['stable_id'] = [self._by_identity.get(identity, 0)
+                                                 for identity in identities]
             # Both prior and incoming populations remain strong references
             # across this transaction, preventing Python object-ID reuse.
             self._native._check(self._api.sync(self._live(), sources, len(owners)))
             view = self._view()
-            ids = tuple(int(view.stable_ids[index]) for index in range(len(owners)))
-            self._by_identity = {id(entity): stable_id for entity, stable_id in zip(owners, ids)}
+            ids = (tuple(np.ctypeslib.as_array(view.stable_ids, shape=(len(owners),)).tolist())
+                   if owners else ())
+            self._by_identity = dict(zip(identities, ids))
             self._population, self._ids = owners, ids
             self.sync_count += 1
 

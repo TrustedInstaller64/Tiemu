@@ -242,6 +242,9 @@ class BoundaryTimers:
             if (root / 'native_world.py').is_file():
                 import native_world
                 self.resident_world_present = True
+                if hasattr(native_world, '_pack_sources'):
+                    packed = self.wrap('world.pack_sources', native_world._pack_sources)
+                    self.replace(native_world, '_pack_sources', packed)
                 api = native_world._entry_points(native._lib)
                 # Every World instance retains this shared binding table. Patch
                 # it in place so even a handle created during setup is observed.

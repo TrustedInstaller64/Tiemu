@@ -14,6 +14,7 @@ import random
 import threading
 
 import numpy as np
+import native_world
 
 from constants import PATH_NAMES, TITAN_NAMES
 from entities import Pathstrider
@@ -201,7 +202,8 @@ def _eligible(sim, sources=None):
         return False
     seen_arrays = set()
     source_owners = []
-    for row, entity in enumerate(population):
+    source_rows = []
+    for entity in population:
         if (type(entity) is not Pathstrider or not entity.__dict__.keys().isdisjoint(path_methods)
                 or entity._titan_to_path_model is not model):
             return False
@@ -237,12 +239,12 @@ def _eligible(sim, sources=None):
             else:
                 addresses.append(None)
         if sources is not None:
-            sources[row] = _Source(0, *addresses, entity.score, entity.hp,
-                                   _TRAITS[entity.trait],
-                                   -1 if entity.titan_aspect is None else _TITAN_NAMES.index(entity.titan_aspect),
-                                   entity.is_titan_boss, entity.data_modification_unlocked)
+            source_rows.append((0, addresses[0], addresses[1] or 0, entity.score, entity.hp,
+                                _TRAITS[entity.trait],
+                                -1 if entity.titan_aspect is None else _TITAN_NAMES.index(entity.titan_aspect),
+                                entity.is_titan_boss, entity.data_modification_unlocked))
     if sources is not None:
-        sources._owners = tuple(source_owners)
+        native_world._pack_sources(sources, source_rows, source_owners)
     return sim.reincarnator is None or any(entity is sim.reincarnator for entity in population)
 
 
