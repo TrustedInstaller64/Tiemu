@@ -8,8 +8,13 @@ on:
       - 'native_world.py'
       - 'native_encounters.py'
       - 'native_evaluation.py'
+      - 'native_scoring.py'
+      - 'native_lifecycle.py'
+      - 'native_aeonic.py'
+      - 'aeonic_cycle_manager.py'
       - 'population_manager.py'
       - 'cpp/tiemu_world.*'
+      - 'cpp/tiemu_aeonic.*'
       - '.github/workflows/single-world-profile.yml'
   workflow_dispatch:
 permissions:

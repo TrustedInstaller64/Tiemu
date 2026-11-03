@@ -1,6 +1,7 @@
 #include "tiemu_core.h"
 #include "tiemu_encounters.h"
 #include "tiemu_world.h"
+#include "tiemu_aeonic.h"
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -144,6 +145,53 @@ int main(void) {
         if (tiemu_world_destroy(&world) || world != NULL) return 31;
         if (tiemu_world_destroy(&world)) return 32;
     }
-    puts("standalone C client: ABI, arithmetic, resident lifecycle, births, scoring and error contracts passed");
+    {
+        void *aeonic = NULL;
+        uint8_t golden[4] = {0, 1, 0, 1};
+        uint8_t titans[4] = {1, 0, 1, 0};
+        uint8_t holders[4] = {0, 0, 1, 1};
+        size_t size = 999, position = 999;
+        if (tiemu_aeonic_create(golden, titans, holders, 4, 1, &aeonic)) return 68;
+        memset(golden, 0, sizeof(golden));
+        memset(titans, 0, sizeof(titans));
+        memset(holders, 0, sizeof(holders));
+        if (tiemu_aeonic_pool_size(aeonic, TIEMU_AEONIC_ATTACKERS, -1, &size) || size != 3) return 69;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_ATTACKERS, -1, 0, &position) || position != 1) return 70;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_ATTACKERS, -1, 1, &position) || position != 1) return 71;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_ATTACKERS, -1, 2, &position) || position != 3) return 72;
+        if (tiemu_aeonic_pool_size(aeonic, TIEMU_AEONIC_HOLDERS, 2, &size) || size != 2) return 73;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_HOLDERS, 2, 1, &position) || position != 3) return 74;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_TITANS, 0, 0, &position) || position != 2) return 75;
+        if (tiemu_aeonic_update(aeonic, 3, 1, 0) || tiemu_aeonic_update(aeonic, 0, 0, 0)) return 76;
+        if (tiemu_aeonic_pool_size(aeonic, TIEMU_AEONIC_TITANS, -1, &size) || size != 2) return 77;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_TITANS, -1, 1, &position) || position != 3) return 78;
+        if (tiemu_aeonic_update(aeonic, 2, 2, 0) != TIEMU_VALUE_ERROR) return 79;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_HOLDERS, 3, 0, &position) || position != 2) return 80;
+        position = 999;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_ALL, 0, 3, &position) != TIEMU_VALUE_ERROR
+                || position != 999) return 81;
+        size = 999;
+        if (tiemu_aeonic_pool_size(aeonic, TIEMU_AEONIC_ATTACKERS, 0, &size) != TIEMU_VALUE_ERROR
+                || size != 999) return 82;
+        if (tiemu_aeonic_destroy(&aeonic) || aeonic != NULL) return 83;
+        if (tiemu_aeonic_destroy(&aeonic)) return 84;
+        titans[2] = 1;
+        if (tiemu_aeonic_create(golden, titans, holders, 4, -1, &aeonic)) return 85;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_ATTACKERS, -1, 0, &position) || position != 2) return 86;
+        if (tiemu_aeonic_update(aeonic, 2, 0, 0)) return 87;
+        if (tiemu_aeonic_pool_size(aeonic, TIEMU_AEONIC_ATTACKERS, -1, &size) || size != 4) return 88;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_ATTACKERS, -1, 3, &position) || position != 3) return 89;
+        if (tiemu_aeonic_update(aeonic, 1, 1, 0)) return 90;
+        if (tiemu_aeonic_pool_size(aeonic, TIEMU_AEONIC_ATTACKERS, -1, &size) || size != 1) return 91;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_ATTACKERS, -1, 0, &position) || position != 1) return 92;
+        if (tiemu_aeonic_destroy(&aeonic)) return 93;
+        if (tiemu_aeonic_create(NULL, NULL, NULL, 0, -1, &aeonic)) return 94;
+        if (tiemu_aeonic_pool_size(aeonic, TIEMU_AEONIC_ALL, -1, &size) || size != 0) return 95;
+        position = 999;
+        if (tiemu_aeonic_pool_at(aeonic, TIEMU_AEONIC_ATTACKERS, -1, 0, &position) != TIEMU_VALUE_ERROR
+                || position != 999) return 96;
+        if (tiemu_aeonic_destroy(&aeonic)) return 97;
+    }
+    puts("standalone C client: ABI, arithmetic, resident lifecycle, births, scoring, aeonic index and error contracts passed");
     return 0;
 }

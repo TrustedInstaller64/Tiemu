@@ -297,11 +297,26 @@ class AeonicCycleManager:
     def run_aeonic_cycle_generation(self, population: list, reincarnator: Pathstrider, cosmic_zeitgeist: np.ndarray):
         culled_this_gen = set()
         num_encounters = len(population) // 2
-        for _ in range(num_encounters):
-            attacker, defender = self.select_aeonic_opponents(population, reincarnator)
-            if not attacker or not defender or attacker in culled_this_gen or defender in culled_this_gen: continue
-            if culled_entity := self.aeonic_interaction(attacker, defender, reincarnator, population, cosmic_zeitgeist):
-                 culled_this_gen.add(culled_entity)
+        index = native_aeonic.try_create_aeonic_index(self, population, reincarnator) if num_encounters else None
+        try:
+            for _ in range(num_encounters):
+                attacker, defender = (index.select() if index is not None else
+                                      self.select_aeonic_opponents(population, reincarnator))
+                if not attacker or not defender or attacker in culled_this_gen or defender in culled_this_gen: continue
+                if culled_entity := self.aeonic_interaction(attacker, defender, reincarnator, population, cosmic_zeitgeist):
+                     culled_this_gen.add(culled_entity)
+                if index is not None:
+                    if attacker is reincarnator:
+                        # Network/optimizer/LLM callbacks may change any member,
+                        # the population order, or methods used by the selector.
+                        if not index.refresh():
+                            index.close()
+                            index = None
+                    else:
+                        index.update_pair(attacker, defender)
+        finally:
+            if index is not None:
+                index.close()
         if culled_this_gen and reincarnator and reincarnator in population and reincarnator not in culled_this_gen:
             boost_factor = (1.005) ** len(culled_this_gen)
             reincarnator.titan_affinities *= boost_factor
@@ -427,3 +442,9 @@ class AeonicCycleManager:
         reincarnator.golden_one_tenure = 0
         logger.info(f"\033[91m数据继承成功！新的卡厄斯兰那为: {reincarnator.name}。\033[0m")
         return reincarnator
+
+
+_NATIVE_AEONIC_METHODS = {name: getattr(AeonicCycleManager, name) for name in (
+    'select_aeonic_opponents', 'aeonic_interaction')}
+# Freeze guard identities at module load, before callers can replace methods.
+import native_aeonic

@@ -81,7 +81,9 @@ def make_case(kind='mixed', size=24):
         if i % 5 == 2:
             p.held_fire_seeds.add(TITAN_NAMES[i % 12])
     reincarnator = population[0] if population else None
-    if kind == 'reincarnator-golden':
+    if kind == 'mixed' and reincarnator is not None:
+        reincarnator.trait = 'Reincarnator'
+    elif kind == 'reincarnator-golden':
         reincarnator.trait = 'GoldenOne'
     elif kind == 'outside':
         reincarnator = Pathstrider('outside', np.ones(12), titan_to_path_model=model)
@@ -377,3 +379,22 @@ def test_shared_seed_sets_keep_the_original_whole_generation_fallback(native, mo
     actual, _, _, _ = run_case('ordinary', shared_seeds=True)
     assert_same(actual, expected)
     assert declines and not spies
+
+
+@pytest.mark.parametrize('owner,name', [(Pathstrider, '__hash__'),
+                                       (Pathstrider, '__getattribute__'),
+                                       (random.Random, '_randbelow')])
+def test_class_descriptor_is_rejected_without_executing_it(native, monkeypatch, owner, name):
+    bridge = candidate()
+    manager, population, reincarnator = make_case()
+    visits = []
+
+    class CallbackDescriptor:
+        def __get__(self, instance, cls):
+            visits.append(True)
+            raise AssertionError('A compatibility guard must not execute this descriptor')
+
+    before = rng_state()
+    monkeypatch.setattr(owner, name, CallbackDescriptor())
+    assert bridge.try_create_aeonic_index(manager, population, reincarnator) is None
+    assert not visits and rng_state() == before

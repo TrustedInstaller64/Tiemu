@@ -24,9 +24,14 @@ _SOURCE_DTYPE = None
 _ERROR_MODE = {'divide': 'warn', 'over': 'warn', 'under': 'ignore', 'invalid': 'warn'}
 
 
+def _class_attribute(cls, name):
+    # Class-level getattr can itself execute a descriptor installed by a hook.
+    return next((base.__dict__[name] for base in cls.__mro__ if name in base.__dict__), None)
+
+
 def _plain(cls, fields):
-    return (cls.__getattribute__ is object.__getattribute__
-            and cls.__setattr__ is object.__setattr__
+    return (_class_attribute(cls, '__getattribute__') is object.__getattribute__
+            and _class_attribute(cls, '__setattr__') is object.__setattr__
             and not any(name in base.__dict__ for base in cls.__mro__
                         for name in (*fields, '__getattr__')))
 
@@ -66,8 +71,8 @@ def _prepare_sources(entities, parliament, distribution, evaluator, world, nativ
             or threading.active_count() != 1 or np.geterr() != _ERROR_MODE
             or ParliamentManager.__dict__.get('get_zeitgeist_multiplier') is not _MULTIPLIER
             or native.BatchEvaluator.__dict__.get('concepts') is not native._ORIGINAL_BATCH_CONCEPTS
-            or Pathstrider.path_affinities is not _PATH_PROPERTY
-            or TitanToPathModel.get_path_affinities is not _MAP_PATHS
+            or Pathstrider.__dict__.get('path_affinities') is not _PATH_PROPERTY
+            or TitanToPathModel.__dict__.get('get_path_affinities') is not _MAP_PATHS
             or not _plain(Pathstrider, ('titan_affinities', '_path_affinities',
                 '_titan_to_path_model', 'is_titan_boss', 'activity', 'stability', 'score', 'heroic_tendency'))
             or not _plain(TitanToPathModel, ('titan_to_path_matrix',))

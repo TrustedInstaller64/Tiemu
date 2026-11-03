@@ -172,6 +172,7 @@ class BoundaryTimers:
         self.native_encounter_successes = 0
         self.resident_world_present = False
         self.resident_scoring_present = False
+        self.aeonic_index_present = False
         self.resident_worlds = set()
 
     def wrap(self, name, function):
@@ -207,9 +208,11 @@ class BoundaryTimers:
         from aeonic_cycle_manager import AeonicCycleManager
         simulation_module = sys.modules[AeonEvolution.__module__]
         self.native_encounter_entry = hasattr(simulation_module, 'try_run_encounters')
+        self.aeonic_index_present = (root / 'native_aeonic.py').is_file()
         targets = [
             (AeonEvolution, ('_run_one_generation', '_evolve_and_grow', '_train_hybrid_guide_network')),
-            (AeonicCycleManager, ('run_aeonic_cycle_generation', 'aeonic_interaction')),
+            (AeonicCycleManager, ('run_aeonic_cycle_generation',) if self.aeonic_index_present
+             else ('run_aeonic_cycle_generation', 'aeonic_interaction')),
             (ParliamentManager, ('hold_election',)),
         ]
         if not self.native_encounter_entry:
@@ -252,7 +255,7 @@ class BoundaryTimers:
                 api = native_world._entry_points(native._lib)
                 # Every World instance retains this shared binding table. Patch
                 # it in place so even a handle created during setup is observed.
-                for name in ('sync', 'run', 'births', 'reconcile', 'score_prepare', 'score_finish'):
+                for name in ('sync', 'run', 'births', 'reconcile', 'score_prepare', 'score_finish', 'golden_plan'):
                     if not hasattr(api, name):
                         continue
                     self.replace(api, name, self.wrap(f'world.C++_{name}', getattr(api, name)))
@@ -283,6 +286,17 @@ class BoundaryTimers:
                 'try_run_encounters', observed_encounters))
         self.replace(simulation_module, 'evaluate_entities', self.wrap(
             'evaluate_entities', simulation_module.evaluate_entities))
+        if self.aeonic_index_present:
+            import native_aeonic
+            self.replace(native_aeonic, 'try_create_aeonic_index', self.wrap(
+                'aeonic.index_create', native_aeonic.try_create_aeonic_index))
+            for name in ('select', 'update_pair', 'refresh'):
+                self.replace(native_aeonic.AeonicIndex, name, self.wrap(
+                    f'AeonicIndex.{name}', getattr(native_aeonic.AeonicIndex, name)))
+        if (root / 'native_lifecycle.py').is_file():
+            import native_lifecycle
+            self.replace(native_lifecycle, 'try_update_golden_ones', self.wrap(
+                'golden.plan_and_apply', native_lifecycle.try_update_golden_ones))
         if self.resident_scoring_present:
             # Preserve the actual evaluator and protected methods. Shared C
             # bindings above observe the production resident scoring route.
@@ -334,6 +348,9 @@ class BoundaryTimers:
                 errors.append('Distribution call count is smaller than interaction count')
         elif count('AeonicCycleManager.run_aeonic_cycle_generation') != generations:
             errors.append('Aeonic generation span count differs from generation count')
+        if phase == 'aeonic' and self.aeonic_index_present and (
+                count('aeonic.index_create') != generations or count('AeonicIndex.select') == 0):
+            errors.append('The ordinary aeonic fixture must actually execute its native index')
         if any(row['exclusive_instrumented_seconds'] < -1e-9 for row in self.rows.values()):
             errors.append('Negative exclusive instrumented time')
         if self.native_encounter_entry and 'try_run_encounters' in self.rows:
@@ -343,6 +360,7 @@ class BoundaryTimers:
                 'native_encounter_successful_calls': self.native_encounter_successes,
                 'resident_world_present': self.resident_world_present,
                 'resident_scoring_present': self.resident_scoring_present,
+                'aeonic_index_present': self.aeonic_index_present,
                 'resident_encounter_handles': len(self.resident_worlds),
                 'spans': sorted(self.rows.values(), key=lambda row: row['inclusive_seconds'], reverse=True),
                 'scope': 'Explicit Python wrappers count calls and perf_counter spans without cProfile. '
