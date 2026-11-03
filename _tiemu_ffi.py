@@ -321,6 +321,7 @@ class _Handle:
 class BatchEvaluator(_Handle):
     def __init__(self, workers=1, min_rows=4096):
         self._initialize(_batch_destroy)
+        self._closed = False
         workers = _integer(workers, "workers")
         min_rows = _integer(min_rows, "min_rows")
         _check(_batch_create(workers, min_rows, _ct.byref(self._handle)))
@@ -329,6 +330,7 @@ class BatchEvaluator(_Handle):
         with self._lock:
             if self._handle.value:
                 _check(_batch_close(self._handle))
+                self._closed = True
 
     def concepts(self, values, matrix, multipliers, distribution, bosses):
         values = _float_array(values, "values", 2)
@@ -351,6 +353,9 @@ class BatchEvaluator(_Handle):
                                    _ptr(bosses, _I), bosses.size,
                                    _ptr(out_paths), out_paths.size, _ptr(out_stats), out_stats.size))
         return out_paths, out_stats
+
+
+_ORIGINAL_BATCH_CONCEPTS = BatchEvaluator.concepts
 
 
 class PathHistogram(_Handle):

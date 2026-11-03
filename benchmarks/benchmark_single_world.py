@@ -171,6 +171,7 @@ class BoundaryTimers:
         self.native_encounter_entry = False
         self.native_encounter_successes = 0
         self.resident_world_present = False
+        self.resident_scoring_present = False
         self.resident_worlds = set()
 
     def wrap(self, name, function):
@@ -244,13 +245,14 @@ class BoundaryTimers:
             if (root / 'native_world.py').is_file():
                 import native_world
                 self.resident_world_present = True
+                self.resident_scoring_present = (root / 'native_scoring.py').is_file()
                 if hasattr(native_world, '_pack_sources'):
                     packed = self.wrap('world.pack_sources', native_world._pack_sources)
                     self.replace(native_world, '_pack_sources', packed)
                 api = native_world._entry_points(native._lib)
                 # Every World instance retains this shared binding table. Patch
                 # it in place so even a handle created during setup is observed.
-                for name in ('sync', 'run', 'births', 'reconcile'):
+                for name in ('sync', 'run', 'births', 'reconcile', 'score_prepare', 'score_finish'):
                     if not hasattr(api, name):
                         continue
                     self.replace(api, name, self.wrap(f'world.C++_{name}', getattr(api, name)))
@@ -281,6 +283,10 @@ class BoundaryTimers:
                 'try_run_encounters', observed_encounters))
         self.replace(simulation_module, 'evaluate_entities', self.wrap(
             'evaluate_entities', simulation_module.evaluate_entities))
+        if self.resident_scoring_present:
+            # Preserve the actual evaluator and protected methods. Shared C
+            # bindings above observe the production resident scoring route.
+            return
         original_evaluator = AeonEvolution._get_native_evaluator
         tracker = self
 
@@ -320,6 +326,10 @@ class BoundaryTimers:
                 if self.resident_world_present and (
                         count('world.C++_run') != generations or len(self.resident_worlds) != 1):
                     errors.append('One resident World must execute the native encounter core in every generation')
+                if self.resident_scoring_present and (
+                        count('world.C++_score_prepare') != count('evaluate_entities')
+                        or count('world.C++_score_finish') != count('evaluate_entities')):
+                    errors.append('Every observed human scoring call must use the resident C++ stage')
             elif count('PopulationManager.get_global_path_distribution') < count('InteractionHandler.entity_interaction'):
                 errors.append('Distribution call count is smaller than interaction count')
         elif count('AeonicCycleManager.run_aeonic_cycle_generation') != generations:
@@ -332,6 +342,7 @@ class BoundaryTimers:
                 'native_encounter_entry_present': self.native_encounter_entry,
                 'native_encounter_successful_calls': self.native_encounter_successes,
                 'resident_world_present': self.resident_world_present,
+                'resident_scoring_present': self.resident_scoring_present,
                 'resident_encounter_handles': len(self.resident_worlds),
                 'spans': sorted(self.rows.values(), key=lambda row: row['inclusive_seconds'], reverse=True),
                 'scope': 'Explicit Python wrappers count calls and perf_counter spans without cProfile. '

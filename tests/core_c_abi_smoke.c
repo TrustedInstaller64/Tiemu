@@ -1,6 +1,7 @@
 #include "tiemu_core.h"
 #include "tiemu_encounters.h"
 #include "tiemu_world.h"
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -74,6 +75,68 @@ int main(void) {
             if (tiemu_world_sync(world, sources, 2)) return 38;
             if (tiemu_world_get_view(world, &view) || view.stable_ids[1] != assigned[1]) return 39;
         }
+        {
+            void *evaluator = NULL;
+            double current[24], old_cache[12], mapping[144] = {0};
+            double repaired[24], multipliers[2] = {0.91, 1.19};
+            double expected_paths[24], expected_stats[8];
+            int64_t bosses[2] = {0, 1};
+            tiemu_scoring_source scoring_sources[2] = {{0}};
+            tiemu_scoring_view prepared, finished, sentinel = {0};
+            unsigned char before[sizeof(sentinel)];
+            uint64_t token;
+            for (i = 0; i < 24; ++i) current[i] = repaired[i] = 1.0;
+            for (i = 0; i < 12; ++i) {
+                old_cache[i] = 0.25;
+                mapping[i * 12 + i] = 1.0;
+            }
+            current[12] = NAN;
+            scoring_sources[0].titans = current;
+            scoring_sources[0].cached_paths = old_cache;
+            scoring_sources[1].titans = current + 12;
+            scoring_sources[1].boss = 1;
+            if (tiemu_batch_create(2, 1, &evaluator)) return 40;
+            if (tiemu_batch_concepts(evaluator, repaired, 24, 2, 12, mapping, 144, 12,
+                    multipliers, 2, NULL, 0, bosses, 2, expected_paths, 24, expected_stats, 8)) return 41;
+            if (tiemu_world_scoring_prepare(world, scoring_sources, 2, mapping, 144, &prepared)) return 42;
+            token = prepared.token;
+            if (!token || prepared.rows != 2 || prepared.paths || prepared.stats) return 43;
+            if (prepared.repaired[0] || !prepared.repaired[1] || prepared.bosses[1] != 1) return 44;
+            for (i = 0; i < 24; ++i) if (prepared.values[i] != 1.0) return 45;
+            for (i = 0; i < 12; ++i)
+                if (prepared.old_paths[i] != 0.25 || !isnan(prepared.old_paths[12 + i])) return 46;
+            if (!isnan(current[12]) || current[0] != 1.0 || old_cache[0] != 0.25) return 47;
+            if (tiemu_world_get_view(world, &view) != TIEMU_RUNTIME_ERROR) return 48;
+            sentinel.rows = 999; sentinel.token = 123;
+            memcpy(before, &sentinel, sizeof(sentinel));
+            if (tiemu_world_scoring_prepare(world, scoring_sources, 2, mapping, 143,
+                    &sentinel) != TIEMU_VALUE_ERROR || memcmp(before, &sentinel, sizeof(sentinel))) return 49;
+            /* The old preparation owns every input even after caller changes. */
+            current[0] = 99.0; old_cache[0] = 99.0; mapping[0] = 99.0;
+            if (tiemu_world_scoring_finish(world, token, evaluator, multipliers, 2, NULL, 0, &finished)) return 50;
+            if (finished.token != token || finished.rows != 2) return 51;
+            for (i = 0; i < 24; ++i) if (finished.paths[i] != expected_paths[i]) return 52;
+            for (i = 0; i < 8; ++i) if (finished.stats[i] != expected_stats[i]) return 53;
+            if (tiemu_world_scoring_finish(world, token, evaluator, multipliers, 2, NULL, 0,
+                    &sentinel) != TIEMU_RUNTIME_ERROR || memcmp(before, &sentinel, sizeof(sentinel))) return 54;
+            if (tiemu_world_sync(world, sources, 2)) return 55;
+            if (tiemu_world_get_view(world, &view) || view.entities != 2
+                    || view.stable_ids[0] != sources[0].stable_id || view.state.titans[0] != 1.0) return 56;
+            if (tiemu_world_scoring_prepare(world, NULL, 0, mapping, 144, &prepared)) return 57;
+            if (!prepared.token || prepared.token == token || prepared.rows) return 58;
+            if (tiemu_world_scoring_finish(world, prepared.token, evaluator, NULL, 0, NULL, 0, &finished)) return 59;
+            if (finished.rows) return 60;
+            if (tiemu_world_scoring_prepare(world, scoring_sources, 2, mapping, 144, &prepared)) return 61;
+            if (tiemu_world_births(world, titans, 12, noise, 24, 2, NULL, 0, tide, 12,
+                                   0.0, 100.0, &newborns, &newborn_count)) return 62;
+            if (tiemu_world_scoring_finish(world, prepared.token, evaluator, multipliers, 2,
+                    NULL, 0, &sentinel) != TIEMU_RUNTIME_ERROR) return 63;
+            if (tiemu_world_scoring_prepare(world, scoring_sources, 2, mapping, 144, &prepared)) return 64;
+            if (tiemu_batch_close(evaluator)) return 65;
+            if (tiemu_world_scoring_finish(world, prepared.token, evaluator, multipliers, 2, NULL, 0,
+                    &sentinel) != TIEMU_RUNTIME_ERROR || memcmp(before, &sentinel, sizeof(sentinel))) return 66;
+            if (tiemu_batch_destroy(&evaluator) || evaluator != NULL) return 67;
+        }
         if (tiemu_world_sync(world, NULL, 0)) return 28;
         sources[0].stable_id = 0;
         if (tiemu_world_sync(world, sources, 1)) return 29;
@@ -81,6 +144,6 @@ int main(void) {
         if (tiemu_world_destroy(&world) || world != NULL) return 31;
         if (tiemu_world_destroy(&world)) return 32;
     }
-    puts("standalone C client: ABI, arithmetic, resident lifecycle, births and error contracts passed");
+    puts("standalone C client: ABI, arithmetic, resident lifecycle, births, scoring and error contracts passed");
     return 0;
 }

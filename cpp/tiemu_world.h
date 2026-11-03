@@ -15,10 +15,10 @@
  * to preserve a missing lazy cache. Invalid input is rejected before changing
  * the live world. Allocation failure may invalidate the previous borrowed view.
  *
- * view and births expose BORROWED, READ-ONLY native buffers. They are valid only
+ * view, births and scoring expose BORROWED, READ-ONLY native buffers. They are valid only
  * until the next mutating call or destruction. The caller must hold its own
  * lifetime lock from obtaining a view through the last read, and must not pass
- * resident output pointers back as sync/birth inputs. No escaping array view
+ * resident output pointers back as inputs to any resident operation. No escaping array view
  * may outlive that lock. Per-call locking alone cannot protect a borrowed view.
  * A caller may copy values into independently owned public arrays while locked.
  *
@@ -30,9 +30,11 @@
  * POSITIONS, not stable IDs. Config entities must match the synchronized size.
  * A membership-only reconciliation preserves previous native values for retained
  * members; those values may lag public mirrors. It marks numeric state dirty:
- * view/run reject access until a complete sync. births uses independent inputs
- * and remains available while membership-dirty. An encounter-failure state is
- * stricter: sync is required before view/run/births/reconcile can be used again.
+ * view/run reject access until a complete sync. Scoring preparation also marks
+ * numeric state dirty without replacing live population state or IDs. births
+ * and scoring use independent inputs and remain available while numeric-dirty.
+ * An encounter-failure state is stricter: sync is required before
+ * view/run/births/reconcile/scoring can be used again.
  * On a failed encounter the native scratch state/index is unspecified; do not
  * commit it to public state. A complete sync is required before reusing it.
  */
@@ -60,6 +62,23 @@ typedef struct tiemu_world_view {
     const uint64_t *stable_ids;
     tiemu_encounter_state state; /* borrowed pointers; consumers only read */
 } tiemu_world_view;
+
+typedef struct tiemu_scoring_source {
+    const double *titans;       /* exactly 12 doubles; nonfinite values allowed */
+    const double *cached_paths; /* NULL means an absent lazy cache */
+    uint8_t boss;               /* 0 or 1 */
+} tiemu_scoring_source;
+
+typedef struct tiemu_scoring_view {
+    size_t rows;
+    uint64_t token;
+    const double *values;       /* rows * 12 repaired current titan values */
+    const double *old_paths;    /* rows * 12 old cache, before any repair */
+    const int64_t *bosses;      /* rows boss flags, matching batch_concepts */
+    const uint8_t *repaired;    /* rows flags: whole titan row replaced by ones */
+    const double *paths;        /* rows * 12 fresh paths; NULL until finish */
+    const double *stats;        /* rows * 4 batch stats; NULL until finish */
+} tiemu_scoring_view;
 
 TIEMU_API uint32_t tiemu_world_abi_version(void);
 TIEMU_API int tiemu_world_create(void **out_handle);
@@ -103,6 +122,46 @@ TIEMU_API int tiemu_world_births(
     const double *modifier, size_t modifier_count,
     const double *tide, size_t tide_count, double purity_factor, double max_norm,
     const double **out_values, size_t *out_count);
+
+/* Two-stage scoring owns scratch separate from live ordered population state.
+ * Each source has 12 titan doubles and either NULL or 12 cached path doubles.
+ * matrix has exactly 12 * 12 doubles. Cached paths, including stale/nonfinite
+ * values, are copied verbatim. A missing cache is mapped with the existing
+ * path_affinities kernel from raw titans BEFORE replacing any nonfinite titan
+ * row with ones. No caller input pointer is retained or written. Source order
+ * is preserved; source rows need not be members or ordered like the live world.
+ *
+ * prepare copies/validates into independent scratch before publishing a
+ * nonzero, monotonically increasing token and marking live numeric state dirty.
+ * Invalid input leaves the previous preparation, live state and output intact.
+ * It never changes live population rows, membership, IDs or RNG state. Only a
+ * complete sync makes view/run available again. The caller computes original
+ * multiplier arithmetic from old_paths, preserving its numerical microkernel.
+ *
+ * finish accepts exactly rows multipliers and an absent distribution (NULL/0)
+ * or 12 distribution doubles. It uses the supplied batch evaluator and its
+ * existing thread pool; all path/score arithmetic stays in batch_concepts.
+ * The token is single-use. Successful sync/reconcile/run_encounters/births or
+ * another prepare invalidates it. A failed finish may consume the token; a
+ * fresh prepare recovers. No failed finish writes the output structure. On
+ * success, output retains the prepare token and additionally exposes paths
+ * and stats. Empty prepares/finishes are valid with NULL source/multiplier
+ * buffers, but still require the complete mapping and a live evaluator.
+ *
+ * Both the world and evaluator require external lifetime locks for the whole
+ * prepare -> multiplier calculation -> finish -> copy transaction. Per-call
+ * native locking cannot protect borrowed pointers between calls or concurrent
+ * destruction. No returned view may escape those locks; independently copy
+ * public result arrays before unlocking. Never pass resident output storage
+ * back as source/matrix/multiplier/distribution or output-structure storage.
+ */
+TIEMU_API int tiemu_world_scoring_prepare(
+    void *handle, const tiemu_scoring_source *sources, size_t count,
+    const double *matrix, size_t matrix_count, tiemu_scoring_view *output);
+TIEMU_API int tiemu_world_scoring_finish(
+    void *handle, uint64_t token, void *evaluator_handle,
+    const double *multipliers, size_t multiplier_count,
+    const double *distribution, size_t distribution_count, tiemu_scoring_view *output);
 TIEMU_API int tiemu_world_destroy(void **handle);
 
 #ifdef __cplusplus

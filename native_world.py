@@ -77,6 +77,16 @@ class _View(ct.Structure):
     _fields_ = [('entities', _S), ('stable_ids', _ID), ('state', _State)]
 
 
+class _ScoringSource(ct.Structure):
+    _fields_ = [('titans', _H), ('cached_paths', _H), ('boss', ct.c_uint8)]
+
+
+class _ScoringView(ct.Structure):
+    _fields_ = [('rows', _S), ('token', ct.c_uint64), ('values', _D),
+                ('old_paths', _D), ('bosses', _I), ('repaired', _B),
+                ('paths', _D), ('stats', _D)]
+
+
 @functools.lru_cache(maxsize=1)
 def _entry_points(library):
     def bind(name, arguments, result=ct.c_int):
@@ -96,6 +106,8 @@ def _entry_points(library):
         run=bind('run_encounters', [_H, _H, _H, _H, _S, _H]),
         births=bind('births', [_H, _H, _S, _H, _S, _S, _H, _S, _H, _S,
                               _F, _F, _H, _H]),
+        score_prepare=bind('scoring_prepare', [_H, _H, _S, _H, _S, _H]),
+        score_finish=bind('scoring_finish', [_H, ct.c_uint64, _H, _H, _S, _H, _S, _H]),
         destroy=bind('destroy', [_H]))
 
 
@@ -160,6 +172,7 @@ class ResidentWorld:
         self._ids = ()
         self.sync_count = self.encounter_count = self.birth_count = 0
         self.reconcile_count = 0
+        self.scoring_count = 0
         self._native = get_native()
         if self._native is None or getattr(self._native, '__binding__', None) != 'c-abi':
             raise RuntimeError('Resident world requires the standalone C++ backend')

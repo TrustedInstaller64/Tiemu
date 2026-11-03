@@ -489,7 +489,8 @@ class AeonEvolution:
         survivors_to_update = [p for p in entities_to_update if p not in culled_this_gen]
         if survivors_to_update:
             evaluate_entities(survivors_to_update, self.parliament_manager, global_dist,
-                              evaluator=self._get_native_evaluator())
+                              evaluator=self._get_native_evaluator(),
+                              world=self.population_manager.get_native_world())
                     
         logger.info(f"世代 {self.generation} 演算结束。")
         return culled_this_gen

@@ -109,6 +109,33 @@ struct Rows {
     }
 };
 
+struct ScoringRows {
+    std::vector<double> values, old_paths, paths, stats;
+    std::vector<std::int64_t> bosses;
+    std::vector<std::uint8_t> repaired;
+    std::array<double, width * width> matrix{};
+
+    void resize(std::size_t count, std::size_t vectors) {
+        // Preparation uses a second retained buffer. Allocation or validation
+        // failure cannot invalidate the current scoring transaction or views.
+        values.reserve(vectors); old_paths.reserve(vectors); paths.reserve(vectors);
+        stats.reserve(count * 4); bosses.reserve(count); repaired.reserve(count);
+        values.resize(vectors); old_paths.resize(vectors); paths.resize(vectors);
+        stats.resize(count * 4); bosses.resize(count); repaired.resize(count);
+    }
+
+    void swap(ScoringRows &other) noexcept {
+        values.swap(other.values); old_paths.swap(other.old_paths); paths.swap(other.paths);
+        stats.swap(other.stats); bosses.swap(other.bosses); repaired.swap(other.repaired);
+        matrix.swap(other.matrix);
+    }
+
+    tiemu_scoring_view view(std::uint64_t token, bool finished) const {
+        return {bosses.size(), token, values.data(), old_paths.data(), bosses.data(),
+                repaired.data(), finished ? paths.data() : nullptr, finished ? stats.data() : nullptr};
+    }
+};
+
 struct World : Rows {
     std::mutex mutex;
     std::size_t entities = 0;
@@ -118,6 +145,8 @@ struct World : Rows {
     std::vector<std::uint64_t> ids, next_ids;
     std::unordered_map<std::uint64_t, std::size_t> live_ids, next_live_ids;
     Rows scratch;
+    ScoringRows scoring, scoring_scratch;
+    std::uint64_t scoring_token = 0, next_scoring_token = 1;
     std::array<std::uint32_t, TIEMU_MT_STATE_WORDS> numpy_mt{}, python_mt{};
     std::vector<double> newborns;
 
@@ -136,7 +165,7 @@ struct World : Rows {
     void ready() const {
         nonfailed();
         if (membership_dirty)
-            throw std::runtime_error("resident world requires a complete sync after membership reconciliation");
+            throw std::runtime_error("resident world requires a complete sync after membership reconciliation or scoring preparation");
     }
 };
 
@@ -178,6 +207,7 @@ void sync(World &world, const tiemu_world_source *sources, std::size_t count) {
     world.next_id = next_id;
     world.needs_sync = false;
     world.membership_dirty = false;
+    world.scoring_token = 0;
 }
 
 void reconcile(World &world, const std::uint64_t *order, std::size_t count,
@@ -233,7 +263,76 @@ void reconcile(World &world, const std::uint64_t *order, std::size_t count,
     world.entities = count;
     world.next_id = next_id;
     world.membership_dirty = true;
+    world.scoring_token = 0;
     if (count) std::copy(world.ids.begin(), world.ids.end(), out_ids);
+}
+
+void scoring_prepare(World &world, const tiemu_scoring_source *sources, std::size_t count,
+                     const double *matrix, std::size_t matrix_count, tiemu_scoring_view *output) {
+    world.nonfailed();
+    const auto vectors = vector_size(count);
+    if (matrix_count != width * width || !output)
+        throw std::invalid_argument("resident scoring mapping/output is invalid");
+    required(sources, count, "resident scoring sources");
+    required(matrix, matrix_count, "resident scoring mapping");
+    for (std::size_t row = 0; row < count; ++row) {
+        required(sources[row].titans, width, "resident scoring titans");
+        if (sources[row].boss > 1)
+            throw std::invalid_argument("resident scoring boss flag is invalid");
+    }
+    if (!world.next_scoring_token)
+        throw std::runtime_error("resident scoring tokens exhausted");
+
+    auto &next = world.scoring_scratch;
+    next.resize(count, vectors);
+    std::copy_n(matrix, matrix_count, next.matrix.data());
+    for (std::size_t row = 0; row < count; ++row) {
+        const auto &source = sources[row];
+        auto *values = next.values.data() + row * width;
+        auto *old_paths = next.old_paths.data() + row * width;
+        std::copy_n(source.titans, width, values);
+        // The old lazy cache determines the multiplier even if it is stale.
+        // A missing cache observes raw nonfinite titans before repair.
+        if (source.cached_paths) std::copy_n(source.cached_paths, width, old_paths);
+        else checked(tiemu_path_affinities(values, width, 1, width, next.matrix.data(),
+                                           next.matrix.size(), width, old_paths, width));
+        bool repair = false;
+        for (std::size_t j = 0; j < width; ++j)
+            if (!std::isfinite(values[j])) { repair = true; break; }
+        if (repair) std::fill_n(values, width, 1.0);
+        next.repaired[row] = repair ? 1 : 0;
+        next.bosses[row] = source.boss;
+    }
+    // From here all operations are nonthrowing. Publish one complete snapshot.
+    world.scoring.swap(next);
+    world.scoring_token = world.next_scoring_token;
+    world.next_scoring_token = world.next_scoring_token == std::numeric_limits<std::uint64_t>::max()
+        ? 0 : world.next_scoring_token + 1;
+    world.membership_dirty = true;
+    *output = world.scoring.view(world.scoring_token, false);
+}
+
+void scoring_finish(World &world, std::uint64_t token, void *evaluator,
+                    const double *multipliers, std::size_t multiplier_count,
+                    const double *distribution, std::size_t distribution_count,
+                    tiemu_scoring_view *output) {
+    world.nonfailed();
+    if (!output || !evaluator)
+        throw std::invalid_argument("resident scoring evaluator/output is null");
+    if (!token || token != world.scoring_token)
+        throw std::runtime_error("resident scoring token is stale or consumed");
+    auto &rows = world.scoring;
+    const auto count = rows.bosses.size();
+    if (multiplier_count != count || (distribution ? distribution_count != width : distribution_count != 0))
+        throw std::invalid_argument("resident scoring multiplier/distribution shape is invalid");
+    required(multipliers, multiplier_count, "resident scoring multipliers");
+    // A kernel failure may consume this preparation but cannot publish results.
+    world.scoring_token = 0;
+    checked(tiemu_batch_concepts(evaluator, rows.values.data(), rows.values.size(), count, width,
+        rows.matrix.data(), rows.matrix.size(), width, multipliers, multiplier_count,
+        distribution, distribution_count, rows.bosses.data(), count,
+        rows.paths.data(), rows.paths.size(), rows.stats.data(), rows.stats.size()));
+    *output = rows.view(token, true);
 }
 } // namespace
 
@@ -297,6 +396,7 @@ int tiemu_world_run_encounters(void *handle, const tiemu_encounter_config *confi
         const auto status = tiemu_encounters_run(config, &state, result);
         if (status != TIEMU_OK) world.needs_sync = true;
         checked(status);
+        world.scoring_token = 0;
     });
 }
 
@@ -332,6 +432,27 @@ int tiemu_world_births(void *handle, const double *blueprint, size_t blueprint_c
         }
         *out_values = world.newborns.data();
         *out_count = count;
+        world.scoring_token = 0;
+    });
+}
+
+int tiemu_world_scoring_prepare(void *handle, const tiemu_scoring_source *sources, size_t count,
+        const double *matrix, size_t matrix_count, tiemu_scoring_view *output) {
+    return tiemu_detail::guarded([&] {
+        auto &world = live(handle);
+        std::lock_guard<std::mutex> lock(world.mutex);
+        scoring_prepare(world, sources, count, matrix, matrix_count, output);
+    });
+}
+
+int tiemu_world_scoring_finish(void *handle, uint64_t token, void *evaluator_handle,
+        const double *multipliers, size_t multiplier_count, const double *distribution,
+        size_t distribution_count, tiemu_scoring_view *output) {
+    return tiemu_detail::guarded([&] {
+        auto &world = live(handle);
+        std::lock_guard<std::mutex> lock(world.mutex);
+        scoring_finish(world, token, evaluator_handle, multipliers, multiplier_count,
+                       distribution, distribution_count, output);
     });
 }
 

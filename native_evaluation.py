@@ -4,6 +4,7 @@ import numpy as np
 from entities import Pathstrider
 from models import TitanToPathModel
 from native_backend import get_native
+from native_scoring import try_evaluate_resident
 
 
 def _evaluate_scalar(entities, parliament, distribution):
@@ -12,7 +13,7 @@ def _evaluate_scalar(entities, parliament, distribution):
         entity.recalculate_concepts(multiplier, distribution)
 
 
-def evaluate_entities(entities, parliament, distribution, evaluator=None):
+def evaluate_entities(entities, parliament, distribution, evaluator=None, world=None):
     """Score a fixed set of entities without moving random or shared-state work.
 
     The multiplier observes each entity's existing lazy path cache, whereas
@@ -23,6 +24,9 @@ def evaluate_entities(entities, parliament, distribution, evaluator=None):
     entities = list(entities)
     if not entities:
         return
+    if world is not None:
+        if try_evaluate_resident(entities, parliament, distribution, evaluator, world):
+            return
     if (evaluator is None or get_native() is None or len(entities) == 1
             or any(type(entity) is not Pathstrider for entity in entities)
             or len({id(entity) for entity in entities}) != len(entities)):
