@@ -1,0 +1,156 @@
+{
+  "candidate": "5714a60769b06d6435f9a4ff6fcf00ce8ad24d0b",
+  "baseline": "eca7377c6ee53ab1f57c32fd8227c31e0d73b1cb",
+  "run_url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41641853654",
+  "job_id": 125937581615,
+  "source": "Decoded completed GitHub job log JSON lines; raw per-sample files remain in the Actions artifact.",
+  "rows": [
+    {
+      "phase": "human",
+      "population": 1000,
+      "generations": 6,
+      "initial_reincarnator": false,
+      "median_seconds": {
+        "baseline": 0.12921099999999797,
+        "a-1": 0.11501310000002718,
+        "a-4": 0.11386329999999134,
+        "a-4-forced": 0.11589100000003327
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "a-1": 1.123445937897226,
+        "a-4": 1.13479057782453,
+        "a-4-forced": 1.1149355860244614
+      },
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 0.9674098954423537,
+        "a-1": 0.9558604404427901,
+        "a-4": 0.9714890718026875,
+        "a-4-forced": 1.097981207831951
+      }
+    },
+    {
+      "phase": "human",
+      "population": 10000,
+      "generations": 3,
+      "initial_reincarnator": false,
+      "median_seconds": {
+        "baseline": 0.7226052999999979,
+        "a-1": 0.7014725999999882,
+        "a-4": 0.7047321000000011,
+        "a-4-forced": 0.6837848999999778
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "a-1": 1.030126194522794,
+        "a-4": 1.025361694181373,
+        "a-4-forced": 1.0567728243194918
+      },
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 0.9946647222211104,
+        "a-1": 0.9949465398943578,
+        "a-4": 0.9977195589643199,
+        "a-4-forced": 1.0038353079321498
+      }
+    },
+    {
+      "phase": "human",
+      "population": 1000,
+      "generations": 6,
+      "initial_reincarnator": true,
+      "median_seconds": {
+        "baseline": 0.15844540000000507,
+        "a-1": 0.13724539999998342,
+        "a-4": 0.13491469999996752,
+        "a-4-forced": 0.1370508999999629
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "a-1": 1.1544678364449679,
+        "a-4": 1.1744116838272123,
+        "a-4-forced": 1.156106234983119
+      },
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 0.9420122386228202,
+        "a-1": 1.0422881792478822,
+        "a-4": 1.0423252618138263,
+        "a-4-forced": 1.024302016023318
+      }
+    },
+    {
+      "phase": "aeonic",
+      "population": 200,
+      "generations": 2,
+      "initial_reincarnator": false,
+      "median_seconds": {
+        "baseline": 0.03648329999998623,
+        "a-1": 0.034127299999966,
+        "a-4": 0.03443409999999858,
+        "a-4-forced": 0.0342520000000377
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "a-1": 1.0690356400893881,
+        "a-4": 1.0595107756551714,
+        "a-4-forced": 1.065143641245652
+      },
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 0.8565562873975708,
+        "a-1": 0.915689198970652,
+        "a-4": 0.9075306164529141,
+        "a-4-forced": 1.2934352813270775
+      }
+    },
+    {
+      "phase": "aeonic",
+      "population": 200,
+      "generations": 12,
+      "initial_reincarnator": false,
+      "median_seconds": {
+        "baseline": 0.05470900000000256,
+        "a-1": 0.051362500000038835,
+        "a-4": 0.05408779999999069,
+        "a-4-forced": 0.054353999999989355
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "a-1": 1.065154538816475,
+        "a-4": 1.0114850298960574,
+        "a-4-forced": 1.00653125804933
+      },
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 1.016463455292908,
+        "a-1": 1.209988113077626,
+        "a-4": 0.8666464526197787,
+        "a-4-forced": 0.9591813348932744
+      }
+    },
+    {
+      "phase": "inorganic",
+      "grid": [
+        10,
+        10
+      ],
+      "generations": 10000,
+      "median_seconds": {
+        "baseline": 0.03718340000000353,
+        "candidate": 0.036798799999985476
+      },
+      "speedup_over_baseline": {
+        "baseline": 1,
+        "candidate": 1.0104514277644436
+      },
+      "same_legacy": true,
+      "same_checked_state_and_rng_digest": true,
+      "mean_cpu_cores": {
+        "baseline": 0.8404287934937912,
+        "candidate": 0.8492124743201499
+      }
+    }
+  ]
+}

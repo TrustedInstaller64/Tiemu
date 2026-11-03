@@ -17,9 +17,9 @@ python -m main --backend cpp --device cpu --disable-llm --smoke-test
 python -m pytest -q
 ```
 
-Remove `--smoke-test` for the full simulation. Outputs go to `runs/`; use `--output-dir` to change this. `pip install .` builds the C++ extension; installing only `requirements.txt` does not.
+Remove `--smoke-test` for the full simulation. Outputs go to `runs/`; use `--output-dir` to change this. `pip install .` builds the standalone C++ shared core; installing only `requirements.txt` does not.
 
-C++ accelerates path arithmetic, purification, interactions, sequential grid updates, voting, ordered opponent selection and incremental path statistics. Python retains control flow and random draws; existing PyTorch/NumPy/LLM kernels remain native. `--backend python` retains the reference path; `auto` reports a fallback if the native extension is missing.
+C++ accelerates path arithmetic, purification, ordered interactions and their random draws, sequential grid updates, voting, opponent selection and path statistics. A resident World owns continuous state, stable entity IDs, membership reconciliation and batched newborn arithmetic through a C ABI, without pybind11. Python retains public entity mirrors, remaining lifecycle decisions and online training; current public fields are synchronized before native encounters. `--backend python` retains the reference path; `auto` reports a fallback if the native core is missing. See the [resident-world migration and validation](docs/a3-resident-world.md).
 
 Small online networks default to CPU with one PyTorch thread, because MPS was slower for their current single-sample workload on the tested M1. `--device cuda`, `--device mps`, and `--torch-threads N` remain available. LLM device selection is independent: Apple Silicon can use local MLX/Metal, Windows/Linux can use an appropriate CUDA-enabled llama.cpp build, and CPU-only operation needs no GPU.
 
