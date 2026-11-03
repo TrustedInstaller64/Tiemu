@@ -48,6 +48,7 @@ def native(cpp_backend, monkeypatch):
     # Small fixtures deliberately force the C path; production has a measured
     # population threshold, tested separately with the untouched default below.
     monkeypatch.setattr(candidate(), 'MIN_INDEX_POPULATION', 0)
+    monkeypatch.setattr(candidate(), 'INDEX_WITH_REINCARNATOR', True)
 
 
 @functools.lru_cache(maxsize=1)
@@ -445,10 +446,12 @@ def test_default_small_factory_reads_no_custom_fields_and_requires_no_backend(mo
     assert rng_state() == before
 
 
-@pytest.mark.parametrize('unsafe', [False, True])
-def test_default_threshold_admits_standard_population_but_retains_metadata_guards(cpp_backend, unsafe):
+@pytest.mark.parametrize('unsafe,outside', [(False, False), (True, False), (False, True)])
+def test_default_threshold_admits_standard_population_but_retains_metadata_guards(cpp_backend, unsafe, outside):
     bridge = candidate()
-    manager, population, reincarnator = make_case('mixed', bridge.MIN_INDEX_POPULATION)
+    manager, population, reincarnator = make_case('ordinary', bridge.MIN_INDEX_POPULATION)
+    if outside:
+        reincarnator = Pathstrider('outside', np.ones(12))
     if unsafe:
         population[-1].held_fire_seeds = population[-2].held_fire_seeds
     before = rng_state()
@@ -469,3 +472,46 @@ def test_default_threshold_admits_standard_population_but_retains_metadata_guard
     finally:
         index.close()
         manager.population_manager.close_native_world()
+
+
+def test_default_1000_entity_live_reincarnator_generation_keeps_frozen_results_without_index(cpp_backend, monkeypatch):
+    bridge = candidate()
+    assert not bridge.INDEX_WITH_REINCARNATOR
+
+    def forbidden(*arguments):
+        raise AssertionError('The default live-reincarnator path must not allocate or bind a candidate index')
+
+    monkeypatch.setattr(bridge, '_entry_points', forbidden)
+    monkeypatch.setattr(bridge, 'AeonicIndex', forbidden)
+    expected, _, _, _ = run_case('reincarnator-only', reference=True, size=1000)
+    spies, declines = spy_factory(monkeypatch)
+    actual, _, _, _ = run_case('reincarnator-only', size=1000)
+    assert_same(actual, expected)
+    assert declines == [True] and not spies
+
+
+def test_default_large_live_reincarnator_check_uses_only_identity_before_backend_or_fields(monkeypatch):
+    bridge = candidate()
+    assert not bridge.INDEX_WITH_REINCARNATOR
+
+    class Unreadable:
+        def __getattribute__(self, name):
+            raise AssertionError('Live-reincarnator admission must not read custom fields')
+
+        def __eq__(self, other):
+            raise AssertionError('Live membership must use identity, not custom equality')
+
+        def __bool__(self):
+            raise AssertionError('Live membership must not call custom truth conversion')
+
+    def forbidden(*arguments):
+        raise AssertionError('Live-reincarnator admission must precede backend/C API/metadata access')
+
+    monkeypatch.setattr(bridge, 'get_native', forbidden)
+    monkeypatch.setattr(bridge, '_metadata', forbidden)
+    monkeypatch.setattr(bridge, '_entry_points', forbidden)
+    monkeypatch.setattr(bridge, 'AeonicIndex', forbidden)
+    population = [Unreadable() for _ in range(1000)]
+    before = rng_state()
+    assert bridge.try_create_aeonic_index(Unreadable(), population, population[501]) is None
+    assert rng_state() == before

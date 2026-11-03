@@ -27,6 +27,9 @@ _H, _S = ct.c_void_p, ct.c_size_t
 # Cloud paired runs found index overhead regressed the 200-entity generation.
 # Keep that size on the original selector; larger-size calibration is ongoing.
 MIN_INDEX_POPULATION = 512
+# Rebuilding after every live reincarnator interaction regressed short training
+# segments on cloud runners. Keep those generations on the original selector.
+INDEX_WITH_REINCARNATOR = False
 
 
 def _class_attribute(cls, name):
@@ -219,6 +222,9 @@ def try_create_aeonic_index(manager, population, reincarnator):
         return None
     count = len(population)
     if count < 2 or count < MIN_INDEX_POPULATION:
+        return None
+    if (not INDEX_WITH_REINCARNATOR and reincarnator is not None
+            and any(entity is reincarnator for entity in population)):
         return None
     native = get_native()
     if native is None or getattr(native, '__binding__', None) != 'c-abi':

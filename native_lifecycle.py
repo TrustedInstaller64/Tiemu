@@ -20,6 +20,9 @@ _SHUFFLE = random.shuffle
 _RANDOM_METHODS = {name: getattr(random.Random, name) for name in (
     '__getattribute__', 'shuffle', '_randbelow', 'getrandbits', 'random')}
 _SOURCE_DTYPE = None
+# Keep the original selection until cloud timings show a net benefit including
+# metadata preparation, C ABI calls and the ordered Python identity writes.
+NATIVE_GOLDEN_ENABLED = False
 
 
 def _class_attribute(cls, name):
@@ -106,6 +109,8 @@ def _metadata(manager, population):
 
 def try_update_golden_ones(manager, population):
     """Apply a guarded C++ plan, or decline before any public state/RNG change."""
+    if not NATIVE_GOLDEN_ENABLED:
+        return False
     native = get_native()
     if (native is None or getattr(native, '__binding__', None) != 'c-abi'
             or type(population) is not list or threading.active_count() != 1):

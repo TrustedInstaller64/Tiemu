@@ -48,6 +48,8 @@ parser.add_argument('--boundary-timers', action='store_true',
                     help='Use explicit call wrappers instead of cProfile (remote diagnostics only).')
 parser.add_argument('--prematerialize-entity-dicts', action='store_true',
                     help='Diagnostic ablation: move instance dictionary materialization into setup.')
+parser.add_argument('--force-native-golden', action='store_true',
+                    help='Cloud-only ablation: include the new golden metadata adapter regardless of its default gate.')
 args = parser.parse_args()
 if args.boundary_timers and args.profile_output_dir:
     parser.error('boundary timers and cProfile must run in separate samples')
@@ -89,6 +91,10 @@ stub.Debugger = QuietDebugger
 sys.modules['debugger'] = stub
 from simulation import AeonEvolution
 from constants import TITAN_NAMES
+
+if args.force_native_golden:
+    import native_lifecycle
+    native_lifecycle.NATIVE_GOLDEN_ENABLED = True
 
 
 def digest_state(sim):
@@ -296,7 +302,9 @@ class BoundaryTimers:
                 result = original_index(manager, population, reincarnator)
                 self.aeonic_index_decisions.append({
                     'population': len(population),
-                    'expected_index': len(population) >= getattr(native_aeonic, 'MIN_INDEX_POPULATION', 2),
+                    'expected_index': len(population) >= getattr(native_aeonic, 'MIN_INDEX_POPULATION', 2)
+                    and (getattr(native_aeonic, 'INDEX_WITH_REINCARNATOR', True)
+                         or not any(entity is reincarnator for entity in population)),
                     'actual_index': result is not None})
                 return result
 

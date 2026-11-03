@@ -18,6 +18,7 @@ configurations = [('baseline', args.baseline.resolve(), 1, 4096),
                   ('a-1', args.candidate.resolve(), 1, 4096),
                   ('a-4', args.candidate.resolve(), 4, 4096),
                   ('a-4-forced', args.candidate.resolve(), 4, 1)]
+configurations.append(('a-1-forced-golden', args.candidate.resolve(), 1, 4096))
 cases = [('human', 1000, 6, False), ('human', 10000, 3, False),
          ('human', 1000, 6, True), ('aeonic', 200, 2, False),
          ('aeonic', 200, 12, False), ('aeonic', 512, 2, False),
@@ -37,6 +38,8 @@ for phase, population, generations, reincarnator in cases:
                        '--repeats', '1', '--output', str(output)]
             if reincarnator:
                 command.append('--with-reincarnator')
+            if name == 'a-1-forced-golden':
+                command.append('--force-native-golden')
             subprocess.run(command, check=True, timeout=180,
                            env={**os.environ, 'PYTHONHASHSEED': '0'}, stdout=subprocess.DEVNULL)
             results[name].append(json.loads(output.read_text(encoding='utf-8')))
@@ -54,6 +57,7 @@ for phase, population, generations, reincarnator in cases:
     print(json.dumps(row), flush=True)
 report = {'baseline': str(args.baseline.resolve()), 'candidate': str(args.candidate.resolve()),
           'scope': 'Same runner, sequential isolated processes, 3 rotated repeats. '
+                   'The forced-golden configuration isolates its full adapter cost on this same candidate. '
                    'No LLM/log/display/exports; aeonic has actual online training; human with '
                    'reincarnator may train Guide when the original reward condition permits it. '
                    'Digest covers recorded entities, ordering, raw path caches and derived fields, '

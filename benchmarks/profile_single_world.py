@@ -97,7 +97,7 @@ def main():
     print(json.dumps({'environment': environment}), flush=True)
     cases = [('human', 1000, 6, False), ('human', 10000, 3, False),
              ('human', 1000, 6, True), ('aeonic', 200, 2, False),
-             ('aeonic', 1000, 2, False)]
+             ('aeonic', 1000, 12, False)]
     report = {
         'source_root': str(root), 'environment': environment, 'cases': [],
         'known_cprofile_issue': 'https://github.com/pybind/pybind11/issues/5600',

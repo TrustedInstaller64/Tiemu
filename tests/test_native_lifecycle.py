@@ -27,8 +27,9 @@ BASELINE = 'f2073f001af4bc3f03da6d96d5360aa9a2027e0a'
 
 
 @pytest.fixture
-def native():
+def native(monkeypatch):
     module = configure_backend('cpp')
+    monkeypatch.setattr(lifecycle(), 'NATIVE_GOLDEN_ENABLED', True)
     try:
         yield module
     finally:
@@ -122,6 +123,65 @@ def outcome(function, manager, population):
     except Exception as exc:
         return type(exc), str(exc)
     return None
+
+
+def test_disabled_default_declines_before_backend_metadata_binding_or_input_access(monkeypatch):
+    module = lifecycle()
+    assert module.NATIVE_GOLDEN_ENABLED is False
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError('Disabled golden selection must return before preparation or binding access')
+
+    class Unreadable:
+        __getattribute__ = __bool__ = __len__ = __iter__ = forbidden
+
+    for name in ('get_native', '_metadata', '_GoldenSource', '_GoldenView'):
+        monkeypatch.setattr(module, name, forbidden)
+    seed()
+    before = rng()
+    assert module.try_update_golden_ones(Unreadable(), Unreadable()) is False
+    assert rng() == before
+
+
+def test_disabled_default_manager_entry_matches_frozen_full_state_and_rng(monkeypatch):
+    module = lifecycle()
+    assert module.NATIVE_GOLDEN_ENABLED is False
+    manager, population = make_world()
+    expected_manager, expected = make_world()
+    aliases = [(entity, entity.titan_affinities, entity._path_affinities) for entity in population]
+    seed()
+    frozen_update()(expected_manager, expected)
+    expected_state, expected_rng = snapshot(expected_manager, expected), rng()
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError('Default golden update must not prepare or bind the native plan')
+
+    original, calls = module.try_update_golden_ones, []
+
+    def observed(actual_manager, actual_population):
+        result = original(actual_manager, actual_population)
+        calls.append((actual_manager, actual_population, result))
+        return result
+
+    for name in ('get_native', '_metadata', '_GoldenSource', '_GoldenView'):
+        monkeypatch.setattr(module, name, forbidden)
+    monkeypatch.setattr(manager, 'get_native_world', forbidden)
+    monkeypatch.setattr(module, 'try_update_golden_ones', observed)
+    if hasattr(population_module, 'try_update_golden_ones'):
+        monkeypatch.setattr(population_module, 'try_update_golden_ones', observed)
+    seed()
+    try:
+        manager.update_golden_ones(population)
+        assert len(calls) == 1 and calls[0][0] is manager and calls[0][1] is population
+        assert calls[0][2] is False
+        assert snapshot(manager, population) == expected_state and rng() == expected_rng
+        assert manager._native_world is None
+        for entity, (original_entity, titans, cache) in zip(population, aliases):
+            assert entity is original_entity
+            assert entity.titan_affinities is titans and entity._path_affinities is cache
+    finally:
+        close(manager)
+        close(expected_manager)
 
 
 @pytest.mark.parametrize('case,size,cap', [
@@ -348,8 +408,10 @@ def test_data_descriptors_fall_back_before_extra_callbacks_or_random_draws(nativ
         close(expected_manager)
 
 
-def test_python_backend_keeps_golden_reference_path_without_resident_allocation():
-    helper = lifecycle().try_update_golden_ones
+def test_python_backend_keeps_golden_reference_path_without_resident_allocation(monkeypatch):
+    module = lifecycle()
+    monkeypatch.setattr(module, 'NATIVE_GOLDEN_ENABLED', True)
+    helper = module.try_update_golden_ones
     configure_backend('python')
     manager, population = make_world()
     expected_manager, expected = make_world()
@@ -386,7 +448,9 @@ def test_first_helper_import_with_custom_shuffle_keeps_original_failure_prefix(n
     # Reproduce a fresh adapter import after a pre-existing module-level hook.
     # The helper must reject a plain function before reading MethodType fields.
     monkeypatch.delitem(sys.modules, 'native_lifecycle')
-    helper = lifecycle().try_update_golden_ones
+    module = lifecycle()
+    monkeypatch.setattr(module, 'NATIVE_GOLDEN_ENABLED', True)
+    helper = module.try_update_golden_ones
     seed()
     expected_error = outcome(frozen_update(), expected_manager, expected)
     expected_state, expected_rng, expected_visits = snapshot(expected_manager, expected), rng(), list(visits)
