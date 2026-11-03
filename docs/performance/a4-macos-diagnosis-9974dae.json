@@ -1,0 +1,60 @@
+{
+  "workflow": "Frozen A2 A3 macOS aeonic diagnosis",
+  "diagnosis_commit": "9974dae644c60272e814650092f98194a565f8c4",
+  "baseline_commit": "eca7377c6ee53ab1f57c32fd8227c31e0d73b1cb",
+  "candidate_commit": "5714a60769b06d6435f9a4ff6fcf00ce8ad24d0b",
+  "run_url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41650233462",
+  "attempts": [
+    {
+      "attempt": 1,
+      "job_id": 125966122393,
+      "created_at": "2026-11-03T14:05:13Z",
+      "updated_at": "2026-11-03T14:23:45Z",
+      "run_conclusion": "failure",
+      "job_conclusion": "cancelled",
+      "failure_annotation": "The job was not acquired by Runner of type hosted even after multiple attempts",
+      "capacity_annotation": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.",
+      "capacity_annotation_occurrences": 3,
+      "steps": null,
+      "log_download_error": "404 BlobNotFound",
+      "artifact_count": 0,
+      "measurement_started": false
+    },
+    {
+      "attempt": 2,
+      "job_id": 125979940682,
+      "run_started_at": "2026-11-03T14:29:19Z",
+      "updated_at": "2026-11-03T14:46:05Z",
+      "run_conclusion": "failure",
+      "job_conclusion": "cancelled",
+      "failure_annotation": "The job was not acquired by Runner of type hosted even after multiple attempts",
+      "capacity_annotation": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.",
+      "capacity_annotation_occurrences": 3,
+      "steps": null,
+      "logs_url": null,
+      "artifact_count": 0,
+      "measurement_started": false
+    },
+    {
+      "attempt": 3,
+      "job_id": 126002433112,
+      "run_started_at": "2026-11-03T15:07:34Z",
+      "updated_at": "2026-11-03T15:22:38Z",
+      "retry_basis": "A separate macOS hosted job had acquired a runner and executed checkout/setup, establishing a changed external capacity state before this one additional bounded retry.",
+      "capacity_change_run_url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41659474466/job/125998559306",
+      "capacity_change_job_final_conclusion": "success",
+      "run_conclusion": "failure",
+      "job_conclusion": "cancelled",
+      "failure_annotation": "The job was not acquired by Runner of type hosted even after multiple attempts",
+      "capacity_annotation": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.",
+      "capacity_annotation_occurrences": 3,
+      "steps": null,
+      "logs_url": null,
+      "artifact_count": 0,
+      "measurement_started": false
+    }
+  ],
+  "measurements": null,
+  "conclusion": "No timing or consistency conclusion is available: all three attempts failed to acquire a hosted macOS arm64 runner. Attempt 3 was authorized only after a separate macOS job demonstrated changed runner availability; this frozen diagnosis still never started. No further retry was requested after attempt 3.",
+  "local_project_execution": false
+}

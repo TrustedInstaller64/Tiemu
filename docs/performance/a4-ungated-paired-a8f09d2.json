@@ -1,0 +1,310 @@
+{
+  "run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41655444159",
+  "commit": "a8f09d2",
+  "baseline": "f2073f001af4bc3f03da6d96d5360aa9a2027e0a",
+  "scope": "First combined A4, before population-size gating. This evidence retains the 200-entity aeonic regression; correctness passes do not imply speedup. Linux/Windows isolated paired runs, three rotated repeats. macOS unavailable at capture.",
+  "linux": {
+    "job": 125984389448,
+    "cases": [
+      {
+        "phase": "human",
+        "population": 1000,
+        "generations": 6,
+        "initial_reincarnator": false,
+        "median_seconds": {
+          "baseline": 0.12972157699999798,
+          "a-1": 0.12600173500000267,
+          "a-4": 0.1250735530000071,
+          "a-4-forced": 0.12546271099999728
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "a-1": 1.0295221490402116,
+          "a-4": 1.037162324796119,
+          "a-4-forced": 1.0339452731895837
+        },
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 0.9998706152022973,
+          "a-1": 1.0000346625361414,
+          "a-4": 1.000040712044002,
+          "a-4-forced": 1.0054841952203848
+        }
+      },
+      {
+        "phase": "human",
+        "population": 10000,
+        "generations": 3,
+        "initial_reincarnator": false,
+        "median_seconds": {
+          "baseline": 0.7660847209999986,
+          "a-1": 0.7151953230000032,
+          "a-4": 0.7156916440000032,
+          "a-4-forced": 0.7364261459999852
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "a-1": 1.0711545452877564,
+          "a-4": 1.070411716306129,
+          "a-4-forced": 1.040273658344572
+        },
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 0.9999144286508531,
+          "a-1": 0.9999289846019827,
+          "a-4": 1.00476076184829,
+          "a-4-forced": 1.004704857396542
+        }
+      },
+      {
+        "phase": "human",
+        "population": 1000,
+        "generations": 6,
+        "initial_reincarnator": true,
+        "median_seconds": {
+          "baseline": 0.14408554899998194,
+          "a-1": 0.14060119800001303,
+          "a-4": 0.14117074399999296,
+          "a-4-forced": 0.14169433799997933
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "a-1": 1.0247818016455918,
+          "a-4": 1.0206473729428607,
+          "a-4-forced": 1.016875840162385
+        },
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 1.000030440249201,
+          "a-1": 0.9999306592453646,
+          "a-4": 0.9999745052448016,
+          "a-4-forced": 1.0045794722428203
+        }
+      },
+      {
+        "phase": "aeonic",
+        "population": 200,
+        "generations": 2,
+        "initial_reincarnator": false,
+        "median_seconds": {
+          "baseline": 0.030796881000014764,
+          "a-1": 0.03791679100001488,
+          "a-4": 0.038380600000010645,
+          "a-4-forced": 0.03731826599999977
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "a-1": 0.8122227695904612,
+          "a-4": 0.8024074923270148,
+          "a-4-forced": 0.8252495172207347
+        },
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 1.000125933133327,
+          "a-1": 1.0001461598258448,
+          "a-4": 1.000131009251816,
+          "a-4-forced": 1.0001161759473163
+        }
+      },
+      {
+        "phase": "aeonic",
+        "population": 200,
+        "generations": 12,
+        "initial_reincarnator": false,
+        "median_seconds": {
+          "baseline": 0.045011410999990176,
+          "a-1": 0.05845663700000614,
+          "a-4": 0.05868084499999782,
+          "a-4-forced": 0.05882843499998103
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "a-1": 0.7699965873846873,
+          "a-4": 0.7670545814395114,
+          "a-4-forced": 0.7651301789688046
+        },
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 1.00011019427962,
+          "a-1": 1.0000715059950112,
+          "a-4": 1.0000715736114913,
+          "a-4-forced": 1.0000745557827388
+        }
+      },
+      {
+        "phase": "inorganic",
+        "grid": [
+          10,
+          10
+        ],
+        "generations": 10000,
+        "median_seconds": {
+          "baseline": 0.04044010600000547,
+          "candidate": 0.040054090000012366
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "candidate": 1.0096373678691237
+        },
+        "same_legacy": true,
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 1.000101706121055,
+          "candidate": 1.0001105370984043
+        }
+      }
+    ]
+  },
+  "windows": {
+    "job": 125984389910,
+    "cases": [
+      {
+        "phase": "human",
+        "population": 1000,
+        "generations": 6,
+        "initial_reincarnator": false,
+        "median_seconds": {
+          "baseline": 0.071516000000031,
+          "a-1": 0.07272790000001805,
+          "a-4": 0.07061440000001085,
+          "a-4-forced": 0.07075620000000526
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "a-1": 0.9833365187227081,
+          "a-4": 1.012767934019407,
+          "a-4-forced": 1.0107382815926473
+        },
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 1.0924128866262952,
+          "a-1": 1.0742094849429258,
+          "a-4": 1.1063607422846897,
+          "a-4-forced": 0.8902854896280262
+        }
+      },
+      {
+        "phase": "human",
+        "population": 10000,
+        "generations": 3,
+        "initial_reincarnator": false,
+        "median_seconds": {
+          "baseline": 0.4501248999999916,
+          "a-1": 0.405329399999971,
+          "a-4": 0.39614050000000134,
+          "a-4-forced": 0.40327130000002853
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "a-1": 1.1105162862600735,
+          "a-4": 1.136275892013036,
+          "a-4-forced": 1.116183819676629
+        },
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 0.9806724710854555,
+          "a-1": 1.0022712391453201,
+          "a-4": 1.0009121913345764,
+          "a-4-forced": 1.0016591173417841
+        }
+      },
+      {
+        "phase": "human",
+        "population": 1000,
+        "generations": 6,
+        "initial_reincarnator": true,
+        "median_seconds": {
+          "baseline": 0.08153580000004013,
+          "a-1": 0.07925610000000916,
+          "a-4": 0.07950959999999441,
+          "a-4-forced": 0.07894330000004857
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "a-1": 1.028763716610213,
+          "a-4": 1.0254837151745935,
+          "a-4-forced": 1.0328400256891968
+        },
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 0.9581680685044061,
+          "a-1": 0.985728543291822,
+          "a-4": 0.9825857506515627,
+          "a-4-forced": 1.0020046505836024
+        }
+      },
+      {
+        "phase": "aeonic",
+        "population": 200,
+        "generations": 2,
+        "initial_reincarnator": false,
+        "median_seconds": {
+          "baseline": 0.02028899999999112,
+          "a-1": 0.024271300000009433,
+          "a-4": 0.023985100000004422,
+          "a-4-forced": 0.023931899999979578
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "a-1": 0.8359255581688346,
+          "a-4": 0.8459001630173474,
+          "a-4-forced": 0.8477805773886918
+        },
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 0.7701217408451299,
+          "a-1": 0.6437644460739197,
+          "a-4": 1.3021538666681673,
+          "a-4-forced": 1.2860346920697072
+        }
+      },
+      {
+        "phase": "aeonic",
+        "population": 200,
+        "generations": 12,
+        "initial_reincarnator": false,
+        "median_seconds": {
+          "baseline": 0.03045729999996638,
+          "a-1": 0.03519589999996242,
+          "a-4": 0.034936599999980444,
+          "a-4-forced": 0.03495739999999614
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "a-1": 0.8653649999005254,
+          "a-4": 0.8717877526715087,
+          "a-4-forced": 0.8712690303045919
+        },
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 1.0260266011772052,
+          "a-1": 0.9004077046094194,
+          "a-4": 0.9117858164067651,
+          "a-4-forced": 1.335374973292744
+        }
+      },
+      {
+        "phase": "inorganic",
+        "grid": [
+          10,
+          10
+        ],
+        "generations": 10000,
+        "median_seconds": {
+          "baseline": 0.02707700000001978,
+          "candidate": 0.026914200000021538
+        },
+        "speedup_over_baseline": {
+          "baseline": 1,
+          "candidate": 1.0060488515355503
+        },
+        "same_legacy": true,
+        "same_checked_state_and_rng_digest": true,
+        "mean_cpu_cores": {
+          "baseline": 1.1541160394422267,
+          "candidate": 1.1387114523392587
+        }
+      }
+    ]
+  }
+}

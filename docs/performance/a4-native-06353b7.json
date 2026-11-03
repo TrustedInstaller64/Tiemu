@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "repository": "TrustedInstaller64/Tiemu",
+  "source_commit": "06353b7b4772d0db3b5b6848e21ecee7012ce663",
+  "workflow": "Native core and platforms",
+  "workflow_file": ".github/workflows/native.yml",
+  "run_id": 41659474706,
+  "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41659474706",
+  "recorded_at_utc": "2026-11-03T15:34:33Z",
+  "execution_location": "GitHub-hosted runners only",
+  "results": {
+    "linux": {
+      "job_id": 125998558107,
+      "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41659474706/job/125998558107",
+      "status": "completed",
+      "conclusion": "success",
+      "pytest": {
+        "passed": 579,
+        "failed": 0,
+        "skipped": 0,
+        "duration_seconds": 59.34
+      },
+      "math_probe": {
+        "python": "3.12.15",
+        "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.43",
+        "machine": "x86_64",
+        "numpy": "2.2.2",
+        "rows": 3089,
+        "cases": 10,
+        "vecdot_scalar_tanh_mismatches": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "vecdot_vector_tanh_mismatches": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "scope": "Characterization of the supplied 3,089-row float64 inputs across ten seat/suppression cases; not a claim of equivalence for every possible input."
+      },
+      "checks": [
+        {
+          "name": "Run cmake --build build/standalone --config Release --parallel 2",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ctest --test-dir build/standalone -C Release --output-on-failure",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify the installed backend is the C ABI implementation",
+          "conclusion": "success"
+        },
+        {
+          "name": "Characterize exact scoring microkernels on this platform",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest -q",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m main --disable-llm --no-interactive --device cpu --backend cpp --seed 42 --smoke-test --output-dir runs/ci",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m main --disable-llm --no-interactive --compute-only --device cpu --backend cpp --native-threads 4 --native-min-rows 1 --seed 42 --smoke-test --output-dir runs/ci-parallel",
+          "conclusion": "success"
+        }
+      ]
+    },
+    "windows": {
+      "job_id": 125998558823,
+      "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41659474706/job/125998558823",
+      "status": "completed",
+      "conclusion": "success",
+      "pytest": {
+        "passed": 567,
+        "failed": 0,
+        "skipped": 12,
+        "duration_seconds": 72.43,
+        "skip_scope": "Eleven existing POSIX console/PTY tests and one POSIX SIGTERM test."
+      },
+      "math_probe": {
+        "python": "3.12.10",
+        "platform": "Windows-2025Server-10.0.26100-SP0",
+        "machine": "AMD64",
+        "numpy": "2.2.2",
+        "rows": 3089,
+        "cases": 10,
+        "vecdot_scalar_tanh_mismatches": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "vecdot_vector_tanh_mismatches": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "scope": "Characterization of the supplied 3,089-row float64 inputs across ten seat/suppression cases; not a claim of equivalence for every possible input."
+      },
+      "checks": [
+        {
+          "name": "Run cmake --build build/standalone --config Release --parallel 2",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ctest --test-dir build/standalone -C Release --output-on-failure",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify the installed backend is the C ABI implementation",
+          "conclusion": "success"
+        },
+        {
+          "name": "Characterize exact scoring microkernels on this platform",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest -q",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m main --disable-llm --no-interactive --device cpu --backend cpp --seed 42 --smoke-test --output-dir runs/ci",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m main --disable-llm --no-interactive --compute-only --device cpu --backend cpp --native-threads 4 --native-min-rows 1 --seed 42 --smoke-test --output-dir runs/ci-parallel",
+          "conclusion": "success"
+        }
+      ]
+    },
+    "docker": {
+      "job_id": 125998558639,
+      "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41659474706/job/125998558639",
+      "status": "completed",
+      "conclusion": "success",
+      "scope": "Linux Docker image build and CPU/no-LLM CLI smoke.",
+      "checks": [
+        {
+          "name": "Run docker build -t tiemu:cpu .",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run docker run --rm tiemu:cpu --disable-llm --no-interactive --device cpu --llm-device cpu --backend cpp --seed 42 --smoke-test --output-dir /data",
+          "conclusion": "success"
+        }
+      ]
+    }
+  },
+  "macos_attempts": [
+    {
+      "attempt": 1,
+      "job_id": 125998557620,
+      "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41659474706/job/125998557620",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-03T15:01:11Z",
+      "completed_at": "2026-11-03T15:16:12Z",
+      "runner_name": "",
+      "steps": [],
+      "annotations": [
+        {
+          "annotation_level": "failure",
+          "message": "The job was not acquired by Runner of type hosted even after multiple attempts"
+        },
+        {
+          "annotation_level": "notice",
+          "message": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.",
+          "occurrences": 3
+        }
+      ]
+    },
+    {
+      "attempt": 2,
+      "job_id": 126009410662,
+      "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41659474706/job/126009410662",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "created_at": "2026-11-03T15:18:57Z",
+      "started_at": "2026-11-03T15:18:57Z",
+      "completed_at": "2026-11-03T15:33:58Z",
+      "runner_name": "",
+      "steps": [],
+      "annotations": [
+        {
+          "annotation_level": "failure",
+          "message": "The job was not acquired by Runner of type hosted even after multiple attempts",
+          "path": ".github",
+          "title": ""
+        },
+        {
+          "annotation_level": "notice",
+          "message": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.",
+          "path": ".github",
+          "title": ""
+        },
+        {
+          "annotation_level": "notice",
+          "message": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.",
+          "path": ".github",
+          "title": ""
+        }
+      ]
+    }
+  ],
+  "retry": {
+    "additional_attempts_authorized": 1,
+    "additional_attempts_executed": 1,
+    "command": "gh run rerun 41659474706 --failed --repo TrustedInstaller64/Tiemu",
+    "passed_jobs_reexecuted": false,
+    "carried_forward_success_evidence": {
+      "platform": "linux",
+      "attempt_2_record_id": 126009413632,
+      "original_started_at": "2026-11-03T15:01:13Z",
+      "original_completed_at": "2026-11-03T15:03:07Z"
+    },
+    "stopped_after_second_capacity_failure": true
+  },
+  "interpretation": {
+    "verified": "Final-commit Linux, Windows and Linux Docker functional checks passed.",
+    "macos_native_workflow": "Neither macOS attempt acquired a runner. These cancellations provide no macOS C-build, unit-test, math-probe or CLI result.",
+    "timestamp_note": "For unacquired macOS jobs, GitHub started_at is the queued job record time; empty runner_name and steps confirm no runner execution.",
+    "separate_workflows": "macOS paired/performance and frozen-diagnosis evidence is tracked separately; this file does not replace or negate those results."
+  },
+  "not_executed": [
+    "macOS stages of this Native workflow: standalone CMake/CTest, C-ABI installation check, scoring math probe, pytest and both CLI smoke commands.",
+    "Any local project import, build, test, model training, simulation or benchmark; the user's local-load restriction remained in effect.",
+    "Local Docker installation or execution.",
+    "Validation on the user's physical Apple M1 or Hyper-V deployment by this Native workflow."
+  ]
+}
