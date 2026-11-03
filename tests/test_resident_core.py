@@ -1,0 +1,223 @@
+"""Cloud-only contracts for the interpreter-free resident world C ABI."""
+import ctypes as ct
+
+import numpy as np
+import pytest
+
+from native_backend import configure_backend
+from native_encounters import _State
+
+
+class Source(ct.Structure):
+    _fields_ = [('stable_id', ct.c_uint64), ('titans', ct.POINTER(ct.c_double)),
+                ('paths', ct.POINTER(ct.c_double)), ('score', ct.c_double),
+                ('hit_points', ct.c_double), ('trait', ct.c_int32),
+                ('aspect', ct.c_int32), ('boss', ct.c_uint8), ('unlocked', ct.c_uint8)]
+
+
+class View(ct.Structure):
+    _fields_ = [('entities', ct.c_size_t), ('stable_ids', ct.POINTER(ct.c_uint64)),
+                ('state', _State)]
+
+
+def pointer(array):
+    return None if array is None else array.ctypes.data_as(ct.POINTER(ct.c_double))
+
+
+@pytest.fixture
+def abi():
+    native = configure_backend('cpp')
+    library = native._lib
+    signatures = {
+        'tiemu_world_abi_version': ([], ct.c_uint32),
+        'tiemu_world_create': ([ct.POINTER(ct.c_void_p)], ct.c_int),
+        'tiemu_world_sync': ([ct.c_void_p, ct.c_void_p, ct.c_size_t], ct.c_int),
+        'tiemu_world_get_view': ([ct.c_void_p, ct.c_void_p], ct.c_int),
+        'tiemu_world_run_encounters': ([ct.c_void_p, ct.c_void_p, ct.c_void_p,
+                                       ct.c_void_p, ct.c_size_t, ct.c_void_p], ct.c_int),
+        'tiemu_world_births': ([ct.c_void_p, ct.c_void_p, ct.c_size_t, ct.c_void_p,
+                              ct.c_size_t, ct.c_size_t, ct.c_void_p, ct.c_size_t,
+                              ct.c_void_p, ct.c_size_t, ct.c_double, ct.c_double,
+                              ct.POINTER(ct.POINTER(ct.c_double)), ct.POINTER(ct.c_size_t)], ct.c_int),
+        'tiemu_world_destroy': ([ct.POINTER(ct.c_void_p)], ct.c_int),
+    }
+    try:
+        for name, (arguments, result) in signatures.items():
+            assert hasattr(library, name), f'Resident C ABI has not implemented {name}'
+            function = getattr(library, name)
+            function.argtypes, function.restype = arguments, result
+        assert library.tiemu_world_abi_version() == 1
+        yield native, library
+    finally:
+        configure_backend('python')
+
+
+@pytest.fixture
+def world(abi):
+    _, library = abi
+    handle = ct.c_void_p()
+    assert library.tiemu_world_create(ct.byref(handle)) == 0
+    try:
+        yield handle
+    finally:
+        assert library.tiemu_world_destroy(ct.byref(handle)) == 0
+        assert not handle.value
+        assert library.tiemu_world_destroy(ct.byref(handle)) == 0
+
+
+def rows(count=3, ids=None):
+    titans = np.arange(count*12, dtype=np.float64).reshape(count, 12) / 10 + 0.25
+    paths = np.arange(count*12, dtype=np.float64).reshape(count, 12) / 100 + 0.01
+    records = (Source * count)()
+    for index in range(count):
+        records[index] = Source(0 if ids is None else ids[index], pointer(titans[index]),
+                                pointer(paths[index]) if index % 2 else None,
+                                1.5 + index, 100.0 - index, index % 3, index - 1,
+                                index == 1, index == 2)
+    return records, titans, paths
+
+
+def read(library, handle):
+    view = View()
+    assert library.tiemu_world_get_view(handle, ct.byref(view)) == 0
+    n = int(view.entities)
+    return {
+        'ids': np.ctypeslib.as_array(view.stable_ids, shape=(n,)).copy() if n else np.empty(0, dtype=np.uint64),
+        'titans': np.ctypeslib.as_array(view.state.titans, shape=(n, 12)).copy() if n else np.empty((0, 12)),
+        'paths': np.ctypeslib.as_array(view.state.paths, shape=(n, 12)).copy() if n else np.empty((0, 12)),
+        'valid': np.ctypeslib.as_array(view.state.path_valid, shape=(n,)).copy() if n else np.empty(0, dtype=np.uint8),
+        'scores': np.ctypeslib.as_array(view.state.scores, shape=(n,)).copy() if n else np.empty(0),
+    }
+
+
+def same(actual, expected):
+    for field in actual:
+        np.testing.assert_array_equal(actual[field], expected[field])
+
+
+def test_resident_ids_survive_reorder_but_not_removal(abi, world):
+    _, library = abi
+    source, titans, paths = rows()
+    assert library.tiemu_world_sync(world, source, 3) == 0
+    initial = read(library, world)
+    assert len(set(initial['ids'])) == 3 and all(initial['ids'] > 0)
+    reordered, reordered_titans, reordered_paths = rows(2, [int(initial['ids'][2]), int(initial['ids'][0])])
+    assert library.tiemu_world_sync(world, reordered, 2) == 0
+    np.testing.assert_array_equal(read(library, world)['ids'], initial['ids'][[2, 0]])
+    replacement, replacement_titans, replacement_paths = rows(3, [int(initial['ids'][2]), int(initial['ids'][0]), 0])
+    assert library.tiemu_world_sync(world, replacement, 3) == 0
+    current = read(library, world)
+    assert current['ids'][2] > max(initial['ids'])
+    stale, stale_titans, stale_paths = rows(1, [int(initial['ids'][1])])
+    assert library.tiemu_world_sync(world, stale, 1) == 1
+    same(read(library, world), current)
+
+
+def test_resident_copies_sources_and_resynchronizes_external_writes(abi, world):
+    _, library = abi
+    source, titans, paths = rows()
+    assert library.tiemu_world_sync(world, source, 3) == 0
+    initial = read(library, world)
+    titans[:] *= 7
+    paths[:] *= 3
+    same(read(library, world), initial)
+    for index, identifier in enumerate(initial['ids']):
+        source[index].stable_id = int(identifier)
+    assert library.tiemu_world_sync(world, source, 3) == 0
+    refreshed = read(library, world)
+    np.testing.assert_array_equal(refreshed['titans'], titans)
+    np.testing.assert_array_equal(refreshed['paths'][1], paths[1])
+    np.testing.assert_array_equal(refreshed['valid'], [0, 1, 0])
+    np.testing.assert_array_equal(refreshed['ids'], initial['ids'])
+
+
+@pytest.mark.parametrize('invalid', ['duplicate', 'unknown', 'null-titan', 'nan-titan',
+                                    'nan-path', 'nan-score', 'inf-hp', 'trait', 'aspect', 'boss', 'unlocked'])
+def test_invalid_sync_does_not_commit_partial_population(abi, world, invalid):
+    _, library = abi
+    source, titans, paths = rows()
+    assert library.tiemu_world_sync(world, source, 3) == 0
+    initial = read(library, world)
+    for index, identifier in enumerate(initial['ids']):
+        source[index].stable_id = int(identifier)
+    source[0].score = 777.0  # a valid earlier row must not commit before a later error
+    if invalid == 'duplicate':
+        source[2].stable_id = source[0].stable_id
+    elif invalid == 'unknown':
+        source[2].stable_id = 999999
+    elif invalid == 'null-titan':
+        source[2].titans = None
+    elif invalid == 'nan-titan':
+        titans[2, 11] = np.nan
+    elif invalid == 'nan-path':
+        paths[1, 11] = np.nan
+    elif invalid == 'nan-score':
+        source[2].score = np.nan
+    elif invalid == 'inf-hp':
+        source[2].hit_points = np.inf
+    elif invalid == 'trait':
+        source[2].trait = 9
+    elif invalid == 'aspect':
+        source[2].aspect = 12
+    elif invalid == 'boss':
+        source[2].boss = 2
+    elif invalid == 'unlocked':
+        source[2].unlocked = 2
+    assert library.tiemu_world_sync(world, source, 3) == 1
+    same(read(library, world), initial)
+
+
+def test_empty_population_and_handle_contracts(abi, world):
+    _, library = abi
+    source, titans, paths = rows(1)
+    assert library.tiemu_world_sync(world, source, 1) == 0
+    old = read(library, world)['ids'][0]
+    assert library.tiemu_world_sync(world, None, 0) == 0
+    assert read(library, world)['ids'].size == 0
+    assert library.tiemu_world_sync(world, source, 1) == 0
+    assert read(library, world)['ids'][0] > old
+    assert library.tiemu_world_create(ct.byref(world)) == 1
+    assert library.tiemu_world_get_view(world, None) == 1
+    assert library.tiemu_world_sync(None, source, 1) == 1
+    assert library.tiemu_world_sync(world, None, 1) == 1
+    assert library.tiemu_world_run_encounters(world, None, None, None, 625, None) == 1
+    assert library.tiemu_world_destroy(None) == 1
+
+
+@pytest.mark.parametrize('modifier_present', [False, True])
+@pytest.mark.parametrize('purity', [0.0, 0.01])
+def test_native_birth_stage_matches_separate_original_operations(abi, world, modifier_present, purity):
+    native, library = abi
+    source, titans, paths = rows()
+    assert library.tiemu_world_sync(world, source, 3) == 0
+    population = read(library, world)
+    blueprint = np.linspace(-1.0, 3.0, 12)
+    noise = np.linspace(-2.0, 1.0, 60).reshape(5, 12)
+    modifier = np.linspace(-0.6, 0.5, 12) if modifier_present else None
+    tide = np.linspace(-0.04, 0.03, 12)
+    expected = []
+    for row in noise:
+        values = np.array(blueprint + row).clip(min=0)
+        if modifier is not None:
+            values += modifier
+        expected.append(native.normalize_pipeline(values, purity, tide, 2.5))
+    output, count = ct.POINTER(ct.c_double)(), ct.c_size_t()
+    status = library.tiemu_world_births(world, blueprint.ctypes.data, blueprint.size,
+        noise.ctypes.data, noise.size, len(noise), None if modifier is None else modifier.ctypes.data,
+        0 if modifier is None else modifier.size, tide.ctypes.data, tide.size, purity, 2.5,
+        ct.byref(output), ct.byref(count))
+    assert status == 0 and count.value == noise.size
+    actual = np.ctypeslib.as_array(output, shape=noise.shape).copy()
+    np.testing.assert_array_equal(actual, expected)
+    same(read(library, world), population)
+
+
+def test_birth_stage_rejects_invalid_shape_before_output(abi, world):
+    _, library = abi
+    values = np.ones(12)
+    output, count = ct.POINTER(ct.c_double)(), ct.c_size_t(999)
+    status = library.tiemu_world_births(world, values.ctypes.data, 12, values.ctypes.data,
+        11, 1, None, 0, values.ctypes.data, 12, 0.01, 100.0,
+        ct.byref(output), ct.byref(count))
+    assert status == 1
+    assert not output and count.value == 999
