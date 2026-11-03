@@ -6,10 +6,14 @@ on:
       - '*.py'
       - 'cpp/**'
       - 'benchmarks/**'
+      - '!benchmarks/diagnose_aeonic.py'
       - '.github/workflows/single-world-performance.yml'
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   compare:
     timeout-minutes: 20
@@ -26,7 +30,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: baseline
-          ref: 4a2311dfff44e5b92829dfdb84f735f37c171701
+          ref: eca7377c6ee53ab1f57c32fd8227c31e0d73b1cb
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -34,8 +38,6 @@ jobs:
       - if: runner.os != 'macOS'
         run: python -m pip install torch==2.12.0 --index-url https://download.pytorch.org/whl/cpu
       - run: python -m pip install "./candidate[test]"
-      - name: Install binding headers only for the frozen historical baseline
-        run: python -m pip install 'pybind11>=2.13,<4'
       - name: Build isolated baseline native module
         working-directory: baseline
         run: python setup.py build_ext --inplace

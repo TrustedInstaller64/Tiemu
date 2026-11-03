@@ -3,14 +3,79 @@ from contextlib import contextmanager
 from native_backend import get_native
 from native_paths import _native_dominant_paths
 import random
+import threading
 from collections import Counter
 
 from constants import GREEK_ROOTS, TITAN_NAMES, PATH_NAMES
 from entities import Pathstrider
 from models import TitanToPathModel
+from native_world import ResidentWorld
 
 import logging 
 logger = logging.getLogger("OmphalosLogger") 
+
+
+def _birth_array(value, shape):
+    # This conservative range excludes overflow-sensitive exception/warning
+    # paths before any names or random draws have advanced. It is many orders
+    # above the normal configured world ranges, while keeping legacy dot,
+    # purification and norm intermediates safely within float64.
+    return (type(value) is np.ndarray and value.dtype == np.float64
+            and value.shape == shape and bool(np.isfinite(value).all())
+            and bool((np.abs(value) <= 1e30).all()))
+
+
+def _native_births_supported(manager, population, count, blueprint, modifier):
+    if (get_native() is None or type(manager) is not PopulationManager
+            or type(population) is not list or type(count) is not int or count <= 0
+            or threading.active_count() != 1
+            or np.geterr() != {'divide': 'warn', 'over': 'warn', 'under': 'ignore', 'invalid': 'warn'}):
+        return False
+    if any(name in manager.__dict__ or getattr(PopulationManager, name) is not original
+           for name, original in _BIRTH_MANAGER_METHODS.items()):
+        return False
+    if (Pathstrider.__init__ is not _BIRTH_ENTITY_INIT
+            or Pathstrider.internal_purification is not _BIRTH_PURIFICATION
+            or Pathstrider.__getattribute__ is not object.__getattribute__
+            or Pathstrider.__setattr__ is not object.__setattr__
+            or any(name in Pathstrider.__dict__ for name in (
+                'name', '_titan_to_path_model', 'titan_affinities', 'trait',
+                'golden_one_tenure', 'heroic_tendency', '_path_affinities', 'score',
+                'hp', 'is_titan_boss', 'titan_aspect', 'data_modification_unlocked',
+                'activity', 'stability', 'is_titan_form', 'held_fire_seeds'))
+            or PopulationManager.__getattribute__ is not object.__getattribute__
+            or PopulationManager.__setattr__ is not object.__setattr__):
+        return False
+    if any(getattr(owner, name) is not original for owner, name, original in _BIRTH_RNG):
+        return False
+    python_owner, numpy_owner = random._inst, np.random.mtrand._rand
+    if (type(python_owner) is not random.Random or type(numpy_owner) is not np.random.RandomState
+            or any(name in python_owner.__dict__ for name in ('sample', 'randint', 'random',
+                                                              'getrandbits', '_randbelow'))):
+        return False
+    if any(getattr(original, '__self__', None) is not
+           (python_owner if owner is random else numpy_owner)
+           for owner, _, original in _BIRTH_RNG):
+        return False
+    if (type(manager.existing_names) is not set or type(manager.name_to_entity_map) is not dict
+            or tuple(GREEK_ROOTS) != _BIRTH_ROOTS
+            or type(manager.titan_to_path_model) is not TitanToPathModel):
+        return False
+    if not all(type(value) in (int, float, np.float64) and np.isfinite(value)
+               for value in (manager.mutation_rate, manager.purity_factor, manager.max_affinity_norm)):
+        return False
+    if not (0 <= manager.mutation_rate <= 1e30 and 0 < manager.purity_factor <= 1e10
+            and 0 < manager.max_affinity_norm <= 1e100):
+        return False
+    if not (_birth_array(blueprint, (12,))
+            and _birth_array(manager.base_titan_affinities, (12,))
+            and _birth_array(manager.cosmic_tide_vector, (12,))):
+        return False
+    if modifier is not None and not (
+            _birth_array(modifier, (12,)) and _birth_array(
+                manager.titan_to_path_model.path_to_titan_feedback_matrix, (12, 12))):
+        return False
+    return True
 
 class PopulationManager:
     def __init__(self, existing_names: set, name_to_entity_map: dict, 
@@ -35,6 +100,19 @@ class PopulationManager:
         self._tracked_indices = {}
         self._dirty_paths = set()
         self.cosmic_tide_vector = np.zeros(len(TITAN_NAMES)) 
+        self._native_world = None
+
+    def get_native_world(self):
+        if get_native() is None:
+            return None
+        if self._native_world is None:
+            self._native_world = ResidentWorld()
+        return self._native_world
+
+    def close_native_world(self):
+        world, self._native_world = self._native_world, None
+        if world is not None:
+            world.close()
 
     def generate_unique_name(self):
         while True:
@@ -197,6 +275,35 @@ class PopulationManager:
     def _add_new_entities(self, population: list, num_to_add: int, blueprint: np.ndarray, 
                           cosmic_zeitgeist: np.ndarray, legacy_modifier: np.ndarray = None): # 新增参数
         dist_newborns = self.get_global_path_distribution(population)
+        try:
+            native_births = _native_births_supported(self, population, num_to_add, blueprint, legacy_modifier)
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            native_births = False
+        if native_births:
+            # Keep the name/RandomState draw interleave. Only side-effect-free
+            # numerical work moves past subsequent draws on this guarded path.
+            names, noise = [], np.empty((num_to_add, 12), dtype=np.float64)
+            modifier = (None if legacy_modifier is None else
+                        np.dot(legacy_modifier, self.titan_to_path_model.path_to_titan_feedback_matrix) * 50.0)
+            for index in range(num_to_add):
+                names.append(self.generate_unique_name())
+                noise[index] = np.random.normal(0, self.mutation_rate, self.base_titan_affinities.shape)
+            world = self.get_native_world()
+            values = world.births(blueprint, noise, modifier, self.cosmic_tide_vector,
+                                  self.purity_factor, self.max_affinity_norm)
+            for name, row in zip(names, values):
+                entity = Pathstrider(name, row, titan_to_path_model=self.titan_to_path_model)
+                population.append(entity)
+                self.name_to_entity_map[name] = entity
+            # The numerical birth buffer does not create live IDs until these
+            # public objects exist. Sync also removes culls and preserves order.
+            # An unsupported pre-existing entity cannot invalidate completed
+            # births; discard only the unavailable resident mirror in that case.
+            try:
+                world.sync(population)
+            except (ValueError, AttributeError, TypeError):
+                self.close_native_world()
+            return
         for _ in range(num_to_add):
             name = self.generate_unique_name()
             new_affinities = blueprint + np.random.normal(0, self.mutation_rate, self.base_titan_affinities.shape)
@@ -212,3 +319,13 @@ class PopulationManager:
             self.recalculate_and_normalize_entity(entity, dist_newborns, cosmic_zeitgeist)
             population.append(entity)
             self.name_to_entity_map[name] = entity
+
+
+_BIRTH_ENTITY_INIT = Pathstrider.__init__
+_BIRTH_PURIFICATION = Pathstrider.internal_purification
+_BIRTH_ROOTS = tuple(GREEK_ROOTS)
+_BIRTH_MANAGER_METHODS = {name: getattr(PopulationManager, name) for name in (
+    'generate_unique_name', 'recalculate_and_normalize_entity', 'normalize_affinities',
+    'get_global_path_distribution', 'get_native_world')}
+_BIRTH_RNG = [(owner, name, getattr(owner, name)) for owner, names in (
+    (random, ('sample', 'randint')), (np.random, ('normal',))) for name in names]

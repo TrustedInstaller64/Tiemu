@@ -28,7 +28,7 @@
 
 ## Tasks
 
-- [ ] Add bounded frozen-A1/A2 aeonic diagnosis and run it remotely. Record rotated pure timings, separate inclusive spans, optimizer-step evidence and checked-state equality for each ablation.
+- [x] Add bounded frozen-A1/A2 aeonic diagnosis and run it remotely. Record rotated pure timings, separate inclusive spans, optimizer-step evidence and checked-state equality for each ablation.
 - [ ] Fix World C ABI and Python interfaces between implementers. Add lifecycle/birth behavior contracts first; observe missing implementation failures in cloud before production changes.
 - [ ] Implement `cpp/tiemu_world.h/.cpp`, add standalone/build integration and C consumer contracts. World owns state and IDs, validates before sync commit, exposes only bounded synchronous borrowed data.
 - [ ] Implement `native_world.py` and actual `native_encounters.py`/`simulation.py` lifetime integration. Test reuse, reorder/delete/add, external mutation, close/load and unchanged original encounter behavior.
@@ -43,3 +43,5 @@
 - Ruling: the user's explicit continuation authorizes the already selected A architecture and remote verification; no redundant design/commit/push approval. The prohibition on local load overrides generic skill commands that execute tests locally.
 - Ruling: keep complete synchronization at Python-visible boundaries because public ndarrays can change in place. Claim persistent native ownership and actual native stage execution, not complete Python removal or zero-copy whole-world management.
 - Independent ownership: resident C++ ABI/build/C smoke; Python integration/birth and contracts; aeonic diagnostic harness/workflow. Parent owns performance/profile workflow integration and evidence.
+- Remote RED at `0047daa`, run `41634794869`, Ubuntu job `125913148001`: original 346 tests pass; 22 new failures and 19 setup errors all identify the missing `native_world`/World C ABI/lifecycle API. Production implementation began after observing this result. Additional reviewer-requested edge cases cover positional IDs after reordering, invalid native calls, load teardown and birth exception prefixes.
+- First frozen-A1/A2 diagnosis at `42b8fdf`, run `41634508599`: all pure/observed/ablation checked states agree. The 200×2 process-median time is 0.015565/0.016004 s; 200×12 is 0.023081/0.028540 s. Both scenarios perform 15 actual updates per optimizer, so the longer case adds selection/ordinary interactions rather than more training. A2's selector span grows relative to A1 while the training span is similar; neither legacy distribution nor disabling GC removes the difference. Further causal ablations are required before naming a root cause.

@@ -1,6 +1,7 @@
 """A3 resident-world contracts. Execute only on the hosted cloud runners."""
 import gc
 import importlib
+import json
 import random
 from types import SimpleNamespace
 import weakref
@@ -144,6 +145,29 @@ def test_snapshots_own_their_data_and_world_keeps_entities_alive_only_until_next
         world.sync(population())
 
 
+def test_sync_keeps_explicit_array_owners_when_an_entity_field_is_replaced(native, monkeypatch):
+    world = resident_type()()
+    entities = population()
+    reference = weakref.ref(entities[0].titan_affinities)
+    before = entities[0].titan_affinities.copy()
+    synchronize = world._api.sync
+
+    def replace_at_boundary(*args):
+        entities[0].titan_affinities = np.ones(12) * 99.
+        gc.collect()
+        assert reference() is not None
+        return synchronize(*args)
+
+    monkeypatch.setattr(world._api, 'sync', replace_at_boundary)
+    try:
+        world.sync(entities)
+        np.testing.assert_array_equal(world.snapshot()['titans'][0], before)
+        gc.collect()
+        assert reference() is None
+    finally:
+        world.close()
+
+
 def test_repeated_native_encounters_use_the_same_resident_world_and_match_frozen_loop(native, monkeypatch):
     from test_native_encounters import (make_world, frozen_oracle, trace_recorder,
                                         assert_same_entities, ids, close_index, rng_state)
@@ -161,6 +185,9 @@ def test_repeated_native_encounters_use_the_same_resident_world_and_match_frozen
     resident = None
     try:
         for generation in range(3):
+            if generation:
+                for current in (actual, expected):
+                    current.population[:] = current.population[3:] + current.population[:3]
             # Direct public writes between calls must be imported even though
             # both the entity and its ndarray retain their original identity.
             for current in (actual, expected):
@@ -191,6 +218,38 @@ def test_repeated_native_encounters_use_the_same_resident_world_and_match_frozen
             resident.close()
 
 
+def test_native_error_does_not_commit_mirrors_or_global_rng_or_fallback(native, monkeypatch):
+    from test_native_encounters import make_world, snapshot, close_index, rng_state
+    from native_encounters import try_run_encounters
+    cls = resident_type()
+    run = cls.run_encounters
+    world = make_world(relation='REPULSION')
+    before = snapshot(world)
+    rng_before = rng_state()
+
+    def fail_after_native_work(self, *args, **kwargs):
+        run(self, *args, **kwargs)
+        raise RuntimeError('synthetic error after native state changed')
+
+    monkeypatch.setattr(cls, 'run_encounters', fail_after_native_work)
+    try:
+        with pytest.raises(RuntimeError, match='synthetic error'):
+            try_run_encounters(world)
+        assert rng_state() == rng_before
+        after = snapshot(world)
+        for current, previous in zip(after, before):
+            for key in current:
+                if key in ('cache', 'titan_affinities'):
+                    np.testing.assert_array_equal(current[key], previous[key])
+                else:
+                    assert current[key] == previous[key]
+    finally:
+        close_index(world)
+        resident = getattr(world.population_manager, '_native_world', None)
+        if resident is not None:
+            resident.close()
+
+
 def test_simulation_close_releases_resident_state_after_partial_setup(native):
     from simulation import AeonEvolution
     from population_manager import PopulationManager
@@ -209,3 +268,47 @@ def test_simulation_close_releases_resident_state_after_partial_setup(native):
     assert manager._native_world is None
     with pytest.raises(RuntimeError):
         world.sync([])
+
+
+def test_loading_population_discards_the_previous_resident_world(native, tmp_path):
+    from simulation import AeonEvolution
+    from population_manager import PopulationManager
+    model = TitanToPathModel()
+    entities = population()
+    names = {p.name for p in entities}
+    mapping = {p.name: p for p in entities}
+    manager = PopulationManager(names, mapping, np.ones(12), .1, .01, 12, .1,
+                                model, 100., 1., 1000.)
+    assert hasattr(manager, 'get_native_world'), 'Population lifecycle does not own a native world yet'
+    old = manager.get_native_world()
+    old.sync(entities)
+    simulation = object.__new__(AeonEvolution)
+    simulation.population_manager = manager
+    simulation.population = entities
+    simulation.name_to_entity_map = mapping
+    simulation.existing_names = names
+    simulation.titan_to_path_model_instance = model
+    simulation.parliament_manager = SimpleNamespace()
+    simulation.stagnation_manager = SimpleNamespace()
+    simulation.diversity_manager = SimpleNamespace()
+    state = {
+        'generation': 20, 'aeonic_cycle_mode': False, 'reincarnator_name': None,
+        'base_titan_affinities': [1.] * 12, 'cosmic_zeitgeist': [0.] * 12,
+        'parliament_seats': {}, 'stagnation_counter': 0, 'baie_stagnation_counter': 0,
+        'diversity_intervention': None, 'diversity_duration': 0, 'simulation_weights': {},
+        'existing_names': [entities[0].name], 'population': [entities[0].to_dict()],
+    }
+    path = tmp_path / 'state.json'
+    path.write_text(json.dumps(state), encoding='utf-8')
+    simulation.load_simulation_state(str(path))
+    try:
+        assert simulation.generation == 20 and len(simulation.population) == 1
+        assert manager._native_world is None
+        with pytest.raises(RuntimeError):
+            old.sync([])
+        new = manager.get_native_world()
+        assert new is not old
+        new.sync(simulation.population)
+        assert len(new.stable_ids()) == 1
+    finally:
+        manager.close_native_world()

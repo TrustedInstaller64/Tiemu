@@ -10,6 +10,7 @@ import ast
 import functools
 import gc
 import hashlib
+import importlib
 import json
 import logging
 import os
@@ -34,7 +35,8 @@ def arguments():
     parser.add_argument('--worker', action='store_true')
     parser.add_argument('--source-root', type=Path)
     parser.add_argument('--generations', type=int, default=2)
-    parser.add_argument('--mode', choices=('plain', 'legacy-distribution', 'no-gc'), default='plain')
+    parser.add_argument('--mode', choices=('plain', 'legacy-distribution', 'no-gc',
+                                           'materialize-dicts', 'legacy-path-access'), default='plain')
     parser.add_argument('--observe', action='store_true')
     args = parser.parse_args()
     if min(args.blocks, args.samples, args.generations) < 1:
@@ -199,6 +201,22 @@ def worker(args):
                      'frozen-A1:get_global_path_distribution', 'exec'), namespace)
         population_module.PopulationManager.get_global_path_distribution = namespace[method.name]
 
+    patched_path_consumers = []
+    if args.mode == 'legacy-path-access':
+        # A2 inspects entity.__dict__ in the batch helper. CPython's managed
+        # instance layout may then affect later, otherwise unchanged attribute
+        # scans. Disable every imported helper alias before world creation,
+        # including the first election; replacing only distribution misses it.
+        def use_original_getters(*positional, **keywords):
+            return None
+        for name in ('parliament_manager', 'population_manager',
+                     'diversity_manager', 'stagnation_manager'):
+            module = importlib.import_module(name)
+            if not hasattr(module, '_native_dominant_paths'):
+                raise AssertionError(f'{name}: expected A2 batch-path alias is absent')
+            module._native_dominant_paths = use_original_getters
+            patched_path_consumers.append(name)
+
     def digest_checked_state(sim):
         """Hash raw arrays/RNG (never truncated reprs) and ordered state references."""
         digest = hashlib.sha256()
@@ -309,6 +327,14 @@ def worker(args):
             manager = sim.aeonic_cycle_manager
             if not manager.initialize_aeonic_cycle(sim.reincarnator, sim.population, sim.cosmic_zeitgeist):
                 raise AssertionError('aeonic setup did not initialize')
+            materialized = 0
+            if args.mode == 'materialize-dicts':
+                # Apply the hypothesized A2 layout side effect to A1 after all
+                # setup, without changing a field, RNG draw, method or algorithm.
+                # Do not inspect dicts in any other timing mode before timing.
+                for entity in sim.population:
+                    entity.__dict__
+                    materialized += 1
             if observe:
                 timers = Timers()
                 timers.install(sim, native, torch)
@@ -355,6 +381,7 @@ def worker(args):
             result = {'seconds': seconds, 'cpu_seconds': cpu_seconds,
                       'state_digest': state_digest, 'state_components': components,
                       'optimizer_updates': step_groups[0][0], 'population': len(sim.population),
+                      'setup_entity_dicts_explicitly_materialized': materialized,
                       'cycle': manager.aeonic_cycle_number,
                       'gc_collections': [after['collections'] - before['collections']
                                          for before, after in zip(gc_before, gc_after)]}
@@ -381,6 +408,7 @@ def worker(args):
         'platform': platform.platform(), 'machine': platform.machine(),
         'python': platform.python_version(), 'numpy': np.__version__, 'torch': torch.__version__,
         'mode': args.mode, 'observed': args.observe, 'population': 200,
+        'batch_path_aliases_disabled_before_setup': patched_path_consumers,
         'generations': args.generations, 'runs': runs,
         'median_seconds': statistics.median(run['seconds'] for run in runs),
         'scope': 'CPU Torch/BLAS/native 1 thread; fixed seed 731; real aeonic phase and ordered '
@@ -400,7 +428,9 @@ def parent(args):
     baseline, candidate = args.baseline.resolve(), args.candidate.resolve()
     configurations = [('A1', baseline, 'plain'), ('A2', candidate, 'plain'),
                       ('A2-legacy-distribution', candidate, 'legacy-distribution'),
-                      ('A1-no-gc', baseline, 'no-gc'), ('A2-no-gc', candidate, 'no-gc')]
+                      ('A1-no-gc', baseline, 'no-gc'), ('A2-no-gc', candidate, 'no-gc'),
+                      ('A1-materialized-dicts', baseline, 'materialize-dicts'),
+                      ('A2-legacy-path-access', candidate, 'legacy-path-access')]
     reports = []
     for generations in (2, 12):
         runs = {name: [] for name, _, _ in configurations}
@@ -423,7 +453,7 @@ def parent(args):
             for name, root, mode in order:
                 runs[name].append(execute(name, root, mode, block))
         observations = {name: execute(name, root, mode, 'observed', True)
-                        for name, root, mode in configurations[:3]}
+                        for name, root, mode in configurations if mode != 'no-gc'}
         digests = {run['state_digest'] for series in runs.values() for record in series for run in record['runs']}
         digests.update(run['state_digest'] for record in observations.values() for run in record['runs'])
         if len(digests) != 1:
@@ -435,6 +465,10 @@ def parent(args):
                'process_medians_seconds': process_medians, 'median_seconds': medians,
                'speedup_over_A1': {name: medians['A1']/value for name, value in medians.items()},
                'per_block_A2_over_A1_seconds': [b/a for a, b in zip(process_medians['A1'], process_medians['A2'])],
+               'ablation_wall_ratios': {
+                   'A1_materialized_dicts_over_A1': medians['A1-materialized-dicts']/medians['A1'],
+                   'A2_legacy_path_access_over_A2': medians['A2-legacy-path-access']/medians['A2'],
+               },
                'same_checked_state_and_rng': True,
                'optimizer_updates': observations['A2']['runs'][0]['optimizer_updates'],
                'observations': {name: record['runs'][0]['observation'] for name, record in observations.items()}}
@@ -446,8 +480,13 @@ def parent(args):
                        'of process medians retains process blocks as independent samples. All raw '
                        'samples, GC counts, environment and state digests are retained. Legacy '
                        'distribution replaces only the frozen A1 method inside the A2 diagnostic '
-                       'process. No-gc disables collection only within the measured phase. Neither '
-                       'ablation changes production code. Short and longer finite-stage workloads '
+                       'process. No-gc disables collection only within the measured phase. A1 '
+                       'materialized-dicts touches every initial entity.__dict__ after setup; A2 '
+                       'legacy-path-access disables every imported batch-path helper alias before '
+                       'initialization/election. Ablations change no production code or numerical '
+                       'rule. The longer phase may add candidate selections without adding optimizer '
+                       'updates; actual update and observed selection counts are reported. These '
+                       'short and longer finite-stage workloads '
                        'are not complete-world, local M1, power or multicore measurements.'}
     (output/'summary.json').write_text(json.dumps(report, indent=2)+'\n', encoding='utf-8')
 

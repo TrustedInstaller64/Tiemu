@@ -196,3 +196,54 @@ def test_birth_outputs_survive_later_native_calls_and_close(native):
         assert first.flags.owndata
     finally:
         world.close()
+
+
+@pytest.mark.parametrize('case', ['negative_mutation', 'invalid_modifier', 'replaced_rng'])
+def test_birth_fallback_preserves_exception_prefix_without_extra_names_or_rng(native, monkeypatch, case):
+    cls = resident_type()
+    calls = []
+    original = cls.births
+
+    def counted(self, *args, **kwargs):
+        calls.append(self)
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(cls, 'births', counted)
+    actual_manager, actual = fixture_world()
+    expected_manager, expected = fixture_world()
+    modifier = None
+    if case == 'negative_mutation':
+        actual_manager.mutation_rate = expected_manager.mutation_rate = -0.1
+    elif case == 'invalid_modifier':
+        modifier = np.ones(11)
+    else:
+        original_normal = np.random.normal
+        def normal(*args, **kwargs):
+            random.random()
+            return original_normal(*args, **kwargs)
+        monkeypatch.setattr(np.random, 'normal', normal)
+    seed()
+    if case == 'replaced_rng':
+        frozen_births()(expected_manager, expected, 5, expected_manager.base_titan_affinities,
+                        None, modifier)
+    else:
+        with pytest.raises(ValueError):
+            frozen_births()(expected_manager, expected, 5, expected_manager.base_titan_affinities,
+                            None, modifier)
+    expected_rng = capture_rng()
+    seed()
+    try:
+        if case == 'replaced_rng':
+            actual_manager._add_new_entities(actual, 5, actual_manager.base_titan_affinities,
+                                             None, modifier)
+        else:
+            with pytest.raises(ValueError):
+                actual_manager._add_new_entities(actual, 5, actual_manager.base_titan_affinities,
+                                                 None, modifier)
+        assert capture_rng() == expected_rng
+        assert_same(actual_manager, actual, expected_manager, expected)
+        assert calls == []
+    finally:
+        world = getattr(actual_manager, '_native_world', None)
+        if world is not None:
+            world.close()

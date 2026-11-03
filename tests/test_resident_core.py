@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from native_backend import configure_backend
-from native_encounters import _State
+from native_encounters import _Config, _Event, _Result, _State
 
 
 class Source(ct.Structure):
@@ -221,3 +221,109 @@ def test_birth_stage_rejects_invalid_shape_before_output(abi, world):
         ct.byref(output), ct.byref(count))
     assert status == 1
     assert not output and count.value == 999
+
+
+@pytest.mark.parametrize('invalid', ['rng-size', 'rng-index', 'population-count',
+                                    'reincarnator', 'index', 'result-capacity'])
+def test_encounter_failure_does_not_write_inputs_and_complete_sync_recovers(abi, world, invalid):
+    native, library = abi
+    source, titans, paths = rows()
+    assert library.tiemu_world_sync(world, source, 3) == 0
+    matrix, relations, modifiers, tide = np.eye(12), np.zeros((12, 12), dtype=np.int32), np.ones((12, 12)), np.zeros(12)
+    np_mt, py_mt = np.arange(625, dtype=np.uint32), np.arange(625, dtype=np.uint32)
+    culled, updated = np.empty(3, dtype=np.int64), np.empty(3, dtype=np.int64)
+    index = native.OpponentIndex([row.score for row in source], 10.0)
+    try:
+        config = _Config(3, 0, index._live(), pointer(matrix), 144,
+                         relations.ctypes.data_as(ct.POINTER(ct.c_int32)), 144,
+                         pointer(modifiers), 144, pointer(tide), 12, .01, 100., .1, -1, 0)
+        result = _Result()
+        result.culled_ids = culled.ctypes.data_as(ct.POINTER(ct.c_int64))
+        result.culled_capacity = 3
+        result.updated_ids = updated.ctypes.data_as(ct.POINTER(ct.c_int64))
+        result.updated_capacity = 3
+        words = 625
+        if invalid == 'rng-size':
+            words = 624
+        elif invalid == 'rng-index':
+            np_mt[-1] = 625
+        elif invalid == 'population-count':
+            config.entities = 2
+        elif invalid == 'reincarnator':
+            config.reincarnator = 3
+        elif invalid == 'index':
+            config.opponent_index = None
+        else:
+            result.culled_capacity = 2
+        old_np, old_py, old_titans, old_paths = np_mt.copy(), py_mt.copy(), titans.copy(), paths.copy()
+        assert library.tiemu_world_run_encounters(world, ct.byref(config), np_mt.ctypes.data,
+                                                  py_mt.ctypes.data, words, ct.byref(result)) == 1
+        np.testing.assert_array_equal(np_mt, old_np)
+        np.testing.assert_array_equal(py_mt, old_py)
+        np.testing.assert_array_equal(titans, old_titans)
+        np.testing.assert_array_equal(paths, old_paths)
+        assert index.alive_count == 3
+        # A failing native call is fatal to that attempt, never replayed over
+        # its potentially modified index/state. A fresh full sync restores use.
+        assert library.tiemu_world_sync(world, source, 3) == 0
+        np.testing.assert_array_equal(read(library, world)['titans'], titans)
+    finally:
+        index.close()
+
+
+def test_sync_count_overflow_is_rejected_before_source_access(abi, world):
+    _, library = abi
+    source, titans, paths = rows(1)
+    assert library.tiemu_world_sync(world, source, ct.c_size_t(-1).value) == 1
+    assert read(library, world)['ids'].size == 0
+
+
+def test_birth_constructor_clip_preserves_numpy_signed_zero_bits(abi, world):
+    native, library = abi
+    blueprint, noise, tide = np.full(12, -0.0), np.full((1, 12), -0.0), np.full(12, -0.0)
+    blueprint[-1] = 1.0  # Keep the row norm nonzero to expose zero sign bits.
+    initial = np.array(blueprint + noise[0]).clip(min=0)
+    expected = native.normalize_pipeline(initial, 0., tide, 100.)
+    output, count = ct.POINTER(ct.c_double)(), ct.c_size_t()
+    assert library.tiemu_world_births(world, blueprint.ctypes.data, 12, noise.ctypes.data,
+        12, 1, None, 0, tide.ctypes.data, 12, 0., 100., ct.byref(output), ct.byref(count)) == 0
+    actual = np.ctypeslib.as_array(output, shape=(12,)).copy()
+    np.testing.assert_array_equal(np.signbit(actual), np.signbit(expected))
+    assert actual.tobytes() == expected.tobytes()
+
+
+def test_consecutive_resident_segments_refresh_original_array_alias_snapshot(abi, world):
+    native, library = abi
+    source, titans, paths = rows(2)
+    source[0].trait, source[1].trait = 2, 1  # Every encounter boosts the reincarnator.
+    assert library.tiemu_world_sync(world, source, 2) == 0
+    matrix, relations, modifiers, tide = np.eye(12), np.zeros((12, 12), dtype=np.int32), np.ones((12, 12)), np.zeros(12)
+    np_mt, py_mt = np.zeros(625, dtype=np.uint32), np.zeros(625, dtype=np.uint32)
+    np_mt[-1] = py_mt[-1] = 624
+    for segment in range(2):
+        before = read(library, world)
+        index = native.OpponentIndex(before['scores'], 10.0)
+        culled, updated, events = np.empty(2, dtype=np.int64), np.empty(2, dtype=np.int64), (_Event * 3)()
+        try:
+            config = _Config(2, 1, index._live(), pointer(matrix), 144,
+                             relations.ctypes.data_as(ct.POINTER(ct.c_int32)), 144,
+                             pointer(modifiers), 144, pointer(tide), 12, .01, 100., 0., 0, 0)
+            result = _Result()
+            result.culled_ids = culled.ctypes.data_as(ct.POINTER(ct.c_int64))
+            result.culled_capacity = 2
+            result.updated_ids = updated.ctypes.data_as(ct.POINTER(ct.c_int64))
+            result.updated_capacity = 2
+            result.events, result.event_capacity = events, 3
+            assert library.tiemu_world_run_encounters(world, ct.byref(config), np_mt.ctypes.data,
+                py_mt.ctypes.data, 625, ct.byref(result)) == 0
+            assert result.applied_encounters == 1
+            view = View()
+            assert library.tiemu_world_get_view(world, ct.byref(view)) == 0
+            expected_alias = before['titans'].copy()
+            expected_alias[0, 0] *= 1.2
+            np.testing.assert_array_equal(np.ctypeslib.as_array(view.state.original_titans, shape=(2, 12)), expected_alias)
+            assert view.state.original_titan_mutated[0] == 1
+            np_mt = np.ctypeslib.as_array(view.state.numpy_mt, shape=(625,)).copy()
+            py_mt = np.ctypeslib.as_array(view.state.python_mt, shape=(625,)).copy()
+        finally:
+            index.close()

@@ -168,6 +168,8 @@ class BoundaryTimers:
         self.patches = []
         self.native_encounter_entry = False
         self.native_encounter_successes = 0
+        self.resident_world_present = False
+        self.resident_worlds = set()
 
     def wrap(self, name, function):
         @functools.wraps(function)
@@ -237,6 +239,28 @@ class BoundaryTimers:
                 return self.wrap('encounters.C++_run', run), error
 
             self.replace(encounter_module, '_entry_points', observed_entry_points)
+            if (root / 'native_world.py').is_file():
+                import native_world
+                self.resident_world_present = True
+                api = native_world._entry_points(native._lib)
+                # Every World instance retains this shared binding table. Patch
+                # it in place so even a handle created during setup is observed.
+                for name in ('sync', 'run', 'births'):
+                    self.replace(api, name, self.wrap(f'world.C++_{name}', getattr(api, name)))
+                for name in ('_sync_prepared', 'births'):
+                    self.replace(native_world.ResidentWorld, name, self.wrap(
+                        f'ResidentWorld.{name}', getattr(native_world.ResidentWorld, name)))
+                original_resident_run = native_world.ResidentWorld.run_encounters
+
+                @functools.wraps(original_resident_run)
+                def observed_resident_run(world, *positional, **keywords):
+                    # Retain the objects until summary; recycled Python IDs
+                    # must not disguise handle replacement between generations.
+                    self.resident_worlds.add(world)
+                    return original_resident_run(world, *positional, **keywords)
+
+                self.replace(native_world.ResidentWorld, 'run_encounters', self.wrap(
+                    'ResidentWorld.run_encounters', observed_resident_run))
             original_encounters = simulation_module.try_run_encounters
             @functools.wraps(original_encounters)
             def observed_encounters(*positional, **keywords):
@@ -284,6 +308,9 @@ class BoundaryTimers:
             if self.native_encounter_entry:
                 if count('try_run_encounters') != generations or self.native_encounter_successes != generations:
                     errors.append('Native encounter entry must execute successfully once per human generation')
+                if self.resident_world_present and (
+                        count('world.C++_run') != generations or len(self.resident_worlds) != 1):
+                    errors.append('One resident World must execute the native encounter core in every generation')
             elif count('PopulationManager.get_global_path_distribution') < count('InteractionHandler.entity_interaction'):
                 errors.append('Distribution call count is smaller than interaction count')
         elif count('AeonicCycleManager.run_aeonic_cycle_generation') != generations:
@@ -295,6 +322,8 @@ class BoundaryTimers:
         return {'valid': not errors, 'integrity_errors': errors,
                 'native_encounter_entry_present': self.native_encounter_entry,
                 'native_encounter_successful_calls': self.native_encounter_successes,
+                'resident_world_present': self.resident_world_present,
+                'resident_encounter_handles': len(self.resident_worlds),
                 'spans': sorted(self.rows.values(), key=lambda row: row['inclusive_seconds'], reverse=True),
                 'scope': 'Explicit Python wrappers count calls and perf_counter spans without cProfile. '
                          'Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped '
@@ -312,7 +341,11 @@ class BoundaryTimers:
                          'time, so compare the total entry span across revisions. Population, diversity '
                          'and stagnation statistics may share batched path reads outside the encounter '
                          'entry; their cost remains in the enclosing generation/evolution spans. '
-                         'Scalar C ABI conversion is included in its calling phase; no timer is subtracted.'}
+                         'Resident core sync/run/birth spans use the actual shared C binding table; '
+                         'the human case must use one persistent World for all generations. '
+                         'ResidentWorld spans include its Python adapter. All source identities and '
+                         'eligibility guards remain unchanged. Scalar C ABI conversion is included '
+                         'in its calling phase; no timer is subtracted.'}
 
 
 def sample(population, generations, profile_path=None, boundary_timers=False):

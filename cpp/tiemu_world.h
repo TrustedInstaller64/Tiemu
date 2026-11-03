@@ -26,6 +26,8 @@
  * not race with any operation or borrowed-view read. All status/error/handle
  * ownership rules from tiemu_core.h also apply; errors use tiemu_last_error().
  * run_encounters retains ordered RNG/arithmetic semantics of encounters_run.
+ * Config reincarnator and result/trace entity indices remain current population
+ * POSITIONS, not stable IDs. Config entities must match the synchronized size.
  * On a failed encounter the native scratch state/index is unspecified; do not
  * commit it to public state. A complete sync is required before reusing it.
  */
@@ -71,6 +73,10 @@ TIEMU_API int tiemu_world_run_encounters(
  * consumed and no live entity is appended until the caller's following sync.
  * The returned independent newborn buffer belongs to the world, not the caller.
  * births never changes existing population state, IDs, or encounter RNG state.
+ * Constructor clipping uses +0 for values equal to either signed zero. Finite
+ * inputs may still overflow in intermediate arithmetic: those IEEE results
+ * follow the existing normalize_pipeline kernel, without Python FP warnings.
+ * The integrating caller restricts magnitude/error-mode support as needed.
  */
 TIEMU_API int tiemu_world_births(
     void *handle, const double *blueprint, size_t blueprint_count,

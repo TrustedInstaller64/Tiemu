@@ -208,9 +208,14 @@ class AeonEvolution:
             if evaluator is not None:
                 evaluator.close()
         finally:
-            debugger = getattr(self, "debugger", None)
-            if debugger is not None:
-                debugger.close()
+            try:
+                manager = getattr(self, 'population_manager', None)
+                if manager is not None:
+                    manager.close_native_world()
+            finally:
+                debugger = getattr(self, "debugger", None)
+                if debugger is not None:
+                    debugger.close()
 
     def _control_checkpoint(self):
         if getattr(self, '_step_pending', False):
@@ -966,6 +971,7 @@ class AeonEvolution:
             self.simulation_weights = state['simulation_weights']
 
             # 清理并重建种群
+            self.population_manager.close_native_world()
             self.population.clear()
             self.name_to_entity_map.clear()
             self.existing_names = set(state['existing_names'])

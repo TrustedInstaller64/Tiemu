@@ -20,6 +20,7 @@ from entities import Pathstrider
 from interaction_handler import InteractionHandler
 from models import TitanToPathModel
 from native_backend import get_native
+from native_world import _Source, _State
 from parliament_manager import ParliamentManager
 from population_manager import PopulationManager
 
@@ -44,7 +45,7 @@ _METHODS = {
         '_handle_mentorship_or_assimilation', '_handle_titan_battle')},
     PopulationManager: {name: getattr(PopulationManager, name) for name in (
         'recalculate_and_normalize_entity', 'normalize_affinities', 'track_distribution',
-        'mark_paths_dirty', 'get_global_path_distribution')},
+        'mark_paths_dirty', 'get_global_path_distribution', 'get_native_world')},
     ParliamentManager: {'get_zeitgeist_multiplier': ParliamentManager.get_zeitgeist_multiplier},
     TitanToPathModel: {'get_path_affinities': TitanToPathModel.get_path_affinities},
     Pathstrider: {name: getattr(Pathstrider, name) for name in (
@@ -62,14 +63,6 @@ class _Config(ct.Structure):
                 ('interaction_modifiers', _D), ('modifiers_count', _S), ('tide', _D), ('tide_count', _S),
                 ('purity_factor', _F), ('max_norm', _F), ('culling_strength', _F),
                 ('reincarnator', _L), ('negative_world_titan', _L)]
-
-
-class _State(ct.Structure):
-    _fields_ = [('entity_capacity', _S), ('vector_capacity', _S), ('titans', _D), ('paths', _D),
-                ('scores', _D), ('hit_points', _D), ('traits', _I32), ('aspects', _I32),
-                ('bosses', _B), ('unlocked', _B), ('path_valid', _B), ('titan_replaced', _B),
-                ('path_changed', _B), ('original_titan_mutated', _B), ('original_titans', _D),
-                ('numpy_mt', _U), ('python_mt', _U), ('rng_words', _S)]
 
 
 class _Event(ct.Structure):
@@ -148,11 +141,12 @@ def _number(value):
     return isinstance(value, (int, float, np.integer, np.floating)) and bool(np.isfinite(value))
 
 
-def _eligible(sim):
+def _eligible(sim, sources=None):
     """Check structure without reading lazy caches; packed values are checked below.
 
     Class methods are checked once per call, while every entity still rejects
-    instance overrides. No validation is cached across generations.
+    instance overrides. Optional source rows are filled in this same scan,
+    reusing checked buffer addresses. No validation is cached across generations.
     """
     if threading.active_count() != 1 or not _standard_rngs():
         return False
@@ -198,10 +192,16 @@ def _eligible(sim):
         start = array.ctypes.data
         reserved_ranges.append((start, start + array.nbytes))
     path_methods = _METHODS[Pathstrider]
-    if any(getattr(Pathstrider, name) is not original for name, original in path_methods.items()):
+    if (any(getattr(Pathstrider, name) is not original for name, original in path_methods.items())
+            or Pathstrider.__getattribute__ is not object.__getattribute__
+            or Pathstrider.__setattr__ is not object.__setattr__
+            or any(name in Pathstrider.__dict__ for name in (
+                'titan_affinities', '_path_affinities', 'score', 'hp', 'trait', 'titan_aspect',
+                'name', 'is_titan_boss', 'data_modification_unlocked', '_titan_to_path_model'))):
         return False
     seen_arrays = set()
-    for entity in population:
+    source_owners = []
+    for row, entity in enumerate(population):
         if (type(entity) is not Pathstrider or not entity.__dict__.keys().isdisjoint(path_methods)
                 or entity._titan_to_path_model is not model):
             return False
@@ -219,6 +219,7 @@ def _eligible(sim):
         cache = entity._path_affinities
         if cache is not None and not _array_layout(cache, (12,), owned=True):
             return False
+        addresses = []
         for array in (entity.titan_affinities, cache):
             if array is not None:
                 identity = id(array)
@@ -230,6 +231,18 @@ def _eligible(sim):
                     if start < right and left < end:
                         return False
                 seen_arrays.add(identity)
+                if sources is not None:
+                    source_owners.append(array)
+                addresses.append(start)
+            else:
+                addresses.append(None)
+        if sources is not None:
+            sources[row] = _Source(0, *addresses, entity.score, entity.hp,
+                                   _TRAITS[entity.trait],
+                                   -1 if entity.titan_aspect is None else _TITAN_NAMES.index(entity.titan_aspect),
+                                   entity.is_titan_boss, entity.data_modification_unlocked)
+    if sources is not None:
+        sources._owners = tuple(source_owners)
     return sim.reincarnator is None or any(entity is sim.reincarnator for entity in population)
 
 
@@ -262,39 +275,25 @@ def try_run_encounters(sim, *, trace=False):
     if native is None or getattr(native, '__binding__', None) != 'c-abi':
         return None
     try:
-        eligible = _eligible(sim)
+        population = sim.population
+        if type(population) is not list or not 2 <= len(population) <= (1 << 32)-1:
+            return None
+        sources = (_Source * len(population))()
+        eligible = _eligible(sim, sources)
     except (AttributeError, TypeError, ValueError, OverflowError):
         eligible = False
     if not eligible:
         return None
-    population = sim.population
     count, encounters = len(population), min(2*len(population), 5000)
     manager, handler = sim.population_manager, sim.interaction_handler
-    titans = np.stack([entity.titan_affinities for entity in population])
-    paths = np.zeros((count, 12), dtype=np.float64)
-    valid = np.zeros(count, dtype=np.uint8)
-    for i, entity in enumerate(population):
-        if entity._path_affinities is not None:
-            paths[i] = entity._path_affinities
-            valid[i] = 1
-    scores = np.array([entity.score for entity in population], dtype=np.float64)
-    hp = np.array([entity.hp for entity in population], dtype=np.float64)
-    # These copies are already needed by the C ABI. Validate whole buffers once
-    # instead of allocating/reducing a 12-element mask for every source array.
-    # Missing caches remain zero rows, and no entity/index/RNG has been changed.
-    if not (np.isfinite(titans).all() and np.isfinite(paths).all()
-            and np.isfinite(scores).all() and np.isfinite(hp).all()):
+    world = manager.get_native_world()
+    # C++ validates finite values and gathers these already-checked sources
+    # into its resident arrays. Unsupported values leave the prior world intact,
+    # and this happens before touching the opponent index or process RNGs.
+    try:
+        world._sync_prepared(population, sources)
+    except ValueError:
         return None
-    run, last_error = _entry_points(native._lib)
-    original_titans = titans.copy()
-    traits = np.array([_TRAITS[entity.trait] for entity in population], dtype=np.int32)
-    aspects = np.array([-1 if entity.titan_aspect is None else _TITAN_NAMES.index(entity.titan_aspect)
-                        for entity in population], dtype=np.int32)
-    bosses = np.array([entity.is_titan_boss for entity in population], dtype=np.uint8)
-    unlocked = np.array([entity.data_modification_unlocked for entity in population], dtype=np.uint8)
-    titan_replaced = np.zeros(count, dtype=np.uint8)
-    path_changed = np.zeros(count, dtype=np.uint8)
-    old_mutated = np.zeros(count, dtype=np.uint8)
     relations = np.array([_RELATIONS.get(str(value), 0)
                           for value in handler.PATH_RELATIONSHIP_MATRIX.flat], dtype=np.int32)
     culled_ids, updated_ids = np.empty(count, dtype=np.int64), np.empty(count, dtype=np.int64)
@@ -318,24 +317,50 @@ def try_run_encounters(sim, *, trace=False):
                      handler.culling_strength,
                      next((i for i, entity in enumerate(population) if entity is sim.reincarnator), -1),
                      _TITAN_NAMES.index('负世'))
-    state = _State(count, count*12, _ptr(titans), _ptr(paths), _ptr(scores), _ptr(hp),
-                   _ptr(traits, _I32), _ptr(aspects, _I32), _ptr(bosses, _B), _ptr(unlocked, _B),
-                   _ptr(valid, _B), _ptr(titan_replaced, _B), _ptr(path_changed, _B), _ptr(old_mutated, _B),
-                   _ptr(original_titans), _ptr(numpy_mt, _U), _ptr(python_mt, _U), 625)
     result = _Result(_ptr(culled_ids, _I), count, 0, _ptr(updated_ids, _I), count, 0,
                      events, encounters*3, 0, traces, encounters if trace else 0, 0, 0,
                      (ct.c_double * 12)())
     # Retain the original manager lifecycle, including replacement of stale
     # dictionaries/sets and finally cleanup. Numeric histogram work stays in C++.
-    with manager.track_distribution(population):
-        with opponent_index._lock:
-            config.opponent_index = opponent_index._live()
-            status = run(ct.byref(config), ct.byref(state), ct.byref(result))
-            if status:
-                raw = last_error()
-                message = raw.decode('utf-8', errors='replace') if raw else 'Encounter engine failed'
-                raise {1: ValueError, 2: IndexError, 3: RuntimeError}.get(status, RuntimeError)(message)
-    np.random.set_state((numpy_state[0], numpy_mt[:624], int(numpy_mt[624]), *numpy_state[3:]))
+    with world._lock:
+        with manager.track_distribution(population):
+            with opponent_index._lock:
+                config.opponent_index = opponent_index._live()
+                world.run_encounters(config, result, numpy_mt, python_mt)
+        # Borrowing, scalar restoration and changed-row copies all finish while
+        # locked. No native row view can become a public ndarray or escape.
+        _commit_resident(sim, world, result, events, numpy_state, python_state)
+    culled, updated = set(), set()
+    for i in culled_ids[:result.culled_count]:
+        culled.add(population[int(i)])
+    for i in updated_ids[:result.updated_count]:
+        updated.add(population[int(i)])
+    _emit_events(events, result.event_count, population)
+    debug_trace = []
+    if trace:
+        for entry in traces[:result.trace_count]:
+            debug_trace.append({'attempt': int(entry.attempt), 'first': int(entry.first),
+                                'second': int(entry.second), 'culled': int(entry.culled),
+                                'applied': bool(entry.applied), 'numpy_state': list(entry.numpy_mt),
+                                'python_state': list(entry.python_mt)})
+    return EncounterResult(culled, updated, debug_trace)
+
+
+def _commit_resident(sim, world, result, events, numpy_state, python_state):
+    """Consume the borrowed world view only within the caller's lifetime lock."""
+    population = sim.population
+    count = len(population)
+    state = world._view().state
+    vector = lambda pointer: np.ctypeslib.as_array(pointer, shape=(count*12,)).reshape(count, 12)
+    scalar = lambda pointer: np.ctypeslib.as_array(pointer, shape=(count,))
+    titans, paths, original_titans = vector(state.titans), vector(state.paths), vector(state.original_titans)
+    scores, hp = scalar(state.scores), scalar(state.hit_points)
+    valid, unlocked = scalar(state.path_valid), scalar(state.unlocked)
+    titan_replaced = scalar(state.titan_replaced)
+    path_changed, old_mutated = scalar(state.path_changed), scalar(state.original_titan_mutated)
+    numpy_mt = np.ctypeslib.as_array(state.numpy_mt, shape=(625,))
+    python_mt = np.ctypeslib.as_array(state.python_mt, shape=(625,))
+    np.random.set_state((numpy_state[0], numpy_mt[:624].copy(), int(numpy_mt[624]), *numpy_state[3:]))
     random.setstate((python_state[0], tuple(int(value) for value in python_mt), python_state[2]))
     # The unused multiplier arithmetic previously initialized this public seat
     # cache. Preserve that side effect once using the first actual old-path read.
@@ -367,17 +392,3 @@ def try_run_encounters(sim, *, trace=False):
             entity.hp = np.float64(hp[i]) if hp_numpy[i] else float(hp[i])
         if bool(unlocked[i]) != entity.data_modification_unlocked:
             entity.data_modification_unlocked = bool(unlocked[i])
-    culled, updated = set(), set()
-    for i in culled_ids[:result.culled_count]:
-        culled.add(population[int(i)])
-    for i in updated_ids[:result.updated_count]:
-        updated.add(population[int(i)])
-    _emit_events(events, result.event_count, population)
-    debug_trace = []
-    if trace:
-        for entry in traces[:result.trace_count]:
-            debug_trace.append({'attempt': int(entry.attempt), 'first': int(entry.first),
-                                'second': int(entry.second), 'culled': int(entry.culled),
-                                'applied': bool(entry.applied), 'numpy_state': list(entry.numpy_mt),
-                                'python_state': list(entry.python_mt)})
-    return EncounterResult(culled, updated, debug_trace)
