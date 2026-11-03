@@ -12,6 +12,7 @@ import functools
 import logging
 import random
 import threading
+from types import MethodType
 
 import numpy as np
 import native_world
@@ -196,15 +197,24 @@ def _eligible(sim, sources=None):
     if (any(getattr(Pathstrider, name) is not original for name, original in path_methods.items())
             or Pathstrider.__getattribute__ is not object.__getattribute__
             or Pathstrider.__setattr__ is not object.__setattr__
-            or any(name in Pathstrider.__dict__ for name in (
+            or any(name in base.__dict__ for base in Pathstrider.__mro__ for name in (
                 'titan_affinities', '_path_affinities', 'score', 'hp', 'trait', 'titan_aspect',
-                'name', 'is_titan_boss', 'data_modification_unlocked', '_titan_to_path_model'))):
+                'name', 'is_titan_boss', 'data_modification_unlocked', '_titan_to_path_model',
+                '__getattr__'))):
         return False
     seen_arrays = set()
     source_owners = []
     source_rows = []
     for entity in population:
-        if (type(entity) is not Pathstrider or not entity.__dict__.keys().isdisjoint(path_methods)
+        if type(entity) is not Pathstrider:
+            return False
+        # Inspect the binding, never invoke the method or materialize __dict__.
+        # Class guards have already excluded custom attribute lookup/descriptors.
+        # The two original properties are data descriptors, so same-named
+        # instance dictionary entries cannot override them and need no check.
+        purification = entity.internal_purification
+        if (type(purification) is not MethodType or purification.__self__ is not entity
+                or purification.__func__ is not path_methods['internal_purification']
                 or entity._titan_to_path_model is not model):
             return False
         if (type(entity.trait) is not str or entity.trait not in _TRAITS
