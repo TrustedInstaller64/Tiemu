@@ -1,0 +1,47 @@
+name: Frozen A1 A2 aeonic regression diagnosis
+on:
+  push:
+    branches: [codex/single-world-a]
+    paths:
+      - 'benchmarks/diagnose_aeonic.py'
+      - '.github/workflows/aeonic-diagnosis.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: diagnosis
+      - uses: actions/checkout@v4
+        with:
+          path: baseline
+          ref: 4a2311dfff44e5b92829dfdb84f735f37c171701
+      - uses: actions/checkout@v4
+        with:
+          path: candidate
+          ref: 26c1c2624cd85529e801754093bf061e0a316ec4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --upgrade pip setuptools wheel
+      - run: python -m pip install torch==2.12.0 --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install './candidate[test]'
+      - name: Install pybind headers only for frozen A1
+        run: python -m pip install 'pybind11>=2.13,<4'
+      - name: Build isolated A1 backend
+        working-directory: baseline
+        run: python setup.py build_ext --inplace
+      - name: Build isolated A2 backend
+        working-directory: candidate
+        run: python setup.py build_ext --inplace
+      - name: Diagnose real aeonic generations with strict state and RNG comparisons
+        run: python diagnosis/benchmarks/diagnose_aeonic.py --baseline baseline --candidate candidate --output-dir aeonic-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frozen-a1-a2-aeonic-diagnosis
+          path: aeonic-evidence/
