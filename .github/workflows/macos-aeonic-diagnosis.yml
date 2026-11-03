@@ -1,0 +1,47 @@
+name: Frozen A2 A3 macOS aeonic diagnosis
+on:
+  push:
+    branches: [codex/single-world-a]
+    paths:
+      - 'benchmarks/diagnose_macos_aeonic.py'
+      - '.github/workflows/macos-aeonic-diagnosis.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  diagnose:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: diagnosis
+      - uses: actions/checkout@v4
+        with:
+          path: baseline
+          ref: eca7377c6ee53ab1f57c32fd8227c31e0d73b1cb
+      - uses: actions/checkout@v4
+        with:
+          path: candidate
+          ref: 5714a60769b06d6435f9a4ff6fcf00ce8ad24d0b
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --upgrade pip setuptools wheel
+      - run: python -m pip install './candidate[test]'
+      - name: Build isolated frozen A2 C ABI core
+        working-directory: baseline
+        run: python setup.py build_ext --inplace
+      - name: Build isolated frozen A3 C ABI core
+        working-directory: candidate
+        run: python setup.py build_ext --inplace
+      - name: Diagnose real aeonic phases with a same-code variability control
+        run: python diagnosis/benchmarks/diagnose_macos_aeonic.py --baseline baseline --candidate candidate --blocks 6 --samples 15 --output-dir macos-aeonic-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frozen-a2-a3-macos-aeonic-diagnosis
+          path: macos-aeonic-evidence/

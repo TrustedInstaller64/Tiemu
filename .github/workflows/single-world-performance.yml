@@ -7,6 +7,8 @@ on:
       - 'cpp/**'
       - 'benchmarks/**'
       - '!benchmarks/diagnose_aeonic.py'
+      - '!benchmarks/diagnose_macos_aeonic.py'
+      - '!benchmarks/probe_scoring_math.py'
       - '.github/workflows/single-world-performance.yml'
   workflow_dispatch:
 permissions:
@@ -30,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: baseline
-          ref: eca7377c6ee53ab1f57c32fd8227c31e0d73b1cb
+          ref: f2073f0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
