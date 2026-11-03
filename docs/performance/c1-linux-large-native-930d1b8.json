@@ -1,0 +1,82 @@
+{
+  "runtime_commit": "92a865b",
+  "harness_commit": "930d1b8",
+  "platform": "linux",
+  "run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41644668094",
+  "job_id": 125946774629,
+  "complete": true,
+  "scope": "Native-only continuation for human10000x4, seed731, three rotated plain timing repeats. No original-Python timing and no additional paired original trajectory observations. Off/A2 and repeat determinism gates passed. Production runtime unchanged from 92a865b.",
+  "records": [
+    {
+      "type": "timing",
+      "data": {
+        "case": "human-10000-4-reinc0",
+        "seed": 731,
+        "samples": {
+          "a2": [
+            {
+              "wall_seconds": 1.061443526000005,
+              "cpu_seconds": 1.0613951000000004,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 1.0724990899998943,
+              "cpu_seconds": 1.0724000059999992,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 1.076468336000005,
+              "cpu_seconds": 1.076424674,
+              "usable_for_performance": true
+            }
+          ],
+          "off": [
+            {
+              "wall_seconds": 1.0407371090000765,
+              "cpu_seconds": 1.0406342610000001,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 1.1047885679999467,
+              "cpu_seconds": 1.1047163969999998,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 1.055170966999981,
+              "cpu_seconds": 1.0550975839999994,
+              "usable_for_performance": true
+            }
+          ],
+          "c1": [
+            {
+              "wall_seconds": 0.9108872390000897,
+              "cpu_seconds": 0.9108650049999998,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 0.9698934369999961,
+              "cpu_seconds": 0.9698774920000002,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 0.9259191430000442,
+              "cpu_seconds": 0.9259147180000009,
+              "usable_for_performance": true
+            }
+          ]
+        },
+        "median_seconds": {
+          "a2": 1.0724990899998943,
+          "off": 1.055170966999981,
+          "c1": 0.9259191430000442
+        },
+        "off_matches_a2": true,
+        "repeat_state_consistent": true,
+        "c1_speedup_over_original": null,
+        "c1_speedup_over_a2": 1.1583075024509382,
+        "c1_speedup_over_off": 1.1395929925167674,
+        "scope": "Native-only timing continuation; three rotated seed731 repeats. No original-Python timing or additional trajectory claim."
+      }
+    }
+  ]
+}
