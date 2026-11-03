@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     for name in ('original', 'a2', 'candidate', 'output-dir'):
         parser.add_argument('--' + name, type=Path, required=True)
-    parser.add_argument('--case', choices=('all', 'human', 'large', 'reincarnator'),
+    parser.add_argument('--case', choices=('all', 'human', 'large', 'reincarnator', 'large-native'),
                         default=os.environ.get('C1_CASE', 'all'))
     args = parser.parse_args()
     output = args.output_dir.resolve()
@@ -42,6 +42,40 @@ def main():
         subprocess.run(command, check=True, env=env, cwd=output, timeout=600,
                        stdout=subprocess.DEVNULL)
         return json.loads(destination.read_text(encoding='utf-8'))
+
+    if args.case == 'large-native':
+        # Original 10k trajectories were already compared in the main run.
+        # This bounded continuation measures only the incremental C1 gain;
+        # it must never manufacture an original-Python speed ratio.
+        native_configurations = configurations[1:]
+        samples = {name: [] for name, _, _ in native_configurations}
+        digests = {name: set() for name in samples}
+        for repeat in range(3):
+            runs = {}
+            for configuration in native_configurations[repeat:] + native_configurations[:repeat]:
+                name = configuration[0]
+                run = execute(configuration, 10000, 4, False, 731,
+                              f'large-native-731-timing-{repeat}')
+                runs[name] = run
+                samples[name].append(run['timing'])
+                digests[name].add(run['final_state_digest'])
+            if runs['a2']['final_state_digest'] != runs['off']['final_state_digest']:
+                raise AssertionError('Disabled C experiment changed frozen A2 state')
+        if any(len(values) != 1 for values in digests.values()):
+            raise AssertionError('Repeated native timing samples are not deterministic')
+        medians = {name: statistics.median(x['wall_seconds'] for x in rows)
+                   for name, rows in samples.items()}
+        report = {'case': 'human-10000-4-reinc0', 'seed': 731, 'samples': samples,
+                  'median_seconds': medians, 'off_matches_a2': True,
+                  'repeat_state_consistent': True, 'c1_speedup_over_original': None,
+                  'c1_speedup_over_a2': medians['a2'] / medians['c1'],
+                  'c1_speedup_over_off': medians['off'] / medians['c1'],
+                  'scope': 'Native-only timing continuation; three rotated seed731 repeats. '
+                           'No original-Python timing or additional trajectory claim.'}
+        (output / 'native-timing-summary.json').write_text(
+            json.dumps(report, indent=2, allow_nan=False) + '\n', encoding='utf-8')
+        print('C1_TIMING ' + json.dumps(report, allow_nan=False), flush=True)
+        return
 
     all_cases = []
     cases = {'human': (1000, 12, False), 'large': (10000, 4, False),

@@ -12,7 +12,7 @@ on:
       workload:
         type: choice
         default: all
-        options: [all, human, large, reincarnator]
+        options: [all, human, large, reincarnator, large-native]
 permissions:
   contents: read
 jobs:
