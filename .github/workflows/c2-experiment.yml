@@ -1,5 +1,8 @@
 name: C2 newborn speed and parallel trajectory deviation
 on:
+  push:
+    branches: [codex/c2-newborns-parallel]
+    paths: ['.github/workflows/c2-experiment.yml']
   workflow_dispatch:
     inputs:
       platform:
@@ -18,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ${{ fromJSON(inputs.platform == 'macos' && '["macos-latest"]' || inputs.platform == 'all' && '["ubuntu-latest","windows-latest","macos-latest"]' || '["ubuntu-latest","windows-latest"]') }}
+        os: ${{ fromJSON(inputs.platform == 'macos' && '["macos-latest"]' || inputs.platform == 'linux-windows' && '["ubuntu-latest","windows-latest"]' || '["ubuntu-latest","windows-latest","macos-latest"]') }}
         workload: ${{ fromJSON(inputs.workload == 'human' && '["human"]' || inputs.workload == 'reincarnator' && '["reincarnator"]' || inputs.workload == 'large-native' && '["large-native"]' || inputs.workload == 'births' && '["births"]' || '["human","reincarnator","large-native","births"]') }}
     runs-on: ${{ matrix.os }}
     steps:
