@@ -1,0 +1,2812 @@
+{
+  "schema_version": 1,
+  "run_id": 41651261785,
+  "run_url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41651261785",
+  "runtime_commit": "d32edce",
+  "harness_commit": "5e4f944",
+  "baseline_commits": {
+    "original": "691c6e0023a83513ad3cd386cfee2198317104d3",
+    "a2": "eca7377c6ee53ab1f57c32fd8227c31e0d73b1cb",
+    "c1": "7305af8"
+  },
+  "status": "finished_with_missing_evidence",
+  "coverage": {
+    "successful_jobs": 10,
+    "total_jobs": 12,
+    "incomplete_jobs": [
+      {
+        "id": 125969728802,
+        "name": "compare (macos-latest, reincarnator)",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 125969729434,
+        "name": "compare (macos-latest, births)",
+        "status": "completed",
+        "conclusion": "cancelled"
+      }
+    ],
+    "original_paired_trajectory_seed_groups": 15,
+    "native_only_large_seed_groups": 3,
+    "isolated_birth_case_groups": 4
+  },
+  "missing_evidence": [
+    {
+      "runtime_commit": "d32edce",
+      "harness_commit": "5e4f944",
+      "platform": "macos",
+      "suite": "reincarnator",
+      "run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41651261785",
+      "job_id": 125969728802,
+      "complete": false,
+      "conclusion": "cancelled",
+      "source": "GitHub workflow run jobs status; job log fetch returned 404 BlobNotFound; normalized job steps/logs_url are null.",
+      "cancellation_cause": "Hosted macOS arm64 runner was not acquired due to capacity constraints; this is missing runtime evidence, not a test failure in project code.",
+      "records": [],
+      "annotations": {
+        "source": "https://api.github.com/repos/TrustedInstaller64/Tiemu/check-runs/125969728802/annotations",
+        "annotation_count": 3,
+        "failure": "The job was not acquired by Runner of type hosted even after multiple attempts",
+        "notice": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.",
+        "verified_by": "Parent agent via gh api"
+      },
+      "execution_evidence": {
+        "steps": null,
+        "logs_url": null,
+        "log_fetch_error": "404 BlobNotFound",
+        "measurement_records": 0
+      }
+    },
+    {
+      "runtime_commit": "d32edce",
+      "harness_commit": "5e4f944",
+      "platform": "macos",
+      "suite": "births",
+      "run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41651261785",
+      "job_id": 125969729434,
+      "complete": false,
+      "conclusion": "cancelled",
+      "source": "GitHub workflow run jobs status; job log fetch returned 404 BlobNotFound; normalized job steps/logs_url are null.",
+      "cancellation_cause": "Hosted macOS arm64 runner was not acquired due to capacity constraints; this is missing runtime evidence, not a test failure in project code.",
+      "execution_evidence": {
+        "steps": null,
+        "logs_url": null,
+        "log_fetch_error": "404 BlobNotFound",
+        "measurement_records": 0
+      },
+      "records": [],
+      "annotations": {
+        "source": "https://api.github.com/repos/TrustedInstaller64/Tiemu/check-runs/125969729434/annotations",
+        "annotation_count": 4,
+        "failure_count": 1,
+        "notice_count": 3,
+        "failure": "The job was not acquired by Runner of type hosted even after multiple attempts",
+        "notice": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.",
+        "verified_by": "Parent agent via gh api"
+      }
+    }
+  ],
+  "original_paired_trajectory": {
+    "c2_1_vs_original": {
+      "comparisons": 15,
+      "individual_numeric_available": 15,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [
+        {
+          "location": {
+            "step": 0,
+            "stage": "initial"
+          },
+          "count": 15
+        }
+      ],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 3.552713678800501e-15,
+        "hp": 0,
+        "titan_affinities": 4.440892098500626e-16,
+        "cached_paths": 1.6653345369377348e-16,
+        "activity": 2.6645352591003757e-15,
+        "stability": 1.3322676295501878e-15,
+        "heroic_tendency": 2.6645352591003757e-15,
+        "reincarnator": 6.938893903907228e-18
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 8.881784197001252e-16
+      },
+      "final_network_max_absolute_error": {
+        "action": 0,
+        "guide": 0,
+        "value": 0
+      },
+      "final_network_reference_count_range": {
+        "action": [
+          1370,
+          1370
+        ],
+        "value": [
+          1353,
+          1353
+        ],
+        "guide": [
+          73876,
+          221620
+        ]
+      },
+      "final_population_reference_range": [
+        601,
+        611
+      ],
+      "final_population_candidate_range": [
+        601,
+        611
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0.0016366612111293755,
+          0.0016638935108154174
+        ],
+        "wasserstein_1_range": [
+          4.5073946424049626e-17,
+          1.180303547774257e-16
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 1.7763568394002505e-15
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_2_vs_original": {
+      "comparisons": 15,
+      "individual_numeric_available": 15,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [
+        {
+          "location": {
+            "step": 0,
+            "stage": "initial"
+          },
+          "count": 15
+        }
+      ],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 3.552713678800501e-15,
+        "hp": 0,
+        "titan_affinities": 4.440892098500626e-16,
+        "cached_paths": 1.6653345369377348e-16,
+        "activity": 2.6645352591003757e-15,
+        "stability": 1.3322676295501878e-15,
+        "heroic_tendency": 2.6645352591003757e-15,
+        "reincarnator": 6.938893903907228e-18
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 8.881784197001252e-16
+      },
+      "final_network_max_absolute_error": {
+        "action": 0,
+        "guide": 0,
+        "value": 0
+      },
+      "final_network_reference_count_range": {
+        "action": [
+          1370,
+          1370
+        ],
+        "value": [
+          1353,
+          1353
+        ],
+        "guide": [
+          73876,
+          221620
+        ]
+      },
+      "final_population_reference_range": [
+        601,
+        611
+      ],
+      "final_population_candidate_range": [
+        601,
+        611
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0.0016366612111293755,
+          0.0016638935108154174
+        ],
+        "wasserstein_1_range": [
+          4.5073946424049626e-17,
+          1.180303547774257e-16
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 1.7763568394002505e-15
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_4_vs_original": {
+      "comparisons": 15,
+      "individual_numeric_available": 15,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [
+        {
+          "location": {
+            "step": 0,
+            "stage": "initial"
+          },
+          "count": 15
+        }
+      ],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 3.552713678800501e-15,
+        "hp": 0,
+        "titan_affinities": 4.440892098500626e-16,
+        "cached_paths": 1.6653345369377348e-16,
+        "activity": 2.6645352591003757e-15,
+        "stability": 1.3322676295501878e-15,
+        "heroic_tendency": 2.6645352591003757e-15,
+        "reincarnator": 6.938893903907228e-18
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 8.881784197001252e-16
+      },
+      "final_network_max_absolute_error": {
+        "action": 0,
+        "guide": 0,
+        "value": 0
+      },
+      "final_network_reference_count_range": {
+        "action": [
+          1370,
+          1370
+        ],
+        "value": [
+          1353,
+          1353
+        ],
+        "guide": [
+          73876,
+          221620
+        ]
+      },
+      "final_population_reference_range": [
+        601,
+        611
+      ],
+      "final_population_candidate_range": [
+        601,
+        611
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0.0016366612111293755,
+          0.0016638935108154174
+        ],
+        "wasserstein_1_range": [
+          4.5073946424049626e-17,
+          1.180303547774257e-16
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 1.7763568394002505e-15
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_1_vs_a2": {
+      "comparisons": 15,
+      "individual_numeric_available": 15,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [
+        {
+          "location": {
+            "step": 1,
+            "stage": "after_interactions"
+          },
+          "count": 15
+        }
+      ],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 8.881784197001252e-16,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 0,
+        "activity": 0,
+        "stability": 0,
+        "heroic_tendency": 0,
+        "reincarnator": 0
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {
+        "action": 0,
+        "guide": 0,
+        "value": 0
+      },
+      "final_network_reference_count_range": {
+        "action": [
+          1370,
+          1370
+        ],
+        "value": [
+          1353,
+          1353
+        ],
+        "guide": [
+          73876,
+          221620
+        ]
+      },
+      "final_population_reference_range": [
+        601,
+        611
+      ],
+      "final_population_candidate_range": [
+        601,
+        611
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0,
+          0.0016638935108153063
+        ],
+        "wasserstein_1_range": [
+          0,
+          4.360941504255849e-18
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_1_vs_c1": {
+      "comparisons": 15,
+      "individual_numeric_available": 15,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 0,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 0,
+        "activity": 0,
+        "stability": 0,
+        "heroic_tendency": 0,
+        "reincarnator": 0
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {
+        "action": 0,
+        "guide": 0,
+        "value": 0
+      },
+      "final_network_reference_count_range": {
+        "action": [
+          1370,
+          1370
+        ],
+        "value": [
+          1353,
+          1353
+        ],
+        "guide": [
+          73876,
+          221620
+        ]
+      },
+      "final_population_reference_range": [
+        601,
+        611
+      ],
+      "final_population_candidate_range": [
+        601,
+        611
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0,
+          0
+        ],
+        "wasserstein_1_range": [
+          0,
+          0
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_2_vs_c2_1": {
+      "comparisons": 15,
+      "individual_numeric_available": 15,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 0,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 0,
+        "activity": 0,
+        "stability": 0,
+        "heroic_tendency": 0,
+        "reincarnator": 0
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {
+        "action": 0,
+        "guide": 0,
+        "value": 0
+      },
+      "final_network_reference_count_range": {
+        "action": [
+          1370,
+          1370
+        ],
+        "value": [
+          1353,
+          1353
+        ],
+        "guide": [
+          73876,
+          221620
+        ]
+      },
+      "final_population_reference_range": [
+        601,
+        611
+      ],
+      "final_population_candidate_range": [
+        601,
+        611
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0,
+          0
+        ],
+        "wasserstein_1_range": [
+          0,
+          0
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_4_vs_c2_1": {
+      "comparisons": 15,
+      "individual_numeric_available": 15,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 0,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 0,
+        "activity": 0,
+        "stability": 0,
+        "heroic_tendency": 0,
+        "reincarnator": 0
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {
+        "action": 0,
+        "guide": 0,
+        "value": 0
+      },
+      "final_network_reference_count_range": {
+        "action": [
+          1370,
+          1370
+        ],
+        "value": [
+          1353,
+          1353
+        ],
+        "guide": [
+          73876,
+          221620
+        ]
+      },
+      "final_population_reference_range": [
+        601,
+        611
+      ],
+      "final_population_candidate_range": [
+        601,
+        611
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0,
+          0
+        ],
+        "wasserstein_1_range": [
+          0,
+          0
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    }
+  },
+  "native_only_large_trajectory": {
+    "c2_1_vs_a2": {
+      "comparisons": 3,
+      "individual_numeric_available": 3,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [
+        {
+          "location": {
+            "step": 1,
+            "stage": "after_interactions"
+          },
+          "count": 3
+        }
+      ],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 8.881784197001252e-16,
+        "hp": 0,
+        "titan_affinities": 2.220446049250313e-16,
+        "cached_paths": 2.7755575615628914e-17,
+        "activity": 4.440892098500626e-16,
+        "stability": 0,
+        "heroic_tendency": 4.440892098500626e-16
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {
+        "action": 0,
+        "guide": 0,
+        "value": 0
+      },
+      "final_network_reference_count_range": {
+        "action": [
+          1370,
+          1370
+        ],
+        "value": [
+          1353,
+          1353
+        ],
+        "guide": [
+          73876,
+          73876
+        ]
+      },
+      "final_population_reference_range": [
+        8297,
+        8297
+      ],
+      "final_population_candidate_range": [
+        8297,
+        8297
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0.00012052549114138777,
+          0.00012052549114138777
+        ],
+        "wasserstein_1_range": [
+          6.8778430114176564e-18,
+          8.189182729548e-18
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 2.220446049250313e-16,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_1_vs_c1": {
+      "comparisons": 3,
+      "individual_numeric_available": 3,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 0,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 0,
+        "activity": 0,
+        "stability": 0,
+        "heroic_tendency": 0
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {
+        "action": 0,
+        "guide": 0,
+        "value": 0
+      },
+      "final_network_reference_count_range": {
+        "action": [
+          1370,
+          1370
+        ],
+        "value": [
+          1353,
+          1353
+        ],
+        "guide": [
+          73876,
+          73876
+        ]
+      },
+      "final_population_reference_range": [
+        8297,
+        8297
+      ],
+      "final_population_candidate_range": [
+        8297,
+        8297
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0,
+          0
+        ],
+        "wasserstein_1_range": [
+          0,
+          0
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_2_vs_c2_1": {
+      "comparisons": 3,
+      "individual_numeric_available": 3,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 0,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 0,
+        "activity": 0,
+        "stability": 0,
+        "heroic_tendency": 0
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {
+        "action": 0,
+        "guide": 0,
+        "value": 0
+      },
+      "final_network_reference_count_range": {
+        "action": [
+          1370,
+          1370
+        ],
+        "value": [
+          1353,
+          1353
+        ],
+        "guide": [
+          73876,
+          73876
+        ]
+      },
+      "final_population_reference_range": [
+        8297,
+        8297
+      ],
+      "final_population_candidate_range": [
+        8297,
+        8297
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0,
+          0
+        ],
+        "wasserstein_1_range": [
+          0,
+          0
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_4_vs_c2_1": {
+      "comparisons": 3,
+      "individual_numeric_available": 3,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 0,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 0,
+        "activity": 0,
+        "stability": 0,
+        "heroic_tendency": 0
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {
+        "action": 0,
+        "guide": 0,
+        "value": 0
+      },
+      "final_network_reference_count_range": {
+        "action": [
+          1370,
+          1370
+        ],
+        "value": [
+          1353,
+          1353
+        ],
+        "guide": [
+          73876,
+          73876
+        ]
+      },
+      "final_population_reference_range": [
+        8297,
+        8297
+      ],
+      "final_population_candidate_range": [
+        8297,
+        8297
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0,
+          0
+        ],
+        "wasserstein_1_range": [
+          0,
+          0
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    }
+  },
+  "isolated_birth_state": {
+    "c2_1_vs_original": {
+      "comparisons": 4,
+      "individual_numeric_available": 4,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [
+        {
+          "location": {
+            "step": 0,
+            "stage": "initial"
+          },
+          "count": 4
+        }
+      ],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 1.7763568394002505e-15,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 1.1102230246251565e-16,
+        "activity": 1.7763568394002505e-15,
+        "stability": 1.3322676295501878e-15,
+        "heroic_tendency": 1.7763568394002505e-15
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {},
+      "final_network_reference_count_range": {
+        "action": null,
+        "value": null,
+        "guide": null
+      },
+      "final_population_reference_range": [
+        2000,
+        11000
+      ],
+      "final_population_candidate_range": [
+        2000,
+        11000
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0.00009090909090914145,
+          0.000500000000000056
+        ],
+        "wasserstein_1_range": [
+          9.245129914150971e-18,
+          5.0848214527832313e-17
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_1_vs_a2": {
+      "comparisons": 4,
+      "individual_numeric_available": 4,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 0,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 0,
+        "activity": 0,
+        "stability": 0,
+        "heroic_tendency": 0
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {},
+      "final_network_reference_count_range": {
+        "action": null,
+        "value": null,
+        "guide": null
+      },
+      "final_population_reference_range": [
+        2000,
+        11000
+      ],
+      "final_population_candidate_range": [
+        2000,
+        11000
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0,
+          0
+        ],
+        "wasserstein_1_range": [
+          0,
+          0
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_1_vs_c1": {
+      "comparisons": 4,
+      "individual_numeric_available": 4,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 0,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 0,
+        "activity": 0,
+        "stability": 0,
+        "heroic_tendency": 0
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {},
+      "final_network_reference_count_range": {
+        "action": null,
+        "value": null,
+        "guide": null
+      },
+      "final_population_reference_range": [
+        2000,
+        11000
+      ],
+      "final_population_candidate_range": [
+        2000,
+        11000
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0,
+          0
+        ],
+        "wasserstein_1_range": [
+          0,
+          0
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_2_vs_c2_1": {
+      "comparisons": 4,
+      "individual_numeric_available": 4,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 0,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 0,
+        "activity": 0,
+        "stability": 0,
+        "heroic_tendency": 0
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {},
+      "final_network_reference_count_range": {
+        "action": null,
+        "value": null,
+        "guide": null
+      },
+      "final_population_reference_range": [
+        2000,
+        11000
+      ],
+      "final_population_candidate_range": [
+        2000,
+        11000
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0,
+          0
+        ],
+        "wasserstein_1_range": [
+          0,
+          0
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    },
+    "c2_4_vs_c2_1": {
+      "comparisons": 4,
+      "individual_numeric_available": 4,
+      "individual_numeric_censored": 0,
+      "first_numeric_locations": [],
+      "first_numeric_above_reference_tolerance": [],
+      "first_discrete_locations": [],
+      "first_difference_locations": {
+        "population_order": [],
+        "membership": [],
+        "seats": [],
+        "culls": [],
+        "traits": [],
+        "golden": [],
+        "rng": [],
+        "networks": [],
+        "cache": [],
+        "reincarnator": [],
+        "reporting_path": []
+      },
+      "final_max_absolute_error": {
+        "score": 0,
+        "hp": 0,
+        "titan_affinities": 0,
+        "cached_paths": 0,
+        "activity": 0,
+        "stability": 0,
+        "heroic_tendency": 0
+      },
+      "final_world_max_absolute_error": {
+        "blueprint": 0,
+        "zeitgeist": 0,
+        "managers": 0
+      },
+      "final_network_max_absolute_error": {},
+      "final_network_reference_count_range": {
+        "action": null,
+        "value": null,
+        "guide": null
+      },
+      "final_population_reference_range": [
+        2000,
+        11000
+      ],
+      "final_population_candidate_range": [
+        2000,
+        11000
+      ],
+      "final_population_delta_range": [
+        0,
+        0
+      ],
+      "final_path_total_variation_range": [
+        0,
+        0
+      ],
+      "final_seat_l1_range": [
+        0,
+        0
+      ],
+      "final_score_distribution": {
+        "ks_distance_range": [
+          0,
+          0
+        ],
+        "wasserstein_1_range": [
+          0,
+          0
+        ],
+        "max_absolute_statistic_delta": {
+          "mean": 0,
+          "std": 0,
+          "q05": 0,
+          "q50": 0,
+          "q95": 0
+        },
+        "reference_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "candidate_nonfinite_count_range": [
+          0,
+          0
+        ],
+        "interpretation": "Descriptive distances only. Tiny rounded score shifts can produce nonzero empirical KS; no significance claim."
+      },
+      "scope": "Final sampled raw state errors, not a maximum over every intermediate operation. No individual pointwise error is inferred where the comparator censored correspondence."
+    }
+  },
+  "cases": [
+    {
+      "platform": "macos",
+      "suite": "human",
+      "job_id": 125969729141,
+      "complete": true,
+      "evidence": "c2-macos-human-5e4f944.json",
+      "cpu": {
+        "logical_cpus": 3,
+        "cpu_affinity": null,
+        "affinity_count": null,
+        "processor": "arm",
+        "cpu_models": [],
+        "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+      },
+      "seed_groups": [
+        731,
+        42,
+        2026
+      ],
+      "birth_cases": [],
+      "trajectory_gates": {
+        "observer_unchanged": true,
+        "off_matches_a2": true,
+        "c1only_matches_frozen_c1": true,
+        "c2_thread_digests_equal": true,
+        "phase_native_calls": [
+          {
+            "seed": 731,
+            "requested": {
+              "calls": 6,
+              "rows": 1981
+            },
+            "called": {
+              "count": 6,
+              "rows": 1981,
+              "parallel_eligible_batches": 6
+            }
+          },
+          {
+            "seed": 42,
+            "requested": {
+              "calls": 6,
+              "rows": 1936
+            },
+            "called": {
+              "count": 6,
+              "rows": 1936,
+              "parallel_eligible_batches": 6
+            }
+          },
+          {
+            "seed": 2026,
+            "requested": {
+              "calls": 6,
+              "rows": 1939
+            },
+            "called": {
+              "count": 6,
+              "rows": 1939,
+              "parallel_eligible_batches": 6
+            }
+          }
+        ]
+      },
+      "timing": [
+        {
+          "case": "human-1000-6-reinc0",
+          "seed": 731,
+          "repeat_count": 3,
+          "median_seconds": {
+            "original": 11.287157210000032,
+            "a2": 0.15742771000006428,
+            "c1": 0.11775304200003234,
+            "off": 0.17521837599997525,
+            "c1only": 0.10424683600001572,
+            "c2_1": 0.09557154099996978,
+            "c2_2": 0.08271758200004342,
+            "c2_4": 0.07760679100010748
+          },
+          "speedup_over_original": {
+            "c2_1": 118.10165549181215,
+            "c2_2": 136.45414840576586,
+            "c2_4": 145.44032892668375
+          },
+          "speedup_over_a2": {
+            "c2_1": 1.6472237274076604,
+            "c2_2": 1.9031952602287339,
+            "c2_4": 2.028530080567901
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 1.2320931604531684,
+            "c2_2": 1.4235551759717846,
+            "c2_4": 1.517303324651953
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 1.09077278559366,
+            "c2_2": 1.2602742183634066,
+            "c2_4": 1.3432695084618478
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 1.1553957295308706,
+            "c2_4": 1.2314842524520493
+          },
+          "all_repeat_state_consistent": true
+        }
+      ],
+      "isolated_births": []
+    },
+    {
+      "platform": "linux",
+      "suite": "human",
+      "job_id": 125969729239,
+      "complete": true,
+      "evidence": "c2-linux-human-5e4f944.json",
+      "cpu": {
+        "logical_cpus": 4,
+        "cpu_affinity": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "affinity_count": 4,
+        "processor": "",
+        "cpu_models": [
+          "AMD EPYC 9V74 80-Core Processor"
+        ],
+        "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+      },
+      "seed_groups": [
+        731,
+        42,
+        2026
+      ],
+      "birth_cases": [],
+      "trajectory_gates": {
+        "observer_unchanged": true,
+        "off_matches_a2": true,
+        "c1only_matches_frozen_c1": true,
+        "c2_thread_digests_equal": true,
+        "phase_native_calls": [
+          {
+            "seed": 731,
+            "requested": {
+              "calls": 6,
+              "rows": 1981
+            },
+            "called": {
+              "count": 6,
+              "rows": 1981,
+              "parallel_eligible_batches": 6
+            }
+          },
+          {
+            "seed": 42,
+            "requested": {
+              "calls": 6,
+              "rows": 1936
+            },
+            "called": {
+              "count": 6,
+              "rows": 1936,
+              "parallel_eligible_batches": 6
+            }
+          },
+          {
+            "seed": 2026,
+            "requested": {
+              "calls": 6,
+              "rows": 1939
+            },
+            "called": {
+              "count": 6,
+              "rows": 1939,
+              "parallel_eligible_batches": 6
+            }
+          }
+        ]
+      },
+      "timing": [
+        {
+          "case": "human-1000-6-reinc0",
+          "seed": 731,
+          "repeat_count": 3,
+          "median_seconds": {
+            "original": 11.443730886000012,
+            "a2": 0.14616128199992318,
+            "c1": 0.13049191900023516,
+            "off": 0.14351007399999105,
+            "c1only": 0.12911214699988705,
+            "c2_1": 0.10407078399998682,
+            "c2_2": 0.1035792510000988,
+            "c2_4": 0.1043948049998562
+          },
+          "speedup_over_original": {
+            "c2_1": 109.96103273327374,
+            "c2_2": 110.48285033446608,
+            "c2_4": 109.61973525421858
+          },
+          "speedup_over_a2": {
+            "c2_1": 1.4044410581161924,
+            "c2_2": 1.4111058014870543,
+            "c2_4": 1.4000819485234395
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 1.2538765826944447,
+            "c2_2": 1.259826825742452,
+            "c2_4": 1.2499847957033388
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 1.2406185678384378,
+            "c2_2": 1.2465058952759167,
+            "c2_4": 1.2367679311251636
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 1.0047454774497988,
+            "c2_4": 0.9968961961290139
+          },
+          "all_repeat_state_consistent": true
+        }
+      ],
+      "isolated_births": []
+    },
+    {
+      "platform": "windows",
+      "suite": "reincarnator",
+      "job_id": 125969729240,
+      "complete": true,
+      "evidence": "c2-windows-reincarnator-5e4f944.json",
+      "cpu": {
+        "logical_cpus": 4,
+        "cpu_affinity": null,
+        "affinity_count": null,
+        "processor": "AMD64 Family 26 Model 2 Stepping 1, AuthenticAMD",
+        "cpu_models": [],
+        "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+      },
+      "seed_groups": [
+        731,
+        42,
+        2026
+      ],
+      "birth_cases": [],
+      "trajectory_gates": {
+        "observer_unchanged": true,
+        "off_matches_a2": true,
+        "c1only_matches_frozen_c1": true,
+        "c2_thread_digests_equal": true,
+        "phase_native_calls": [
+          {
+            "seed": 731,
+            "requested": {
+              "calls": 6,
+              "rows": 1967
+            },
+            "called": {
+              "count": 6,
+              "rows": 1967,
+              "parallel_eligible_batches": 6
+            }
+          },
+          {
+            "seed": 42,
+            "requested": {
+              "calls": 6,
+              "rows": 1907
+            },
+            "called": {
+              "count": 6,
+              "rows": 1907,
+              "parallel_eligible_batches": 6
+            }
+          },
+          {
+            "seed": 2026,
+            "requested": {
+              "calls": 6,
+              "rows": 1902
+            },
+            "called": {
+              "count": 6,
+              "rows": 1902,
+              "parallel_eligible_batches": 6
+            }
+          }
+        ]
+      },
+      "timing": [
+        {
+          "case": "human-1000-6-reinc1",
+          "seed": 731,
+          "repeat_count": 3,
+          "median_seconds": {
+            "original": 6.530262499999992,
+            "a2": 0.10247240000001057,
+            "c1": 0.0959702999999763,
+            "off": 0.10431450000010045,
+            "c1only": 0.1041966999999886,
+            "c2_1": 0.07823649999994586,
+            "c2_2": 0.08470620000008466,
+            "c2_4": 0.08186539999991282
+          },
+          "speedup_over_original": {
+            "c2_1": 83.4682341362984,
+            "c2_2": 77.09308763695532,
+            "c2_4": 79.7682842813563
+          },
+          "speedup_over_a2": {
+            "c2_1": 1.3097774056876454,
+            "c2_2": 1.209739074588497,
+            "c2_4": 1.2517180640431695
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 1.2266691378070684,
+            "c2_2": 1.1329784596626975,
+            "c2_4": 1.1722937895628496
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 1.3318169907915192,
+            "c2_2": 1.2300953176967502,
+            "c2_4": 1.2727806863473403
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 0.9236218836385963,
+            "c2_4": 0.9556723597518509
+          },
+          "all_repeat_state_consistent": true
+        }
+      ],
+      "isolated_births": []
+    },
+    {
+      "platform": "windows",
+      "suite": "births",
+      "job_id": 125969729325,
+      "complete": true,
+      "evidence": "c2-windows-births-5e4f944.json",
+      "cpu": {
+        "logical_cpus": 4,
+        "cpu_affinity": null,
+        "affinity_count": null,
+        "processor": "AMD64 Family 25 Model 17 Stepping 1, AuthenticAMD",
+        "cpu_models": [],
+        "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+      },
+      "seed_groups": [],
+      "birth_cases": [
+        "births-existing1000-new1000",
+        "births-existing1000-new10000"
+      ],
+      "trajectory_gates": null,
+      "timing": [
+        {
+          "case": "births-existing1000-new1000",
+          "repeat_count": 3,
+          "median_seconds": {
+            "original": 0.028966999999994414,
+            "a2": 0.02104199999996581,
+            "c1": 0.022202999999990425,
+            "off": 0.020401399999968817,
+            "c1only": 0.02066669999999249,
+            "c2_1": 0.008223900000018602,
+            "c2_2": 0.008237999999977319,
+            "c2_4": 0.008086100000014085
+          },
+          "speedup_over_original": {
+            "c2_1": 3.5222947749764577,
+            "c2_2": 3.516266084009974,
+            "c2_4": 3.582320278001009
+          },
+          "speedup_over_a2": {
+            "c2_1": 2.558640061274847,
+            "c2_2": 2.554260742901644,
+            "c2_4": 2.6022433558735556
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 2.6998139568745003,
+            "c2_2": 2.6951930080179114,
+            "c2_4": 2.7458230791051004
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 2.513004778748008,
+            "c2_2": 2.5087035688333805,
+            "c2_4": 2.5558303755774094
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 0.9982884195243075,
+            "c2_4": 1.0170415898893506
+          },
+          "all_repeat_state_consistent": true
+        },
+        {
+          "case": "births-existing1000-new10000",
+          "repeat_count": 3,
+          "median_seconds": {
+            "original": 0.25733480000002373,
+            "a2": 0.19108779999999115,
+            "c1": 0.19241590000001452,
+            "off": 0.18886200000002873,
+            "c1only": 0.18946779999998853,
+            "c2_1": 0.06830920000004426,
+            "c2_2": 0.0672476999999958,
+            "c2_4": 0.06739959999998746
+          },
+          "speedup_over_original": {
+            "c2_1": 3.7672055887033813,
+            "c2_2": 3.826670651933669,
+            "c2_4": 3.818046397902534
+          },
+          "speedup_over_a2": {
+            "c2_1": 2.797394787230232,
+            "c2_2": 2.841551458265533,
+            "c2_4": 2.8351473895991477
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 2.8168372635002292,
+            "c2_2": 2.8613008325939258,
+            "c2_4": 2.854852254316796
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 2.7736790944684726,
+            "c2_2": 2.8174614150372483,
+            "c2_4": 2.8111116386450927
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 1.0157849264740433,
+            "c2_4": 1.0134956290550237
+          },
+          "all_repeat_state_consistent": true
+        }
+      ],
+      "isolated_births": [
+        {
+          "case": "births-existing1000-new1000",
+          "kernel_median_seconds": {
+            "off": 0.00019040000000813961,
+            "c1only": 0.0001778000000172142,
+            "c2_1": 0.00016320000003133828,
+            "c2_2": 0.0004950000000008004,
+            "c2_4": 0.0006051000000013573
+          },
+          "off_matches_a2": true,
+          "c1only_matches_frozen_c1": true,
+          "c2_thread_digests_equal_each_repeat": [
+            true,
+            true,
+            true
+          ],
+          "all_contracts_pass": true,
+          "all_repeat_state_consistent": true,
+          "all_kernel_repeat_consistent": true
+        },
+        {
+          "case": "births-existing1000-new10000",
+          "kernel_median_seconds": {
+            "off": 0.0014631000000235872,
+            "c1only": 0.001460099999974318,
+            "c2_1": 0.0013965999999641099,
+            "c2_2": 0.0009838999999942644,
+            "c2_4": 0.0010895000000346045
+          },
+          "off_matches_a2": true,
+          "c1only_matches_frozen_c1": true,
+          "c2_thread_digests_equal_each_repeat": [
+            true,
+            true,
+            true
+          ],
+          "all_contracts_pass": true,
+          "all_repeat_state_consistent": true,
+          "all_kernel_repeat_consistent": true
+        }
+      ]
+    },
+    {
+      "platform": "windows",
+      "suite": "human",
+      "job_id": 125969729367,
+      "complete": true,
+      "evidence": "c2-windows-human-5e4f944.json",
+      "cpu": {
+        "logical_cpus": 4,
+        "cpu_affinity": null,
+        "affinity_count": null,
+        "processor": "Intel64 Family 6 Model 173 Stepping 1, GenuineIntel",
+        "cpu_models": [],
+        "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+      },
+      "seed_groups": [
+        731,
+        42,
+        2026
+      ],
+      "birth_cases": [],
+      "trajectory_gates": {
+        "observer_unchanged": true,
+        "off_matches_a2": true,
+        "c1only_matches_frozen_c1": true,
+        "c2_thread_digests_equal": true,
+        "phase_native_calls": [
+          {
+            "seed": 731,
+            "requested": {
+              "calls": 6,
+              "rows": 1981
+            },
+            "called": {
+              "count": 6,
+              "rows": 1981,
+              "parallel_eligible_batches": 6
+            }
+          },
+          {
+            "seed": 42,
+            "requested": {
+              "calls": 6,
+              "rows": 1936
+            },
+            "called": {
+              "count": 6,
+              "rows": 1936,
+              "parallel_eligible_batches": 6
+            }
+          },
+          {
+            "seed": 2026,
+            "requested": {
+              "calls": 6,
+              "rows": 1939
+            },
+            "called": {
+              "count": 6,
+              "rows": 1939,
+              "parallel_eligible_batches": 6
+            }
+          }
+        ]
+      },
+      "timing": [
+        {
+          "case": "human-1000-6-reinc0",
+          "seed": 731,
+          "repeat_count": 3,
+          "median_seconds": {
+            "original": 6.091818100000012,
+            "a2": 0.10001390000002175,
+            "c1": 0.08537479999989728,
+            "off": 0.09301079999988815,
+            "c1only": 0.08362079999994876,
+            "c2_1": 0.06521480000003521,
+            "c2_2": 0.06576109999980417,
+            "c2_4": 0.07178969999995388
+          },
+          "speedup_over_original": {
+            "c2_1": 93.41158908708947,
+            "c2_2": 92.63558699623565,
+            "c2_4": 84.85643622976451
+          },
+          "speedup_over_a2": {
+            "c2_1": 1.5336074020002783,
+            "c2_2": 1.5208671996107057,
+            "c2_4": 1.3931511066362723
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 1.3091322828537568,
+            "c2_2": 1.2982568722261567,
+            "c2_4": 1.1892346673680503
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 1.2822365475306772,
+            "c2_2": 1.2715845689959226,
+            "c2_4": 1.1648021930722998
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 0.9916926572126897,
+            "c2_4": 0.9084144382840033
+          },
+          "all_repeat_state_consistent": true
+        }
+      ],
+      "isolated_births": []
+    },
+    {
+      "platform": "linux",
+      "suite": "births",
+      "job_id": 125969729424,
+      "complete": true,
+      "evidence": "c2-linux-births-5e4f944.json",
+      "cpu": {
+        "logical_cpus": 4,
+        "cpu_affinity": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "affinity_count": 4,
+        "processor": "",
+        "cpu_models": [
+          "AMD EPYC 7763 64-Core Processor"
+        ],
+        "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+      },
+      "seed_groups": [],
+      "birth_cases": [
+        "births-existing1000-new1000",
+        "births-existing1000-new10000"
+      ],
+      "trajectory_gates": null,
+      "timing": [
+        {
+          "case": "births-existing1000-new1000",
+          "repeat_count": 3,
+          "median_seconds": {
+            "original": 0.03519102800001406,
+            "a2": 0.02707432799999765,
+            "c1": 0.02649699400001282,
+            "off": 0.026862195999996175,
+            "c1only": 0.027420290999998542,
+            "c2_1": 0.008373268000013923,
+            "c2_2": 0.00834469099999069,
+            "c2_4": 0.0084948020000013
+          },
+          "speedup_over_original": {
+            "c2_1": 4.202782951645109,
+            "c2_2": 4.217175686919183,
+            "c2_4": 4.142654296122343
+          },
+          "speedup_over_a2": {
+            "c2_1": 3.2334242735276875,
+            "c2_2": 3.2444973696483017,
+            "c2_4": 3.1871641034121225
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 3.164474611342759,
+            "c2_2": 3.1753115843405566,
+            "c2_4": 3.119200894854143
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 3.2747418331711047,
+            "c2_2": 3.285956424273725,
+            "c2_4": 3.227890538236718
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 1.0034245725843252,
+            "c2_4": 0.9856931332846417
+          },
+          "all_repeat_state_consistent": true
+        },
+        {
+          "case": "births-existing1000-new10000",
+          "repeat_count": 3,
+          "median_seconds": {
+            "original": 0.32704970399998956,
+            "a2": 0.2521325350000154,
+            "c1": 0.2562388429999487,
+            "off": 0.25376360499996053,
+            "c1only": 0.25505868900000905,
+            "c2_1": 0.07039156799999091,
+            "c2_2": 0.0695724729999938,
+            "c2_4": 0.06825521600001139
+          },
+          "speedup_over_original": {
+            "c2_1": 4.646148868285358,
+            "c2_2": 4.700849199366806,
+            "c2_4": 4.791570859579948
+          },
+          "speedup_over_a2": {
+            "c2_1": 3.581857062767063,
+            "c2_2": 3.6240272068528867,
+            "c2_4": 3.693967285957653
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 3.640192288371553,
+            "c2_2": 3.683049228391975,
+            "c2_4": 3.754128373132772
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 3.623426729179296,
+            "c2_2": 3.666086283867353,
+            "c2_4": 3.736838060844559
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 1.01177326268102,
+            "c2_4": 1.031299468746523
+          },
+          "all_repeat_state_consistent": true
+        }
+      ],
+      "isolated_births": [
+        {
+          "case": "births-existing1000-new1000",
+          "kernel_median_seconds": {
+            "off": 0.00011815099998102596,
+            "c1only": 0.00011114899999142835,
+            "c2_1": 0.00011273199999095596,
+            "c2_2": 0.0002309829999944668,
+            "c2_4": 0.0002591870000117069
+          },
+          "off_matches_a2": true,
+          "c1only_matches_frozen_c1": true,
+          "c2_thread_digests_equal_each_repeat": [
+            true,
+            true,
+            true
+          ],
+          "all_contracts_pass": true,
+          "all_repeat_state_consistent": true,
+          "all_kernel_repeat_consistent": true
+        },
+        {
+          "case": "births-existing1000-new10000",
+          "kernel_median_seconds": {
+            "off": 0.0010998150000318674,
+            "c1only": 0.001167762999983779,
+            "c2_1": 0.0011463430000162589,
+            "c2_2": 0.0008808239999780199,
+            "c2_4": 0.0007325859999696149
+          },
+          "off_matches_a2": true,
+          "c1only_matches_frozen_c1": true,
+          "c2_thread_digests_equal_each_repeat": [
+            true,
+            true,
+            true
+          ],
+          "all_contracts_pass": true,
+          "all_repeat_state_consistent": true,
+          "all_kernel_repeat_consistent": true
+        }
+      ]
+    },
+    {
+      "platform": "linux",
+      "suite": "large-native",
+      "job_id": 125969729451,
+      "complete": true,
+      "evidence": "c2-linux-large-native-5e4f944.json",
+      "cpu": {
+        "logical_cpus": 4,
+        "cpu_affinity": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "affinity_count": 4,
+        "processor": "",
+        "cpu_models": [
+          "AMD EPYC 9V45 96-Core Processor"
+        ],
+        "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+      },
+      "seed_groups": [
+        731
+      ],
+      "birth_cases": [],
+      "trajectory_gates": {
+        "observer_unchanged": true,
+        "off_matches_a2": true,
+        "c1only_matches_frozen_c1": true,
+        "c2_thread_digests_equal": true,
+        "phase_native_calls": [
+          {
+            "seed": 731,
+            "requested": {
+              "calls": 6,
+              "rows": 6665
+            },
+            "called": {
+              "count": 6,
+              "rows": 6665,
+              "parallel_eligible_batches": 6
+            }
+          }
+        ]
+      },
+      "timing": [
+        {
+          "case": "human-10000-6-reinc0",
+          "seed": 731,
+          "repeat_count": 3,
+          "median_seconds": {
+            "a2": 0.8802358209999923,
+            "c1": 0.7718257659999921,
+            "off": 0.9805740500000297,
+            "c1only": 0.7995139510000229,
+            "c2_1": 0.7575772799999925,
+            "c2_2": 0.7779487990000007,
+            "c2_4": 0.7232126600000015
+          },
+          "speedup_over_original": null,
+          "speedup_over_a2": {
+            "c2_1": 1.161908948747778,
+            "c2_2": 1.1314829743698744,
+            "c2_4": 1.2171189329014103
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 1.0188079637235157,
+            "c2_2": 0.9921292596532325,
+            "c2_4": 1.067218272976569
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 1.0553562944760313,
+            "c2_2": 1.0277205286874183,
+            "c2_4": 1.1055032568152516
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 0.9738138049365275,
+            "c2_4": 1.0475166184175908
+          },
+          "all_repeat_state_consistent": true
+        }
+      ],
+      "isolated_births": []
+    },
+    {
+      "platform": "linux",
+      "suite": "reincarnator",
+      "job_id": 125969729512,
+      "complete": true,
+      "evidence": "c2-linux-reincarnator-5e4f944.json",
+      "cpu": {
+        "logical_cpus": 4,
+        "cpu_affinity": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "affinity_count": 4,
+        "processor": "",
+        "cpu_models": [
+          "AMD EPYC 7763 64-Core Processor"
+        ],
+        "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+      },
+      "seed_groups": [
+        731,
+        42,
+        2026
+      ],
+      "birth_cases": [],
+      "trajectory_gates": {
+        "observer_unchanged": true,
+        "off_matches_a2": true,
+        "c1only_matches_frozen_c1": true,
+        "c2_thread_digests_equal": true,
+        "phase_native_calls": [
+          {
+            "seed": 731,
+            "requested": {
+              "calls": 6,
+              "rows": 1967
+            },
+            "called": {
+              "count": 6,
+              "rows": 1967,
+              "parallel_eligible_batches": 6
+            }
+          },
+          {
+            "seed": 42,
+            "requested": {
+              "calls": 6,
+              "rows": 1907
+            },
+            "called": {
+              "count": 6,
+              "rows": 1907,
+              "parallel_eligible_batches": 6
+            }
+          },
+          {
+            "seed": 2026,
+            "requested": {
+              "calls": 6,
+              "rows": 1902
+            },
+            "called": {
+              "count": 6,
+              "rows": 1902,
+              "parallel_eligible_batches": 6
+            }
+          }
+        ]
+      },
+      "timing": [
+        {
+          "case": "human-1000-6-reinc1",
+          "seed": 731,
+          "repeat_count": 3,
+          "median_seconds": {
+            "original": 11.65174609600001,
+            "a2": 0.17228920300010486,
+            "c1": 0.15394246399989697,
+            "off": 0.17324389200001633,
+            "c1only": 0.1554803849999189,
+            "c2_1": 0.11797991800000318,
+            "c2_2": 0.11811701700003141,
+            "c2_4": 0.11850597399995877
+          },
+          "speedup_over_original": {
+            "c2_1": 98.76041866718111,
+            "c2_2": 98.64578696562336,
+            "c2_4": 98.32201451720961
+          },
+          "speedup_over_a2": {
+            "c2_1": 1.4603265192988202,
+            "c2_2": 1.4586315111569321,
+            "c2_4": 1.453844031526755
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 1.3048192150794071,
+            "c2_2": 1.3033047050270161,
+            "c2_4": 1.299027034704179
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 1.3178546623495255,
+            "c2_2": 1.3163250219896558,
+            "c2_4": 1.3120046167459287
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 0.9988392951031925,
+            "c2_4": 0.995560932650064
+          },
+          "all_repeat_state_consistent": true
+        }
+      ],
+      "isolated_births": []
+    },
+    {
+      "platform": "macos",
+      "suite": "large-native",
+      "job_id": 125969729736,
+      "complete": true,
+      "evidence": "c2-macos-large-native-5e4f944.json",
+      "cpu": {
+        "logical_cpus": 3,
+        "cpu_affinity": null,
+        "affinity_count": null,
+        "processor": "arm",
+        "cpu_models": [],
+        "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+      },
+      "seed_groups": [
+        731
+      ],
+      "birth_cases": [],
+      "trajectory_gates": {
+        "observer_unchanged": true,
+        "off_matches_a2": true,
+        "c1only_matches_frozen_c1": true,
+        "c2_thread_digests_equal": true,
+        "phase_native_calls": [
+          {
+            "seed": 731,
+            "requested": {
+              "calls": 6,
+              "rows": 6665
+            },
+            "called": {
+              "count": 6,
+              "rows": 6665,
+              "parallel_eligible_batches": 6
+            }
+          }
+        ]
+      },
+      "timing": [
+        {
+          "case": "human-10000-6-reinc0",
+          "seed": 731,
+          "repeat_count": 3,
+          "median_seconds": {
+            "a2": 1.04649887700009,
+            "c1": 0.9075553340000511,
+            "off": 1.0880261680000274,
+            "c1only": 1.011202874999924,
+            "c2_1": 0.8856211259999327,
+            "c2_2": 0.8984921659999827,
+            "c2_4": 0.8880884140000376
+          },
+          "speedup_over_original": null,
+          "speedup_over_a2": {
+            "c2_1": 1.1816552770447004,
+            "c2_2": 1.164727881445001,
+            "c2_4": 1.1783724013317054
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 1.0247670333917938,
+            "c2_2": 1.0100870862796911,
+            "c2_4": 1.021920024733047
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 1.1418007602948723,
+            "c2_2": 1.1254442868452827,
+            "c2_4": 1.1386286084347919
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 0.9856748444926895,
+            "c2_4": 0.9972217991348497
+          },
+          "all_repeat_state_consistent": true
+        }
+      ],
+      "isolated_births": []
+    },
+    {
+      "platform": "windows",
+      "suite": "large-native",
+      "job_id": 125969730871,
+      "complete": true,
+      "evidence": "c2-windows-large-native-5e4f944.json",
+      "cpu": {
+        "logical_cpus": 4,
+        "cpu_affinity": null,
+        "affinity_count": null,
+        "processor": "Intel64 Family 6 Model 207 Stepping 2, GenuineIntel",
+        "cpu_models": [],
+        "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+      },
+      "seed_groups": [
+        731
+      ],
+      "birth_cases": [],
+      "trajectory_gates": {
+        "observer_unchanged": true,
+        "off_matches_a2": true,
+        "c1only_matches_frozen_c1": true,
+        "c2_thread_digests_equal": true,
+        "phase_native_calls": [
+          {
+            "seed": 731,
+            "requested": {
+              "calls": 6,
+              "rows": 6665
+            },
+            "called": {
+              "count": 6,
+              "rows": 6665,
+              "parallel_eligible_batches": 6
+            }
+          }
+        ]
+      },
+      "timing": [
+        {
+          "case": "human-10000-6-reinc0",
+          "seed": 731,
+          "repeat_count": 3,
+          "median_seconds": {
+            "a2": 1.4375082999999904,
+            "c1": 1.260863900000004,
+            "off": 1.4652882999999974,
+            "c1only": 1.259074099999964,
+            "c2_1": 1.1654374000000303,
+            "c2_2": 1.1642117999999755,
+            "c2_4": 1.1616177999999877
+          },
+          "speedup_over_original": null,
+          "speedup_over_a2": {
+            "c2_1": 1.2334496044145769,
+            "c2_2": 1.234748093087547,
+            "c2_4": 1.2375053997967367
+          },
+          "speedup_over_frozen_c1": {
+            "c2_1": 1.0818804167430796,
+            "c2_2": 1.083019344074704,
+            "c2_4": 1.0854378264520543
+          },
+          "speedup_over_same_revision_c1only": {
+            "c2_1": 1.080344684321896,
+            "c2_2": 1.0814819949428363,
+            "c2_4": 1.0838970442773666
+          },
+          "speedup_over_c2_one_thread": {
+            "c2_1": 1,
+            "c2_2": 1.0010527294089056,
+            "c2_4": 1.0032881727535878
+          },
+          "all_repeat_state_consistent": true
+        }
+      ],
+      "isolated_births": []
+    }
+  ],
+  "scope": [
+    "1000 population, six generations, seeds 731/42/2026 with and without one reincarnator are the bounded original paired trajectories. Seeds are correctness sensitivity checks, not user product batch experiments.",
+    "10000 population, six generations, seed 731 is native-only: there is no original measurement and no valid original speedup for that workload.",
+    "All C2 experiments force native_min_rows=1 and use thread budgets 1/2/4. Budget and eligible batch count do not prove actual core occupancy.",
+    "Timing uses three unobserved fresh-process repeats at seed 731. Initialization and final snapshot are outside trajectory phase timing.",
+    "Each job has its own runner/CPU. Cross-job absolute timings are not directly comparable. Frozen A2/off and frozen C1/c1only timing discrepancies expose noise or code-layout effects; use same-revision C1only to isolate C2.",
+    "The isolated birth state includes 1000 existing entities. A nonzero whole-state score error versus original is not evidence of newborn score change; integer-zero newborn score and empty caches are checked separately.",
+    "Full isolated entry reuses the C2 pool warmed during initial population. Prepacked kernel boundary is a separate fresh evaluator including FFI, output allocation and cold worker-pool startup; it is not pure C++ time or a whole-world speedup.",
+    "Observer checks apply to trajectories. Isolated birth calls have contract/digest checks but are not observed/plain trajectory pairs.",
+    "Reported error maxima are final sampled-state maxima across completed cases, not a proof of exact equality for all seeds or long runs. First-fork locations have checkpoint resolution."
+  ]
+}

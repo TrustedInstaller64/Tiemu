@@ -1,0 +1,26 @@
+{
+  "runtime_commit": "d32edce",
+  "harness_commit": "5e4f944",
+  "platform": "macos",
+  "suite": "reincarnator",
+  "run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41651261785",
+  "job_id": 125969728802,
+  "complete": false,
+  "conclusion": "cancelled",
+  "source": "GitHub workflow run jobs status; job log fetch returned 404 BlobNotFound; normalized job steps/logs_url are null.",
+  "cancellation_cause": "Hosted macOS arm64 runner was not acquired due to capacity constraints; this is missing runtime evidence, not a test failure in project code.",
+  "records": [],
+  "annotations": {
+    "source": "https://api.github.com/repos/TrustedInstaller64/Tiemu/check-runs/125969728802/annotations",
+    "annotation_count": 3,
+    "failure": "The job was not acquired by Runner of type hosted even after multiple attempts",
+    "notice": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.",
+    "verified_by": "Parent agent via gh api"
+  },
+  "execution_evidence": {
+    "steps": null,
+    "logs_url": null,
+    "log_fetch_error": "404 BlobNotFound",
+    "measurement_records": 0
+  }
+}

@@ -1,0 +1,2085 @@
+{
+  "runtime_commit": "d32edce",
+  "harness_commit": "5e4f944",
+  "platform": "macos",
+  "suite": "large-native",
+  "run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41651261785",
+  "job_id": 125969729736,
+  "complete": true,
+  "conclusion": "success",
+  "source": "Parsed completed GitHub Actions log records C2_DEVIATION and C2_TIMING.",
+  "scope": "Native-only 10000 population x six generations, seed731; observed/plain and three timing repeats. No original measurement or original speedup. Hosted runner exposes 3 logical ARM CPUs; not an M1 machine measurement.",
+  "records": [
+    {
+      "type": "deviation",
+      "data": {
+        "case": "human-10000-6-reinc0",
+        "seed": 731,
+        "observer_unchanged": true,
+        "off_matches_a2": true,
+        "c1only_matches_frozen_c1": true,
+        "c2_thread_digests_equal": true,
+        "execution_metadata": {
+          "a2": {
+            "commit": "eca7377c6ee53ab1f57c32fd8227c31e0d73b1cb",
+            "mode": "a",
+            "seed": 731,
+            "population": 10000,
+            "generations": 6,
+            "reincarnator": false,
+            "observed": false,
+            "native_threads": 1,
+            "native_min_rows": 4096,
+            "experimental_c_scoring": false,
+            "experimental_c_newborns": false,
+            "platform": "macOS-26.6.2-arm64-arm-64bit",
+            "machine": "arm64",
+            "cpu": {
+              "logical_cpus": 3,
+              "cpu_affinity": null,
+              "affinity_count": null,
+              "processor": "arm",
+              "cpu_models": [],
+              "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+            },
+            "python": "3.12.10",
+            "numpy": "2.2.2",
+            "torch": "2.12.0",
+            "native_encounters": {
+              "calls": 6,
+              "successes": 6
+            },
+            "experimental_calls": 0,
+            "newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "initial_newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "phase_newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "phase_birth_requests": {
+              "calls": 6,
+              "rows": 6665
+            },
+            "phase_birth_events": [
+              {
+                "step": 1,
+                "requested_rows": 423,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 2,
+                "requested_rows": 761,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 3,
+                "requested_rows": 1031,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 4,
+                "requested_rows": 1258,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 5,
+                "requested_rows": 1489,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 6,
+                "requested_rows": 1703,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              }
+            ],
+            "parallel_count_scope": "Threshold-eligible batches, not measured worker occupancy."
+          },
+          "c1": {
+            "commit": "7305af8e8c8e03bec06adec2f5efdc4742974a4a",
+            "mode": "c",
+            "seed": 731,
+            "population": 10000,
+            "generations": 6,
+            "reincarnator": false,
+            "observed": false,
+            "native_threads": 1,
+            "native_min_rows": 4096,
+            "experimental_c_scoring": true,
+            "experimental_c_newborns": false,
+            "platform": "macOS-26.6.2-arm64-arm-64bit",
+            "machine": "arm64",
+            "cpu": {
+              "logical_cpus": 3,
+              "cpu_affinity": null,
+              "affinity_count": null,
+              "processor": "arm",
+              "cpu_models": [],
+              "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+            },
+            "python": "3.12.10",
+            "numpy": "2.2.2",
+            "torch": "2.12.0",
+            "native_encounters": {
+              "calls": 6,
+              "successes": 6
+            },
+            "experimental_calls": 6,
+            "newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "initial_newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "phase_newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "phase_birth_requests": {
+              "calls": 6,
+              "rows": 6665
+            },
+            "phase_birth_events": [
+              {
+                "step": 1,
+                "requested_rows": 423,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 2,
+                "requested_rows": 761,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 3,
+                "requested_rows": 1031,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 4,
+                "requested_rows": 1258,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 5,
+                "requested_rows": 1489,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 6,
+                "requested_rows": 1703,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              }
+            ],
+            "parallel_count_scope": "Threshold-eligible batches, not measured worker occupancy."
+          },
+          "off": {
+            "commit": "5e4f944c042a16550c8529d55cb45b995310f6b8",
+            "mode": "a",
+            "seed": 731,
+            "population": 10000,
+            "generations": 6,
+            "reincarnator": false,
+            "observed": false,
+            "native_threads": 1,
+            "native_min_rows": 4096,
+            "experimental_c_scoring": false,
+            "experimental_c_newborns": false,
+            "platform": "macOS-26.6.2-arm64-arm-64bit",
+            "machine": "arm64",
+            "cpu": {
+              "logical_cpus": 3,
+              "cpu_affinity": null,
+              "affinity_count": null,
+              "processor": "arm",
+              "cpu_models": [],
+              "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+            },
+            "python": "3.12.10",
+            "numpy": "2.2.2",
+            "torch": "2.12.0",
+            "native_encounters": {
+              "calls": 6,
+              "successes": 6
+            },
+            "experimental_calls": 0,
+            "newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "initial_newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "phase_newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "phase_birth_requests": {
+              "calls": 6,
+              "rows": 6665
+            },
+            "phase_birth_events": [
+              {
+                "step": 1,
+                "requested_rows": 423,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 2,
+                "requested_rows": 761,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 3,
+                "requested_rows": 1031,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 4,
+                "requested_rows": 1258,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 5,
+                "requested_rows": 1489,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 6,
+                "requested_rows": 1703,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              }
+            ],
+            "parallel_count_scope": "Threshold-eligible batches, not measured worker occupancy."
+          },
+          "c1only": {
+            "commit": "5e4f944c042a16550c8529d55cb45b995310f6b8",
+            "mode": "c",
+            "seed": 731,
+            "population": 10000,
+            "generations": 6,
+            "reincarnator": false,
+            "observed": false,
+            "native_threads": 1,
+            "native_min_rows": 4096,
+            "experimental_c_scoring": true,
+            "experimental_c_newborns": false,
+            "platform": "macOS-26.6.2-arm64-arm-64bit",
+            "machine": "arm64",
+            "cpu": {
+              "logical_cpus": 3,
+              "cpu_affinity": null,
+              "affinity_count": null,
+              "processor": "arm",
+              "cpu_models": [],
+              "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+            },
+            "python": "3.12.10",
+            "numpy": "2.2.2",
+            "torch": "2.12.0",
+            "native_encounters": {
+              "calls": 6,
+              "successes": 6
+            },
+            "experimental_calls": 6,
+            "newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "initial_newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "phase_newborn_calls": {
+              "count": 0,
+              "rows": 0,
+              "parallel_eligible_batches": 0
+            },
+            "phase_birth_requests": {
+              "calls": 6,
+              "rows": 6665
+            },
+            "phase_birth_events": [
+              {
+                "step": 1,
+                "requested_rows": 423,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 2,
+                "requested_rows": 761,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 3,
+                "requested_rows": 1031,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 4,
+                "requested_rows": 1258,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 5,
+                "requested_rows": 1489,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              },
+              {
+                "step": 6,
+                "requested_rows": 1703,
+                "requested_calls": 1,
+                "native_rows": 0,
+                "native_calls": 0
+              }
+            ],
+            "parallel_count_scope": "Threshold-eligible batches, not measured worker occupancy."
+          },
+          "c2_1": {
+            "commit": "5e4f944c042a16550c8529d55cb45b995310f6b8",
+            "mode": "c",
+            "seed": 731,
+            "population": 10000,
+            "generations": 6,
+            "reincarnator": false,
+            "observed": false,
+            "native_threads": 1,
+            "native_min_rows": 1,
+            "experimental_c_scoring": true,
+            "experimental_c_newborns": true,
+            "platform": "macOS-26.6.2-arm64-arm-64bit",
+            "machine": "arm64",
+            "cpu": {
+              "logical_cpus": 3,
+              "cpu_affinity": null,
+              "affinity_count": null,
+              "processor": "arm",
+              "cpu_models": [],
+              "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+            },
+            "python": "3.12.10",
+            "numpy": "2.2.2",
+            "torch": "2.12.0",
+            "native_encounters": {
+              "calls": 6,
+              "successes": 6
+            },
+            "experimental_calls": 6,
+            "newborn_calls": {
+              "count": 7,
+              "rows": 16665,
+              "parallel_eligible_batches": 0
+            },
+            "initial_newborn_calls": {
+              "count": 1,
+              "rows": 10000,
+              "parallel_eligible_batches": 0
+            },
+            "phase_newborn_calls": {
+              "count": 6,
+              "rows": 6665,
+              "parallel_eligible_batches": 0
+            },
+            "phase_birth_requests": {
+              "calls": 6,
+              "rows": 6665
+            },
+            "phase_birth_events": [
+              {
+                "step": 1,
+                "requested_rows": 423,
+                "requested_calls": 1,
+                "native_rows": 423,
+                "native_calls": 1
+              },
+              {
+                "step": 2,
+                "requested_rows": 761,
+                "requested_calls": 1,
+                "native_rows": 761,
+                "native_calls": 1
+              },
+              {
+                "step": 3,
+                "requested_rows": 1031,
+                "requested_calls": 1,
+                "native_rows": 1031,
+                "native_calls": 1
+              },
+              {
+                "step": 4,
+                "requested_rows": 1258,
+                "requested_calls": 1,
+                "native_rows": 1258,
+                "native_calls": 1
+              },
+              {
+                "step": 5,
+                "requested_rows": 1489,
+                "requested_calls": 1,
+                "native_rows": 1489,
+                "native_calls": 1
+              },
+              {
+                "step": 6,
+                "requested_rows": 1703,
+                "requested_calls": 1,
+                "native_rows": 1703,
+                "native_calls": 1
+              }
+            ],
+            "parallel_count_scope": "Threshold-eligible batches, not measured worker occupancy."
+          },
+          "c2_2": {
+            "commit": "5e4f944c042a16550c8529d55cb45b995310f6b8",
+            "mode": "c",
+            "seed": 731,
+            "population": 10000,
+            "generations": 6,
+            "reincarnator": false,
+            "observed": false,
+            "native_threads": 2,
+            "native_min_rows": 1,
+            "experimental_c_scoring": true,
+            "experimental_c_newborns": true,
+            "platform": "macOS-26.6.2-arm64-arm-64bit",
+            "machine": "arm64",
+            "cpu": {
+              "logical_cpus": 3,
+              "cpu_affinity": null,
+              "affinity_count": null,
+              "processor": "arm",
+              "cpu_models": [],
+              "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+            },
+            "python": "3.12.10",
+            "numpy": "2.2.2",
+            "torch": "2.12.0",
+            "native_encounters": {
+              "calls": 6,
+              "successes": 6
+            },
+            "experimental_calls": 6,
+            "newborn_calls": {
+              "count": 7,
+              "rows": 16665,
+              "parallel_eligible_batches": 7
+            },
+            "initial_newborn_calls": {
+              "count": 1,
+              "rows": 10000,
+              "parallel_eligible_batches": 1
+            },
+            "phase_newborn_calls": {
+              "count": 6,
+              "rows": 6665,
+              "parallel_eligible_batches": 6
+            },
+            "phase_birth_requests": {
+              "calls": 6,
+              "rows": 6665
+            },
+            "phase_birth_events": [
+              {
+                "step": 1,
+                "requested_rows": 423,
+                "requested_calls": 1,
+                "native_rows": 423,
+                "native_calls": 1
+              },
+              {
+                "step": 2,
+                "requested_rows": 761,
+                "requested_calls": 1,
+                "native_rows": 761,
+                "native_calls": 1
+              },
+              {
+                "step": 3,
+                "requested_rows": 1031,
+                "requested_calls": 1,
+                "native_rows": 1031,
+                "native_calls": 1
+              },
+              {
+                "step": 4,
+                "requested_rows": 1258,
+                "requested_calls": 1,
+                "native_rows": 1258,
+                "native_calls": 1
+              },
+              {
+                "step": 5,
+                "requested_rows": 1489,
+                "requested_calls": 1,
+                "native_rows": 1489,
+                "native_calls": 1
+              },
+              {
+                "step": 6,
+                "requested_rows": 1703,
+                "requested_calls": 1,
+                "native_rows": 1703,
+                "native_calls": 1
+              }
+            ],
+            "parallel_count_scope": "Threshold-eligible batches, not measured worker occupancy."
+          },
+          "c2_4": {
+            "commit": "5e4f944c042a16550c8529d55cb45b995310f6b8",
+            "mode": "c",
+            "seed": 731,
+            "population": 10000,
+            "generations": 6,
+            "reincarnator": false,
+            "observed": false,
+            "native_threads": 4,
+            "native_min_rows": 1,
+            "experimental_c_scoring": true,
+            "experimental_c_newborns": true,
+            "platform": "macOS-26.6.2-arm64-arm-64bit",
+            "machine": "arm64",
+            "cpu": {
+              "logical_cpus": 3,
+              "cpu_affinity": null,
+              "affinity_count": null,
+              "processor": "arm",
+              "cpu_models": [],
+              "scope": "Exposed logical CPU/affinity metadata, not actual worker occupancy or cgroup CPU quota."
+            },
+            "python": "3.12.10",
+            "numpy": "2.2.2",
+            "torch": "2.12.0",
+            "native_encounters": {
+              "calls": 6,
+              "successes": 6
+            },
+            "experimental_calls": 6,
+            "newborn_calls": {
+              "count": 7,
+              "rows": 16665,
+              "parallel_eligible_batches": 7
+            },
+            "initial_newborn_calls": {
+              "count": 1,
+              "rows": 10000,
+              "parallel_eligible_batches": 1
+            },
+            "phase_newborn_calls": {
+              "count": 6,
+              "rows": 6665,
+              "parallel_eligible_batches": 6
+            },
+            "phase_birth_requests": {
+              "calls": 6,
+              "rows": 6665
+            },
+            "phase_birth_events": [
+              {
+                "step": 1,
+                "requested_rows": 423,
+                "requested_calls": 1,
+                "native_rows": 423,
+                "native_calls": 1
+              },
+              {
+                "step": 2,
+                "requested_rows": 761,
+                "requested_calls": 1,
+                "native_rows": 761,
+                "native_calls": 1
+              },
+              {
+                "step": 3,
+                "requested_rows": 1031,
+                "requested_calls": 1,
+                "native_rows": 1031,
+                "native_calls": 1
+              },
+              {
+                "step": 4,
+                "requested_rows": 1258,
+                "requested_calls": 1,
+                "native_rows": 1258,
+                "native_calls": 1
+              },
+              {
+                "step": 5,
+                "requested_rows": 1489,
+                "requested_calls": 1,
+                "native_rows": 1489,
+                "native_calls": 1
+              },
+              {
+                "step": 6,
+                "requested_rows": 1703,
+                "requested_calls": 1,
+                "native_rows": 1703,
+                "native_calls": 1
+              }
+            ],
+            "parallel_count_scope": "Threshold-eligible batches, not measured worker occupancy."
+          }
+        },
+        "comparisons": {
+          "c2_1_vs_a2": {
+            "first_numeric_difference": {
+              "step": 1,
+              "stage": "after_interactions"
+            },
+            "first_numeric_above_reference_tolerance": null,
+            "first_discrete_difference": null,
+            "individual_numeric_comparison_stopped_at": null,
+            "individual_first_numeric_location_censored": false,
+            "first_differences": {
+              "population_order": null,
+              "membership": null,
+              "seats": null,
+              "culls": null,
+              "traits": null,
+              "golden": null,
+              "rng": null,
+              "networks": null,
+              "cache": null,
+              "reincarnator": null,
+              "reporting_path": null
+            },
+            "final": {
+              "population_reference": 8297,
+              "population_candidate": 8297,
+              "population_count_delta": 0,
+              "common_name_count": 8297,
+              "name_jaccard": 1,
+              "common_name_reference_fraction": 1,
+              "common_name_candidate_fraction": 1,
+              "individual_comparison_valid": true,
+              "numeric": {
+                "score": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 126,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 8.881784197001252e-16,
+                  "mean_absolute_error": 6.8778430114177465e-18,
+                  "rmse": 5.986022383985876e-17,
+                  "relative_l2_error": 2.808305352734934e-17,
+                  "max_scaled_relative_error": 2.226385417118018e-16,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "hp": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "titan_affinities": {
+                  "reference_count": 99564,
+                  "candidate_count": 99564,
+                  "length_equal": true,
+                  "finite_pair_count": 99564,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 2,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 2.220446049250313e-16,
+                  "mean_absolute_error": 4.460339177313714e-21,
+                  "rmse": 9.951855356958636e-19,
+                  "relative_l2_error": 6.442338437181204e-19,
+                  "max_scaled_relative_error": 1.5394511680162147e-16,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "cached_paths": {
+                  "reference_count": 79128,
+                  "candidate_count": 79128,
+                  "length_equal": true,
+                  "finite_pair_count": 79128,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 3,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 2.7755575615628914e-17,
+                  "mean_absolute_error": 7.015361342540925e-22,
+                  "rmse": 1.2084558087095736e-19,
+                  "relative_l2_error": 1.081962680652533e-18,
+                  "max_scaled_relative_error": 3.6381694453453876e-16,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "activity": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 1,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 4.440892098500626e-16,
+                  "mean_absolute_error": 5.352407012776457e-20,
+                  "rmse": 4.8753935237064e-18,
+                  "relative_l2_error": 1.931291259895701e-18,
+                  "max_scaled_relative_error": 1.504169612886753e-16,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "stability": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "heroic_tendency": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 1,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 4.440892098500626e-16,
+                  "mean_absolute_error": 5.352407012776457e-20,
+                  "rmse": 4.8753935237064e-18,
+                  "relative_l2_error": 1.931291259895701e-18,
+                  "max_scaled_relative_error": 1.504169612886753e-16,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                }
+              },
+              "world_numeric": {
+                "blueprint": {
+                  "reference_count": 12,
+                  "candidate_count": 12,
+                  "length_equal": true,
+                  "finite_pair_count": 12,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "zeitgeist": {
+                  "reference_count": 12,
+                  "candidate_count": 12,
+                  "length_equal": true,
+                  "finite_pair_count": 12,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "managers": {
+                  "reference_count": 5,
+                  "candidate_count": 5,
+                  "length_equal": true,
+                  "finite_pair_count": 5,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                }
+              },
+              "path_total_variation": 0,
+              "unknown_paths_reference": 0,
+              "unknown_paths_candidate": 0,
+              "seat_l1": 0,
+              "score_distribution": {
+                "reference": {
+                  "count": 8297,
+                  "finite_count": 8297,
+                  "nonfinite_count": 0,
+                  "mean": 1.708593445349684,
+                  "std": 1.2744340423849583,
+                  "q05": 0,
+                  "q50": 2.0801304037269523,
+                  "q95": 4.898194843776264
+                },
+                "candidate": {
+                  "count": 8297,
+                  "finite_count": 8297,
+                  "nonfinite_count": 0,
+                  "mean": 1.708593445349684,
+                  "std": 1.2744340423849583,
+                  "q05": 0,
+                  "q50": 2.0801304037269523,
+                  "q95": 4.898194843776264
+                },
+                "ks_distance": 0.00012052549114138777,
+                "wasserstein_1": 6.8778430114176564e-18,
+                "finite_values_only": true,
+                "interpretation": "Descriptive distances, no significance test."
+              },
+              "differences": {
+                "population_order": false,
+                "membership": false,
+                "seats": false,
+                "culls": false,
+                "traits": false,
+                "golden": false,
+                "rng": false,
+                "networks": false,
+                "cache": false,
+                "reincarnator": false,
+                "reporting_path": false
+              },
+              "discrete_difference": false
+            },
+            "final_network_error": {
+              "action": {
+                "reference_count": 1370,
+                "candidate_count": 1370,
+                "length_equal": true,
+                "finite_pair_count": 1370,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              },
+              "guide": {
+                "reference_count": 73876,
+                "candidate_count": 73876,
+                "length_equal": true,
+                "finite_pair_count": 73876,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              },
+              "value": {
+                "reference_count": 1353,
+                "candidate_count": 1353,
+                "length_equal": true,
+                "finite_pair_count": 1353,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              }
+            },
+            "scope": "First differences are first observed checkpoints, not first causal interactions. Population order, membership, seats, culls and entity flags are exact decisions; RNG, network hashes and observer-derived dominant paths are reported separately. Pointwise entity numbers cease after discrete/RNG divergence because names may be reused after death. Common names after that point measure overlap, not lineage. World/network numerical distances and empirical population distributions remain descriptive. Unknown/nonfinite values are counted. A null first numeric checkpoint with censoring does not mean no numerical drift; exact first entity drift is unavailable from the censoring point. Flattened numerical comparisons assume the fixed schema/network architecture of this experiment. No equivalence or distribution-generalization claim beyond samples."
+          },
+          "c2_1_vs_c1": {
+            "first_numeric_difference": null,
+            "first_numeric_above_reference_tolerance": null,
+            "first_discrete_difference": null,
+            "individual_numeric_comparison_stopped_at": null,
+            "individual_first_numeric_location_censored": false,
+            "first_differences": {
+              "population_order": null,
+              "membership": null,
+              "seats": null,
+              "culls": null,
+              "traits": null,
+              "golden": null,
+              "rng": null,
+              "networks": null,
+              "cache": null,
+              "reincarnator": null,
+              "reporting_path": null
+            },
+            "final": {
+              "population_reference": 8297,
+              "population_candidate": 8297,
+              "population_count_delta": 0,
+              "common_name_count": 8297,
+              "name_jaccard": 1,
+              "common_name_reference_fraction": 1,
+              "common_name_candidate_fraction": 1,
+              "individual_comparison_valid": true,
+              "numeric": {
+                "score": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "hp": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "titan_affinities": {
+                  "reference_count": 99564,
+                  "candidate_count": 99564,
+                  "length_equal": true,
+                  "finite_pair_count": 99564,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "cached_paths": {
+                  "reference_count": 79128,
+                  "candidate_count": 79128,
+                  "length_equal": true,
+                  "finite_pair_count": 79128,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "activity": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "stability": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "heroic_tendency": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                }
+              },
+              "world_numeric": {
+                "blueprint": {
+                  "reference_count": 12,
+                  "candidate_count": 12,
+                  "length_equal": true,
+                  "finite_pair_count": 12,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "zeitgeist": {
+                  "reference_count": 12,
+                  "candidate_count": 12,
+                  "length_equal": true,
+                  "finite_pair_count": 12,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "managers": {
+                  "reference_count": 5,
+                  "candidate_count": 5,
+                  "length_equal": true,
+                  "finite_pair_count": 5,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                }
+              },
+              "path_total_variation": 0,
+              "unknown_paths_reference": 0,
+              "unknown_paths_candidate": 0,
+              "seat_l1": 0,
+              "score_distribution": {
+                "reference": {
+                  "count": 8297,
+                  "finite_count": 8297,
+                  "nonfinite_count": 0,
+                  "mean": 1.708593445349684,
+                  "std": 1.2744340423849583,
+                  "q05": 0,
+                  "q50": 2.0801304037269523,
+                  "q95": 4.898194843776264
+                },
+                "candidate": {
+                  "count": 8297,
+                  "finite_count": 8297,
+                  "nonfinite_count": 0,
+                  "mean": 1.708593445349684,
+                  "std": 1.2744340423849583,
+                  "q05": 0,
+                  "q50": 2.0801304037269523,
+                  "q95": 4.898194843776264
+                },
+                "ks_distance": 0,
+                "wasserstein_1": 0,
+                "finite_values_only": true,
+                "interpretation": "Descriptive distances, no significance test."
+              },
+              "differences": {
+                "population_order": false,
+                "membership": false,
+                "seats": false,
+                "culls": false,
+                "traits": false,
+                "golden": false,
+                "rng": false,
+                "networks": false,
+                "cache": false,
+                "reincarnator": false,
+                "reporting_path": false
+              },
+              "discrete_difference": false
+            },
+            "final_network_error": {
+              "action": {
+                "reference_count": 1370,
+                "candidate_count": 1370,
+                "length_equal": true,
+                "finite_pair_count": 1370,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              },
+              "guide": {
+                "reference_count": 73876,
+                "candidate_count": 73876,
+                "length_equal": true,
+                "finite_pair_count": 73876,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              },
+              "value": {
+                "reference_count": 1353,
+                "candidate_count": 1353,
+                "length_equal": true,
+                "finite_pair_count": 1353,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              }
+            },
+            "scope": "First differences are first observed checkpoints, not first causal interactions. Population order, membership, seats, culls and entity flags are exact decisions; RNG, network hashes and observer-derived dominant paths are reported separately. Pointwise entity numbers cease after discrete/RNG divergence because names may be reused after death. Common names after that point measure overlap, not lineage. World/network numerical distances and empirical population distributions remain descriptive. Unknown/nonfinite values are counted. A null first numeric checkpoint with censoring does not mean no numerical drift; exact first entity drift is unavailable from the censoring point. Flattened numerical comparisons assume the fixed schema/network architecture of this experiment. No equivalence or distribution-generalization claim beyond samples."
+          },
+          "c2_2_vs_c2_1": {
+            "first_numeric_difference": null,
+            "first_numeric_above_reference_tolerance": null,
+            "first_discrete_difference": null,
+            "individual_numeric_comparison_stopped_at": null,
+            "individual_first_numeric_location_censored": false,
+            "first_differences": {
+              "population_order": null,
+              "membership": null,
+              "seats": null,
+              "culls": null,
+              "traits": null,
+              "golden": null,
+              "rng": null,
+              "networks": null,
+              "cache": null,
+              "reincarnator": null,
+              "reporting_path": null
+            },
+            "final": {
+              "population_reference": 8297,
+              "population_candidate": 8297,
+              "population_count_delta": 0,
+              "common_name_count": 8297,
+              "name_jaccard": 1,
+              "common_name_reference_fraction": 1,
+              "common_name_candidate_fraction": 1,
+              "individual_comparison_valid": true,
+              "numeric": {
+                "score": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "hp": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "titan_affinities": {
+                  "reference_count": 99564,
+                  "candidate_count": 99564,
+                  "length_equal": true,
+                  "finite_pair_count": 99564,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "cached_paths": {
+                  "reference_count": 79128,
+                  "candidate_count": 79128,
+                  "length_equal": true,
+                  "finite_pair_count": 79128,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "activity": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "stability": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "heroic_tendency": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                }
+              },
+              "world_numeric": {
+                "blueprint": {
+                  "reference_count": 12,
+                  "candidate_count": 12,
+                  "length_equal": true,
+                  "finite_pair_count": 12,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "zeitgeist": {
+                  "reference_count": 12,
+                  "candidate_count": 12,
+                  "length_equal": true,
+                  "finite_pair_count": 12,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "managers": {
+                  "reference_count": 5,
+                  "candidate_count": 5,
+                  "length_equal": true,
+                  "finite_pair_count": 5,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                }
+              },
+              "path_total_variation": 0,
+              "unknown_paths_reference": 0,
+              "unknown_paths_candidate": 0,
+              "seat_l1": 0,
+              "score_distribution": {
+                "reference": {
+                  "count": 8297,
+                  "finite_count": 8297,
+                  "nonfinite_count": 0,
+                  "mean": 1.708593445349684,
+                  "std": 1.2744340423849583,
+                  "q05": 0,
+                  "q50": 2.0801304037269523,
+                  "q95": 4.898194843776264
+                },
+                "candidate": {
+                  "count": 8297,
+                  "finite_count": 8297,
+                  "nonfinite_count": 0,
+                  "mean": 1.708593445349684,
+                  "std": 1.2744340423849583,
+                  "q05": 0,
+                  "q50": 2.0801304037269523,
+                  "q95": 4.898194843776264
+                },
+                "ks_distance": 0,
+                "wasserstein_1": 0,
+                "finite_values_only": true,
+                "interpretation": "Descriptive distances, no significance test."
+              },
+              "differences": {
+                "population_order": false,
+                "membership": false,
+                "seats": false,
+                "culls": false,
+                "traits": false,
+                "golden": false,
+                "rng": false,
+                "networks": false,
+                "cache": false,
+                "reincarnator": false,
+                "reporting_path": false
+              },
+              "discrete_difference": false
+            },
+            "final_network_error": {
+              "action": {
+                "reference_count": 1370,
+                "candidate_count": 1370,
+                "length_equal": true,
+                "finite_pair_count": 1370,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              },
+              "guide": {
+                "reference_count": 73876,
+                "candidate_count": 73876,
+                "length_equal": true,
+                "finite_pair_count": 73876,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              },
+              "value": {
+                "reference_count": 1353,
+                "candidate_count": 1353,
+                "length_equal": true,
+                "finite_pair_count": 1353,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              }
+            },
+            "scope": "First differences are first observed checkpoints, not first causal interactions. Population order, membership, seats, culls and entity flags are exact decisions; RNG, network hashes and observer-derived dominant paths are reported separately. Pointwise entity numbers cease after discrete/RNG divergence because names may be reused after death. Common names after that point measure overlap, not lineage. World/network numerical distances and empirical population distributions remain descriptive. Unknown/nonfinite values are counted. A null first numeric checkpoint with censoring does not mean no numerical drift; exact first entity drift is unavailable from the censoring point. Flattened numerical comparisons assume the fixed schema/network architecture of this experiment. No equivalence or distribution-generalization claim beyond samples."
+          },
+          "c2_4_vs_c2_1": {
+            "first_numeric_difference": null,
+            "first_numeric_above_reference_tolerance": null,
+            "first_discrete_difference": null,
+            "individual_numeric_comparison_stopped_at": null,
+            "individual_first_numeric_location_censored": false,
+            "first_differences": {
+              "population_order": null,
+              "membership": null,
+              "seats": null,
+              "culls": null,
+              "traits": null,
+              "golden": null,
+              "rng": null,
+              "networks": null,
+              "cache": null,
+              "reincarnator": null,
+              "reporting_path": null
+            },
+            "final": {
+              "population_reference": 8297,
+              "population_candidate": 8297,
+              "population_count_delta": 0,
+              "common_name_count": 8297,
+              "name_jaccard": 1,
+              "common_name_reference_fraction": 1,
+              "common_name_candidate_fraction": 1,
+              "individual_comparison_valid": true,
+              "numeric": {
+                "score": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "hp": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "titan_affinities": {
+                  "reference_count": 99564,
+                  "candidate_count": 99564,
+                  "length_equal": true,
+                  "finite_pair_count": 99564,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "cached_paths": {
+                  "reference_count": 79128,
+                  "candidate_count": 79128,
+                  "length_equal": true,
+                  "finite_pair_count": 79128,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "activity": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "stability": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "heroic_tendency": {
+                  "reference_count": 8297,
+                  "candidate_count": 8297,
+                  "length_equal": true,
+                  "finite_pair_count": 8297,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                }
+              },
+              "world_numeric": {
+                "blueprint": {
+                  "reference_count": 12,
+                  "candidate_count": 12,
+                  "length_equal": true,
+                  "finite_pair_count": 12,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "zeitgeist": {
+                  "reference_count": 12,
+                  "candidate_count": 12,
+                  "length_equal": true,
+                  "finite_pair_count": 12,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                },
+                "managers": {
+                  "reference_count": 5,
+                  "candidate_count": 5,
+                  "length_equal": true,
+                  "finite_pair_count": 5,
+                  "nonfinite_pair_count": 0,
+                  "different_element_count": 0,
+                  "outside_reference_tolerance": 0,
+                  "max_absolute_error": 0,
+                  "mean_absolute_error": 0,
+                  "rmse": 0,
+                  "relative_l2_error": 0,
+                  "max_scaled_relative_error": 0,
+                  "rtol": 1e-10,
+                  "atol": 1e-10,
+                  "relative_denominator_floor": 1e-12
+                }
+              },
+              "path_total_variation": 0,
+              "unknown_paths_reference": 0,
+              "unknown_paths_candidate": 0,
+              "seat_l1": 0,
+              "score_distribution": {
+                "reference": {
+                  "count": 8297,
+                  "finite_count": 8297,
+                  "nonfinite_count": 0,
+                  "mean": 1.708593445349684,
+                  "std": 1.2744340423849583,
+                  "q05": 0,
+                  "q50": 2.0801304037269523,
+                  "q95": 4.898194843776264
+                },
+                "candidate": {
+                  "count": 8297,
+                  "finite_count": 8297,
+                  "nonfinite_count": 0,
+                  "mean": 1.708593445349684,
+                  "std": 1.2744340423849583,
+                  "q05": 0,
+                  "q50": 2.0801304037269523,
+                  "q95": 4.898194843776264
+                },
+                "ks_distance": 0,
+                "wasserstein_1": 0,
+                "finite_values_only": true,
+                "interpretation": "Descriptive distances, no significance test."
+              },
+              "differences": {
+                "population_order": false,
+                "membership": false,
+                "seats": false,
+                "culls": false,
+                "traits": false,
+                "golden": false,
+                "rng": false,
+                "networks": false,
+                "cache": false,
+                "reincarnator": false,
+                "reporting_path": false
+              },
+              "discrete_difference": false
+            },
+            "final_network_error": {
+              "action": {
+                "reference_count": 1370,
+                "candidate_count": 1370,
+                "length_equal": true,
+                "finite_pair_count": 1370,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              },
+              "guide": {
+                "reference_count": 73876,
+                "candidate_count": 73876,
+                "length_equal": true,
+                "finite_pair_count": 73876,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              },
+              "value": {
+                "reference_count": 1353,
+                "candidate_count": 1353,
+                "length_equal": true,
+                "finite_pair_count": 1353,
+                "nonfinite_pair_count": 0,
+                "different_element_count": 0,
+                "outside_reference_tolerance": 0,
+                "max_absolute_error": 0,
+                "mean_absolute_error": 0,
+                "rmse": 0,
+                "relative_l2_error": 0,
+                "max_scaled_relative_error": 0,
+                "rtol": 0.000001,
+                "atol": 0.000001,
+                "relative_denominator_floor": 1e-12
+              }
+            },
+            "scope": "First differences are first observed checkpoints, not first causal interactions. Population order, membership, seats, culls and entity flags are exact decisions; RNG, network hashes and observer-derived dominant paths are reported separately. Pointwise entity numbers cease after discrete/RNG divergence because names may be reused after death. Common names after that point measure overlap, not lineage. World/network numerical distances and empirical population distributions remain descriptive. Unknown/nonfinite values are counted. A null first numeric checkpoint with censoring does not mean no numerical drift; exact first entity drift is unavailable from the censoring point. Flattened numerical comparisons assume the fixed schema/network architecture of this experiment. No equivalence or distribution-generalization claim beyond samples."
+          }
+        }
+      }
+    },
+    {
+      "type": "timing",
+      "data": {
+        "case": "human-10000-6-reinc0",
+        "seed": 731,
+        "samples": {
+          "a2": [
+            {
+              "wall_seconds": 1.0048772490000601,
+              "cpu_seconds": 1.0038529999999994,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 1.1450939170000538,
+              "cpu_seconds": 1.1441890000000001,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 1.04649887700009,
+              "cpu_seconds": 1.0370299999999992,
+              "usable_for_performance": true
+            }
+          ],
+          "c1": [
+            {
+              "wall_seconds": 0.9966820399999676,
+              "cpu_seconds": 0.9929200000000005,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 0.8952477499999816,
+              "cpu_seconds": 0.8939090000000003,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 0.9075553340000511,
+              "cpu_seconds": 0.8845650000000003,
+              "usable_for_performance": true
+            }
+          ],
+          "off": [
+            {
+              "wall_seconds": 1.0880261680000274,
+              "cpu_seconds": 1.0868390000000006,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 1.0892102930000647,
+              "cpu_seconds": 1.070603,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 1.058808999000064,
+              "cpu_seconds": 1.0577400000000003,
+              "usable_for_performance": true
+            }
+          ],
+          "c1only": [
+            {
+              "wall_seconds": 1.0608218759999772,
+              "cpu_seconds": 1.0502119999999993,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 0.9236458339999558,
+              "cpu_seconds": 0.9225739999999998,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 1.011202874999924,
+              "cpu_seconds": 0.9311210000000003,
+              "usable_for_performance": true
+            }
+          ],
+          "c2_1": [
+            {
+              "wall_seconds": 0.8718864989999418,
+              "cpu_seconds": 0.8698249999999994,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 0.9129494179999824,
+              "cpu_seconds": 0.9121560000000004,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 0.8856211259999327,
+              "cpu_seconds": 0.8812350000000004,
+              "usable_for_performance": true
+            }
+          ],
+          "c2_2": [
+            {
+              "wall_seconds": 0.9246484149999787,
+              "cpu_seconds": 0.9263330000000001,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 0.8984921659999827,
+              "cpu_seconds": 0.8948119999999999,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 0.8264802899999495,
+              "cpu_seconds": 0.8271559999999998,
+              "usable_for_performance": true
+            }
+          ],
+          "c2_4": [
+            {
+              "wall_seconds": 0.9165368320000482,
+              "cpu_seconds": 0.905473,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 0.8880884140000376,
+              "cpu_seconds": 0.8897780000000002,
+              "usable_for_performance": true
+            },
+            {
+              "wall_seconds": 0.8708284610000305,
+              "cpu_seconds": 0.8713420000000003,
+              "usable_for_performance": true
+            }
+          ]
+        },
+        "median_seconds": {
+          "a2": 1.04649887700009,
+          "c1": 0.9075553340000511,
+          "off": 1.0880261680000274,
+          "c1only": 1.011202874999924,
+          "c2_1": 0.8856211259999327,
+          "c2_2": 0.8984921659999827,
+          "c2_4": 0.8880884140000376
+        },
+        "speedup_over_original": null,
+        "speedup_over_a2": {
+          "a2": 1,
+          "c1": 1.153096497585051,
+          "off": 0.9618324519930698,
+          "c1only": 1.034904966028868,
+          "c2_1": 1.1816552770447004,
+          "c2_2": 1.164727881445001,
+          "c2_4": 1.1783724013317054
+        },
+        "speedup_over_c1": {
+          "a2": 0.8672301078828324,
+          "c1": 1,
+          "off": 0.8341300611071591,
+          "c1only": 0.8975007453376942,
+          "c2_1": 1.0247670333917938,
+          "c2_2": 1.0100870862796911,
+          "c2_4": 1.021920024733047
+        },
+        "speedup_over_c1only": {
+          "a2": 0.9662722982547807,
+          "c1": 1.1142052028310454,
+          "off": 0.9293920539233745,
+          "c1only": 1,
+          "c2_1": 1.1418007602948723,
+          "c2_2": 1.1254442868452827,
+          "c2_4": 1.1386286084347919
+        },
+        "speedup_over_c2_one_thread": {
+          "c2_1": 1,
+          "c2_2": 0.9856748444926895,
+          "c2_4": 0.9972217991348497
+        },
+        "repeat_state_consistent": {
+          "a2": true,
+          "c1": true,
+          "off": true,
+          "c1only": true,
+          "c2_1": true,
+          "c2_2": true,
+          "c2_4": true
+        },
+        "scope": "Three rotated plain-process timings. Original comparison exists only for the small suite. C2 2/4 workers use forced threshold 1; shared scoring/birth thread budgets do not isolate the birth contribution or prove core occupancy."
+      }
+    }
+  ]
+}
