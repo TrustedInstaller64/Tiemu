@@ -125,13 +125,16 @@ def main():
         checked_digests = set()
         for workers in (1, 4):
             records = {}
-            for mode in (('plain', 'boundary', 'profile') if args.include_cprofile else ('plain', 'boundary')):
+            modes = ['plain', 'boundary'] + (['profile'] if args.include_cprofile else [])
+            if phase == 'human' and population == 10000 and workers == 1:
+                modes.append('prematerialized')
+            for mode in modes:
                 label = f'{name}-w{workers}-{mode}'
                 result_path = output/f'{label}.json'
                 command = [sys.executable, str(script), '--source-root', str(root),
                            '--phase', phase, '--population', str(population),
                            '--generations', str(generations), '--native-threads', str(workers),
-                           '--native-min-rows', '1', '--repeats', '3' if mode == 'plain' else '1',
+                           '--native-min-rows', '1', '--repeats', '3' if mode in ('plain', 'prematerialized') else '1',
                            '--output', str(result_path)]
                 if reincarnator:
                     command.append('--with-reincarnator')
@@ -139,6 +142,8 @@ def main():
                     command.extend(['--profile-output-dir', str(output/f'{label}-stats')])
                 if mode == 'boundary':
                     command.append('--boundary-timers')
+                if mode == 'prematerialized':
+                    command.append('--prematerialize-entity-dicts')
                 subprocess.run(command, check=True, timeout=180, stdout=subprocess.DEVNULL,
                                env={**os.environ, 'PYTHONHASHSEED': '0'})
                 records[mode] = json.loads(result_path.read_text(encoding='utf-8'))
@@ -166,6 +171,15 @@ def main():
                 'boundary_spans': boundaries['spans'],
                 'boundary_scope': boundaries['scope'],
             }
+            if 'prematerialized' in records:
+                control = records['prematerialized']
+                item['dictionary_materialization_ablation'] = {
+                    'file': f'{name}-w{workers}-prematerialized.json',
+                    'median_seconds': control['median_seconds'],
+                    'ratio_to_plain': control['median_seconds']/plain['median_seconds'],
+                    'scope': 'Only access vars(entity) during setup before timing. No product '
+                             'algorithm/GC setting changes. Checked states and RNG must agree '
+                             'with plain and observed runs; this is diagnostic, not a speedup result.'}
             if 'profile' in records:
                 profile_run = records['profile']['runs'][0]
                 profile = profile_run['profile']

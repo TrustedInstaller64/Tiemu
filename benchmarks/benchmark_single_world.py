@@ -46,6 +46,8 @@ parser.add_argument('--profile-output-dir', type=Path,
                     help='Profile only measured phase loops; write one .prof per sample (remote use).')
 parser.add_argument('--boundary-timers', action='store_true',
                     help='Use explicit call wrappers instead of cProfile (remote diagnostics only).')
+parser.add_argument('--prematerialize-entity-dicts', action='store_true',
+                    help='Diagnostic ablation: move instance dictionary materialization into setup.')
 args = parser.parse_args()
 if args.boundary_timers and args.profile_output_dir:
     parser.error('boundary timers and cProfile must run in separate samples')
@@ -388,6 +390,9 @@ def sample(population, generations, profile_path=None, boundary_timers=False):
             except BaseException:
                 boundaries.restore()
                 raise
+        if args.prematerialize_entity_dicts:
+            for entity in sim.population:
+                vars(entity)
         usage_before = usage_snapshot()
         start_cpu, start = time.process_time(), time.perf_counter()
         if profiler is not None:
@@ -462,6 +467,7 @@ result = {'source_root': str(root),
           'native_min_rows': args.native_min_rows, 'phase': args.phase,
           'profiled': args.profile_output_dir is not None,
           'boundary_timers': args.boundary_timers,
+          'prematerialized_entity_dicts': args.prematerialize_entity_dicts,
           'initial_reincarnator': args.with_reincarnator,
           'initial_population': args.population, 'generations': args.generations,
           'runs': runs, 'median_seconds': statistics.median(r['seconds'] for r in runs),

@@ -7,12 +7,15 @@ Do not run these tests on the reserved development Mac.
 import ast
 import copy
 import functools
+import gc
 import importlib
 import logging
 from pathlib import Path
 import pickle
+import platform
 import random
 import subprocess
+import sys
 import threading
 from types import SimpleNamespace
 
@@ -303,7 +306,7 @@ def test_stale_bucket_draws_and_culling_keep_numpy_rng_consumption(native):
                                    'last_titan_inf', 'last_cache_nan', 'last_score_nan', 'last_hp_inf',
                                    'titan_float32', 'readonly_titan', 'cache_float32', 'shared_cache',
                                    'entity_class_method', 'entity_instance_method',
-                                   'entity_class_property', 'entity_instance_property'])
+                                   'entity_class_property'])
 def test_ineligible_input_returns_none_without_mutating_state_or_rng(native, unsafe, monkeypatch):
     bridge = candidate()
     world = make_world()
@@ -372,8 +375,6 @@ def test_ineligible_input_returns_none_without_mutating_state_or_rng(native, uns
             monkeypatch.setattr(Pathstrider, 'path_affinities', property(lambda self: np.ones(12)))
     elif unsafe == 'entity_instance_method':
         world.population[-1].internal_purification = lambda *args: None
-    elif unsafe == 'entity_instance_property':
-        world.population[-1].__dict__['path_affinities'] = np.ones(12)
     before = pickle.dumps(snapshot(world))
     before_rng = rng_state()
     before_arrays = [(entity.titan_affinities, entity._path_affinities) for entity in world.population]
@@ -385,6 +386,100 @@ def test_ineligible_input_returns_none_without_mutating_state_or_rng(native, uns
         assert entity._path_affinities is paths
     assert rng_state() == before_rng
     assert world.interaction_handler._native_opponents is None
+
+
+@pytest.mark.skipif(platform.python_implementation() != 'CPython' or sys.version_info[:2] != (3, 12),
+                    reason='This mechanism contract targets CPython 3.12 managed instance dictionaries')
+def test_native_eligibility_and_encounters_do_not_materialize_entity_dictionaries(native):
+    def has_dict(entity):
+        return any(type(referent) is dict for referent in gc.get_referents(entity))
+
+    bridge = candidate()
+    world = make_world()
+    control = Pathstrider('control', np.ones(12),
+                          titan_to_path_model=world.population_manager.titan_to_path_model)
+    assert not has_dict(control)
+    control.__dict__
+    assert has_dict(control), 'GC probe must detect the layout side effect'
+    assert not any(has_dict(entity) for entity in world.population)
+    cache_aliases = [entity._path_affinities for entity in world.population]
+    try:
+        assert bridge._eligible(world)
+        assert all(entity._path_affinities is cached for entity, cached in zip(world.population, cache_aliases))
+        assert not any(has_dict(entity) for entity in world.population)
+        assert bridge.try_run_encounters(world) is not None
+        assert not any(has_dict(entity) for entity in world.population)
+    finally:
+        close_index(world)
+        world.population_manager.close_native_world()
+
+
+@pytest.mark.parametrize('property_name', ['path_affinities', 'dominant_path_idx'])
+def test_instance_shadow_of_original_data_property_keeps_frozen_loop_state_and_rng(native, property_name):
+    bridge = candidate()
+    actual, expected = make_world(relation='REPULSION'), make_world(relation='REPULSION', frozen=True)
+    shadow = np.full(12, 777.)
+    reference_shadow = shadow.copy()
+    # Both original properties are data descriptors: normal Python attribute
+    # reads ignore these same-named dictionary entries. Accepting this case
+    # widens the safe fast path without weakening any numerical/RNG assertion.
+    actual.population[0].__dict__[property_name] = shadow
+    expected.population[0].__dict__[property_name] = reference_shadow
+    initial_cache = actual.population[0]._path_affinities
+    random.seed(731)
+    np.random.seed(731)
+    culled, updated, trace = frozen_oracle()[1](expected, trace_recorder(expected.population))
+    expected_rng = rng_state()
+    random.seed(731)
+    np.random.seed(731)
+    try:
+        assert bridge._eligible(actual)
+        assert actual.population[0]._path_affinities is initial_cache
+        result = bridge.try_run_encounters(actual, trace=True)
+        assert result is not None
+        assert result.trace == trace and rng_state() == expected_rng
+        assert ids(actual.population, result.culled) == ids(expected.population, culled)
+        assert ids(actual.population, result.updated) == ids(expected.population, updated)
+        assert_same_entities(actual, expected)
+        assert actual.population[0].__dict__[property_name] is shadow
+        assert expected.population[0].__dict__[property_name] is reference_shadow
+    finally:
+        close_index(actual)
+        close_index(expected)
+        actual.population_manager.close_native_world()
+
+
+@pytest.mark.parametrize('override', ['hostile_callable', 'another_entity_bound_method'])
+def test_method_override_is_rejected_without_inspecting_or_calling_custom_objects(native, override):
+    world = make_world()
+    visits = []
+    if override == 'hostile_callable':
+        class Hostile:
+            def __getattribute__(self, name):
+                visits.append(name)
+                raise AssertionError('eligibility must not inspect custom method objects')
+            def __call__(self, *args):
+                raise AssertionError('eligibility must not call a method override')
+        world.population[-1].internal_purification = Hostile()
+    else:
+        world.population[-1].internal_purification = world.population[0].internal_purification
+    before = rng_state()
+    assert candidate()._eligible(world) is False
+    assert visits == [] and rng_state() == before
+
+
+def test_missing_entity_field_with_getattr_hook_falls_back_before_callback(native, monkeypatch):
+    world = make_world()
+    del world.population[-1].titan_affinities
+    visits = []
+
+    def missing(entity, name):
+        visits.append(name)
+        raise AssertionError('eligibility must reject custom fallback lookup before calling it')
+
+    monkeypatch.setattr(Pathstrider, '__getattr__', missing, raising=False)
+    assert candidate()._eligible(world) is False
+    assert visits == []
 
 
 def test_production_call_omits_per_encounter_trace_and_preserves_cached_gaussians(native):

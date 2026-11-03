@@ -1,0 +1,1108 @@
+{
+  "candidate": "149442f9",
+  "run_url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41640158575",
+  "job_id": 125931352372,
+  "source": "Decoded completed GitHub job log JSON lines; raw per-sample files remain in the Actions artifact.",
+  "rows": [
+    {
+      "environment": {
+        "platform": "Linux-7.0.0-1019-azure-x86_64-with-glibc2.43",
+        "machine": "x86_64",
+        "logical_cpus": 4,
+        "allowed_cpu_affinity": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "cpu_models": [
+          "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz"
+        ],
+        "cpu_mhz_snapshot": [
+          "800.000",
+          "3491.726",
+          "2849.197",
+          "800.000"
+        ],
+        "hypervisor_cpu_flag": true,
+        "proc_self_cgroup": "0::/system.slice/hosted-compute-agent.service\n",
+        "cgroup_root_cpu_max": null,
+        "cgroup_root_cpu_stat": "usage_usec 55911000\nuser_usec 40985000\nsystem_usec 14926000\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cgroup_root_cpuset_effective": "0-3\n",
+        "perf_event_paranoid": "4\n",
+        "scope": "Metadata snapshot outside measured stages. Exposed CPU model/MHz need not describe a dedicated host or sustained workload frequency. Cgroup root data is reported with proc_self_cgroup and is not assumed to be the effective quota. These fields do not establish IPC, memory bandwidth, cache misses or NUMA locality.",
+        "perf_probe": {
+          "requested": true,
+          "executable": "/usr/bin/perf",
+          "scope": "User-space event availability probe on the true utility only; not a project measurement. No hardware counts from this probe may be attributed to a simulation phase.",
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "Error:\nNo supported events found.\nAccess to performance monitoring and observability operations is limited.\nConsider adjusting /proc/sys/kernel/perf_event_paranoid setting to open\naccess to performance monitoring and observability operations for processes\nwithout CAP_PERFMON, CAP_SYS_PTRACE or CAP_SYS_ADMIN Linux capability.\nMore information can be found at 'Perf events and tool security' document:\nhttps://www.kernel.org/doc/html/latest/admin-guide/perf-security.html\nperf_event_paranoid setting is 4:\n  -1: Allow use of (almost) all events by all users\n      Ignore mlock limit after perf_event_mlock_kb without CAP_IPC_LOCK\n>= 0: Disallow raw and ftrace function tracepoint access\n>= 1: Disallow CPU event access\n>= 2: Disallow kernel profiling\nTo make the adjusted perf_event_paranoid setting permanent preserve it\nin /etc/sysctl.conf (e.g. kernel.perf_event_paranoid = <setting>)\n",
+          "command": [
+            "/usr/bin/perf",
+            "stat",
+            "-x,",
+            "-e",
+            "cycles:u,instructions:u,cache-misses:u",
+            "--",
+            "true"
+          ]
+        }
+      }
+    },
+    {
+      "case": "human-1000",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-w1-plain.json",
+      "boundary_file": "human-1000-w1-boundary.json",
+      "plain_median_seconds": 0.12745822799999473,
+      "boundary_seconds": 0.1255618299999952,
+      "boundary_to_plain_wall_ratio": 0.9851214156217549,
+      "plain_median_process_cpu_over_wall": 0.9999831057926309,
+      "boundary_process_cpu_over_wall": 0.9999556234566255,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.12768900000000016,
+          "ru_stime": 0,
+          "ru_minflt": 229,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 1
+        },
+        {
+          "ru_utime": 0.12742200000000015,
+          "ru_stime": 0.00004399999999998849,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 1
+        },
+        {
+          "ru_utime": 0.1263679999999998,
+          "ru_stime": 0.000019000000000019,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 6,
+          "inclusive_seconds": 0.08475219400001777,
+          "exclusive_instrumented_seconds": 0.00734254300000714
+        },
+        {
+          "name": "try_run_encounters",
+          "calls": 6,
+          "inclusive_seconds": 0.04625515200001473,
+          "exclusive_instrumented_seconds": 0.011287289999998507,
+          "successful_returns": 6
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 6,
+          "inclusive_seconds": 0.03978377900000396,
+          "exclusive_instrumented_seconds": 0.029937202999946066
+        },
+        {
+          "name": "encounters.eligibility",
+          "calls": 6,
+          "inclusive_seconds": 0.02955196599998544,
+          "exclusive_instrumented_seconds": 0.02769149299996343
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.022266988999987802,
+          "exclusive_instrumented_seconds": 0.021785927000010474
+        },
+        {
+          "name": "ResidentWorld.reconcile",
+          "calls": 6,
+          "inclusive_seconds": 0.009029759000029003,
+          "exclusive_instrumented_seconds": 0.0077074750000463155
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 6,
+          "inclusive_seconds": 0.008887510000008092,
+          "exclusive_instrumented_seconds": 0.008887510000008092
+        },
+        {
+          "name": "ResidentWorld.run_encounters",
+          "calls": 6,
+          "inclusive_seconds": 0.0033830770000093935,
+          "exclusive_instrumented_seconds": 0.00008697699999515862
+        },
+        {
+          "name": "world.C++_run",
+          "calls": 6,
+          "inclusive_seconds": 0.003296100000014235,
+          "exclusive_instrumented_seconds": 0.003296100000014235
+        },
+        {
+          "name": "world.pack_sources",
+          "calls": 12,
+          "inclusive_seconds": 0.002664601000020639,
+          "exclusive_instrumented_seconds": 0.002664601000020639
+        },
+        {
+          "name": "ResidentWorld._sync_prepared",
+          "calls": 6,
+          "inclusive_seconds": 0.002032819000021391,
+          "exclusive_instrumented_seconds": 0.0014572990000374375
+        },
+        {
+          "name": "ResidentWorld.births",
+          "calls": 6,
+          "inclusive_seconds": 0.0008072510000403099,
+          "exclusive_instrumented_seconds": 0.0005690380000373807
+        },
+        {
+          "name": "world.C++_sync",
+          "calls": 6,
+          "inclusive_seconds": 0.0005755199999839533,
+          "exclusive_instrumented_seconds": 0.0005755199999839533
+        },
+        {
+          "name": "world.C++_reconcile",
+          "calls": 6,
+          "inclusive_seconds": 0.0005181559999840601,
+          "exclusive_instrumented_seconds": 0.0005181559999840601
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 6,
+          "inclusive_seconds": 0.000481061999977328,
+          "exclusive_instrumented_seconds": 0.000481061999977328
+        },
+        {
+          "name": "world.C++_births",
+          "calls": 6,
+          "inclusive_seconds": 0.00023821300000292922,
+          "exclusive_instrumented_seconds": 0.00023821300000292922
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 6,
+          "inclusive_seconds": 0.000009565999988581098,
+          "exclusive_instrumented_seconds": 0.000009565999988581098
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. When the standalone encounter entry is present, protected entity/handler/manager methods are left untouched. Only its outer entry is wrapped and every human generation must return a non-None native result, ruling out observer-forced fallback. The entry span includes eligibility, packing, core execution and writeback. Separate eligibility and C ABI execution spans identify marshaling overhead without modifying any protected entity or handler method. Eligibility covers structural checks; batched finite-value checks are inside the remaining entry time, so compare the total entry span across revisions. Population, diversity and stagnation statistics may share batched path reads outside the encounter entry; their cost remains in the enclosing generation/evolution spans. Resident core sync/run/birth spans use the actual shared C binding table; the human case must use one persistent World for all generations. ResidentWorld spans include its Python adapter. All source identities and eligibility guards remain unchanged. Scalar C ABI conversion is included in its calling phase; no timer is subtracted."
+    },
+    {
+      "case": "human-1000",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-w4-plain.json",
+      "boundary_file": "human-1000-w4-boundary.json",
+      "plain_median_seconds": 0.1317693439999914,
+      "boundary_seconds": 0.12667513199998837,
+      "boundary_to_plain_wall_ratio": 0.9613399304772787,
+      "plain_median_process_cpu_over_wall": 1.0061152060632381,
+      "boundary_process_cpu_over_wall": 1.0050377843696412,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.13497400000000015,
+          "ru_stime": 0.0008510000000000184,
+          "ru_minflt": 234,
+          "ru_majflt": 0,
+          "ru_nvcsw": 29,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.130147,
+          "ru_stime": 0.0019490000000000063,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 28,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.1311659999999999,
+          "ru_stime": 0.0010600000000000054,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 30,
+          "ru_nivcsw": 0
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 6,
+          "inclusive_seconds": 0.08543895399999712,
+          "exclusive_instrumented_seconds": 0.0074739400000112255
+        },
+        {
+          "name": "try_run_encounters",
+          "calls": 6,
+          "inclusive_seconds": 0.04611713599999234,
+          "exclusive_instrumented_seconds": 0.01135780899998906,
+          "successful_returns": 6
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 6,
+          "inclusive_seconds": 0.040270033999988186,
+          "exclusive_instrumented_seconds": 0.030172271999987288
+        },
+        {
+          "name": "encounters.eligibility",
+          "calls": 6,
+          "inclusive_seconds": 0.02912273300000834,
+          "exclusive_instrumented_seconds": 0.027305183000009947
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.022890439999983414,
+          "exclusive_instrumented_seconds": 0.021852878999965242
+        },
+        {
+          "name": "ResidentWorld.reconcile",
+          "calls": 6,
+          "inclusive_seconds": 0.009263492000002316,
+          "exclusive_instrumented_seconds": 0.007839623000023721
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 6,
+          "inclusive_seconds": 0.008957438000010143,
+          "exclusive_instrumented_seconds": 0.008957438000010143
+        },
+        {
+          "name": "ResidentWorld.run_encounters",
+          "calls": 6,
+          "inclusive_seconds": 0.003527037999987215,
+          "exclusive_instrumented_seconds": 0.00008529099997645062
+        },
+        {
+          "name": "world.C++_run",
+          "calls": 6,
+          "inclusive_seconds": 0.003441747000010764,
+          "exclusive_instrumented_seconds": 0.003441747000010764
+        },
+        {
+          "name": "world.pack_sources",
+          "calls": 12,
+          "inclusive_seconds": 0.002626751999983412,
+          "exclusive_instrumented_seconds": 0.002626751999983412
+        },
+        {
+          "name": "ResidentWorld._sync_prepared",
+          "calls": 6,
+          "inclusive_seconds": 0.0021095560000077285,
+          "exclusive_instrumented_seconds": 0.0014744069999892417
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 6,
+          "inclusive_seconds": 0.0010375610000181723,
+          "exclusive_instrumented_seconds": 0.0010375610000181723
+        },
+        {
+          "name": "ResidentWorld.births",
+          "calls": 6,
+          "inclusive_seconds": 0.0008249109999951543,
+          "exclusive_instrumented_seconds": 0.0005780489999978045
+        },
+        {
+          "name": "world.C++_sync",
+          "calls": 6,
+          "inclusive_seconds": 0.0006351490000184867,
+          "exclusive_instrumented_seconds": 0.0006351490000184867
+        },
+        {
+          "name": "world.C++_reconcile",
+          "calls": 6,
+          "inclusive_seconds": 0.0006146669999935739,
+          "exclusive_instrumented_seconds": 0.0006146669999935739
+        },
+        {
+          "name": "world.C++_births",
+          "calls": 6,
+          "inclusive_seconds": 0.0002468619999973498,
+          "exclusive_instrumented_seconds": 0.0002468619999973498
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 6,
+          "inclusive_seconds": 0.000009359000003428264,
+          "exclusive_instrumented_seconds": 0.000009359000003428264
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. When the standalone encounter entry is present, protected entity/handler/manager methods are left untouched. Only its outer entry is wrapped and every human generation must return a non-None native result, ruling out observer-forced fallback. The entry span includes eligibility, packing, core execution and writeback. Separate eligibility and C ABI execution spans identify marshaling overhead without modifying any protected entity or handler method. Eligibility covers structural checks; batched finite-value checks are inside the remaining entry time, so compare the total entry span across revisions. Population, diversity and stagnation statistics may share batched path reads outside the encounter entry; their cost remains in the enclosing generation/evolution spans. Resident core sync/run/birth spans use the actual shared C binding table; the human case must use one persistent World for all generations. ResidentWorld spans include its Python adapter. All source identities and eligibility guards remain unchanged. Scalar C ABI conversion is included in its calling phase; no timer is subtracted."
+    },
+    {
+      "case": "human-1000",
+      "same_checked_state_and_rng_digest": true
+    },
+    {
+      "case": "human-10000",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "human-10000-w1-plain.json",
+      "boundary_file": "human-10000-w1-boundary.json",
+      "plain_median_seconds": 0.7558720149999942,
+      "boundary_seconds": 0.8389556090000099,
+      "boundary_to_plain_wall_ratio": 1.1099175420590432,
+      "plain_median_process_cpu_over_wall": 0.9999293849083851,
+      "boundary_process_cpu_over_wall": 0.999882052162298,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.8437419999999998,
+          "ru_stime": 0.007995999999999975,
+          "ru_minflt": 4918,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 4
+        },
+        {
+          "ru_utime": 0.7558300000000004,
+          "ru_stime": 0,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 6
+        },
+        {
+          "ru_utime": 0.7517000000000005,
+          "ru_stime": 0,
+          "ru_minflt": 495,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 7
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 3,
+          "inclusive_seconds": 0.6386589530000037,
+          "exclusive_instrumented_seconds": 0.08293157000002793
+        },
+        {
+          "name": "try_run_encounters",
+          "calls": 3,
+          "inclusive_seconds": 0.3330878619999851,
+          "exclusive_instrumented_seconds": 0.046813937999957034,
+          "successful_returns": 3
+        },
+        {
+          "name": "encounters.eligibility",
+          "calls": 3,
+          "inclusive_seconds": 0.2642943190000153,
+          "exclusive_instrumented_seconds": 0.2516687890000213
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 3,
+          "inclusive_seconds": 0.19803287700000283,
+          "exclusive_instrumented_seconds": 0.17444637699999532
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 3,
+          "inclusive_seconds": 0.1778990769999922,
+          "exclusive_instrumented_seconds": 0.1756155780000057
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 3,
+          "inclusive_seconds": 0.04474044399999855,
+          "exclusive_instrumented_seconds": 0.04474044399999855
+        },
+        {
+          "name": "ResidentWorld.reconcile",
+          "calls": 3,
+          "inclusive_seconds": 0.022926960999996027,
+          "exclusive_instrumented_seconds": 0.01767316099996208
+        },
+        {
+          "name": "world.pack_sources",
+          "calls": 6,
+          "inclusive_seconds": 0.013507929000013519,
+          "exclusive_instrumented_seconds": 0.013507929000013519
+        },
+        {
+          "name": "ResidentWorld._sync_prepared",
+          "calls": 3,
+          "inclusive_seconds": 0.012126268000002938,
+          "exclusive_instrumented_seconds": 0.007111764000001131
+        },
+        {
+          "name": "ResidentWorld.run_encounters",
+          "calls": 3,
+          "inclusive_seconds": 0.009853337000009788,
+          "exclusive_instrumented_seconds": 0.0000794940000190536
+        },
+        {
+          "name": "world.C++_run",
+          "calls": 3,
+          "inclusive_seconds": 0.009773842999990734,
+          "exclusive_instrumented_seconds": 0.009773842999990734
+        },
+        {
+          "name": "world.C++_sync",
+          "calls": 3,
+          "inclusive_seconds": 0.005014504000001807,
+          "exclusive_instrumented_seconds": 0.005014504000001807
+        },
+        {
+          "name": "world.C++_reconcile",
+          "calls": 3,
+          "inclusive_seconds": 0.00437140100001443,
+          "exclusive_instrumented_seconds": 0.00437140100001443
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 3,
+          "inclusive_seconds": 0.0022834989999864774,
+          "exclusive_instrumented_seconds": 0.0022834989999864774
+        },
+        {
+          "name": "ResidentWorld.births",
+          "calls": 3,
+          "inclusive_seconds": 0.0006507349999935741,
+          "exclusive_instrumented_seconds": 0.00041567599997449634
+        },
+        {
+          "name": "world.C++_births",
+          "calls": 3,
+          "inclusive_seconds": 0.00023505900001907776,
+          "exclusive_instrumented_seconds": 0.00023505900001907776
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 3,
+          "inclusive_seconds": 0.00000880400001790349,
+          "exclusive_instrumented_seconds": 0.00000880400001790349
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. When the standalone encounter entry is present, protected entity/handler/manager methods are left untouched. Only its outer entry is wrapped and every human generation must return a non-None native result, ruling out observer-forced fallback. The entry span includes eligibility, packing, core execution and writeback. Separate eligibility and C ABI execution spans identify marshaling overhead without modifying any protected entity or handler method. Eligibility covers structural checks; batched finite-value checks are inside the remaining entry time, so compare the total entry span across revisions. Population, diversity and stagnation statistics may share batched path reads outside the encounter entry; their cost remains in the enclosing generation/evolution spans. Resident core sync/run/birth spans use the actual shared C binding table; the human case must use one persistent World for all generations. ResidentWorld spans include its Python adapter. All source identities and eligibility guards remain unchanged. Scalar C ABI conversion is included in its calling phase; no timer is subtracted."
+    },
+    {
+      "case": "human-10000",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "human-10000-w4-plain.json",
+      "boundary_file": "human-10000-w4-boundary.json",
+      "plain_median_seconds": 0.7889527190000081,
+      "boundary_seconds": 0.850713755000001,
+      "boundary_to_plain_wall_ratio": 1.078282303251676,
+      "plain_median_process_cpu_over_wall": 1.0044708850633324,
+      "boundary_process_cpu_over_wall": 1.0039939462363565,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.847502,
+          "ru_stime": 0.005013999999999991,
+          "ru_minflt": 4926,
+          "ru_majflt": 0,
+          "ru_nvcsw": 15,
+          "ru_nivcsw": 6
+        },
+        {
+          "ru_utime": 0.7772869999999994,
+          "ru_stime": 0,
+          "ru_minflt": 34,
+          "ru_majflt": 0,
+          "ru_nvcsw": 15,
+          "ru_nivcsw": 5
+        },
+        {
+          "ru_utime": 0.7917249999999996,
+          "ru_stime": 0.0010199999999999931,
+          "ru_minflt": 584,
+          "ru_majflt": 0,
+          "ru_nvcsw": 14,
+          "ru_nivcsw": 3
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 3,
+          "inclusive_seconds": 0.6447331630000122,
+          "exclusive_instrumented_seconds": 0.08363716300002011
+        },
+        {
+          "name": "try_run_encounters",
+          "calls": 3,
+          "inclusive_seconds": 0.33603438500000493,
+          "exclusive_instrumented_seconds": 0.046677392000006535,
+          "successful_returns": 3
+        },
+        {
+          "name": "encounters.eligibility",
+          "calls": 3,
+          "inclusive_seconds": 0.2667200190000045,
+          "exclusive_instrumented_seconds": 0.25407338699999116
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 3,
+          "inclusive_seconds": 0.20368998399999327,
+          "exclusive_instrumented_seconds": 0.18020115199998088
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 3,
+          "inclusive_seconds": 0.17693581699997196,
+          "exclusive_instrumented_seconds": 0.17499871399998312
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 3,
+          "inclusive_seconds": 0.04812579800001515,
+          "exclusive_instrumented_seconds": 0.04812579800001515
+        },
+        {
+          "name": "ResidentWorld.reconcile",
+          "calls": 3,
+          "inclusive_seconds": 0.02281093200001294,
+          "exclusive_instrumented_seconds": 0.017038873000004173
+        },
+        {
+          "name": "world.pack_sources",
+          "calls": 6,
+          "inclusive_seconds": 0.01352490000002149,
+          "exclusive_instrumented_seconds": 0.01352490000002149
+        },
+        {
+          "name": "ResidentWorld._sync_prepared",
+          "calls": 3,
+          "inclusive_seconds": 0.012280504000003134,
+          "exclusive_instrumented_seconds": 0.0070322509999982685
+        },
+        {
+          "name": "ResidentWorld.run_encounters",
+          "calls": 3,
+          "inclusive_seconds": 0.010356469999990736,
+          "exclusive_instrumented_seconds": 0.00008377199999642926
+        },
+        {
+          "name": "world.C++_run",
+          "calls": 3,
+          "inclusive_seconds": 0.010272697999994307,
+          "exclusive_instrumented_seconds": 0.010272697999994307
+        },
+        {
+          "name": "world.C++_sync",
+          "calls": 3,
+          "inclusive_seconds": 0.0052482530000048655,
+          "exclusive_instrumented_seconds": 0.0052482530000048655
+        },
+        {
+          "name": "world.C++_reconcile",
+          "calls": 3,
+          "inclusive_seconds": 0.004893791000000647,
+          "exclusive_instrumented_seconds": 0.004893791000000647
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 3,
+          "inclusive_seconds": 0.0019371029999888378,
+          "exclusive_instrumented_seconds": 0.0019371029999888378
+        },
+        {
+          "name": "ResidentWorld.births",
+          "calls": 3,
+          "inclusive_seconds": 0.0006670300000024554,
+          "exclusive_instrumented_seconds": 0.00043250899997815395
+        },
+        {
+          "name": "world.C++_births",
+          "calls": 3,
+          "inclusive_seconds": 0.00023452100002430143,
+          "exclusive_instrumented_seconds": 0.00023452100002430143
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 3,
+          "inclusive_seconds": 0.000010869999996998558,
+          "exclusive_instrumented_seconds": 0.000010869999996998558
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. When the standalone encounter entry is present, protected entity/handler/manager methods are left untouched. Only its outer entry is wrapped and every human generation must return a non-None native result, ruling out observer-forced fallback. The entry span includes eligibility, packing, core execution and writeback. Separate eligibility and C ABI execution spans identify marshaling overhead without modifying any protected entity or handler method. Eligibility covers structural checks; batched finite-value checks are inside the remaining entry time, so compare the total entry span across revisions. Population, diversity and stagnation statistics may share batched path reads outside the encounter entry; their cost remains in the enclosing generation/evolution spans. Resident core sync/run/birth spans use the actual shared C binding table; the human case must use one persistent World for all generations. ResidentWorld spans include its Python adapter. All source identities and eligibility guards remain unchanged. Scalar C ABI conversion is included in its calling phase; no timer is subtracted."
+    },
+    {
+      "case": "human-10000",
+      "same_checked_state_and_rng_digest": true
+    },
+    {
+      "case": "human-1000-reincarnator",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-reincarnator-w1-plain.json",
+      "boundary_file": "human-1000-reincarnator-w1-boundary.json",
+      "plain_median_seconds": 0.14490677000000574,
+      "boundary_seconds": 0.1455374020000022,
+      "boundary_to_plain_wall_ratio": 1.0043519843827617,
+      "plain_median_process_cpu_over_wall": 0.999979925023477,
+      "boundary_process_cpu_over_wall": 0.9999462612366662,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.14700599999999997,
+          "ru_stime": 0.0010030000000000039,
+          "ru_minflt": 529,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 2
+        },
+        {
+          "ru_utime": 0.14457200000000014,
+          "ru_stime": 0,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.14491699999999996,
+          "ru_stime": 0,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 1
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 6,
+          "inclusive_seconds": 0.08582261200000119,
+          "exclusive_instrumented_seconds": 0.007688978000032876
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 6,
+          "inclusive_seconds": 0.058612995000018486,
+          "exclusive_instrumented_seconds": 0.031836197000046695
+        },
+        {
+          "name": "try_run_encounters",
+          "calls": 6,
+          "inclusive_seconds": 0.04663772299998925,
+          "exclusive_instrumented_seconds": 0.011380021999983114,
+          "successful_returns": 6
+        },
+        {
+          "name": "encounters.eligibility",
+          "calls": 6,
+          "inclusive_seconds": 0.02974095600001192,
+          "exclusive_instrumented_seconds": 0.027890571000000364
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.02252632100000085,
+          "exclusive_instrumented_seconds": 0.022046383000002834
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 6,
+          "inclusive_seconds": 0.016334549999996284,
+          "exclusive_instrumented_seconds": 0.016334549999996284
+        },
+        {
+          "name": "ResidentWorld.reconcile",
+          "calls": 6,
+          "inclusive_seconds": 0.009526379999982737,
+          "exclusive_instrumented_seconds": 0.008050833999973861
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 6,
+          "inclusive_seconds": 0.008969589999978211,
+          "exclusive_instrumented_seconds": 0.008969589999978211
+        },
+        {
+          "name": "ResidentWorld.run_encounters",
+          "calls": 6,
+          "inclusive_seconds": 0.0033940740000133474,
+          "exclusive_instrumented_seconds": 0.00008661900004369727
+        },
+        {
+          "name": "world.C++_run",
+          "calls": 6,
+          "inclusive_seconds": 0.00330745499996965,
+          "exclusive_instrumented_seconds": 0.00330745499996965
+        },
+        {
+          "name": "world.pack_sources",
+          "calls": 12,
+          "inclusive_seconds": 0.002687139000016714,
+          "exclusive_instrumented_seconds": 0.002687139000016714
+        },
+        {
+          "name": "ResidentWorld._sync_prepared",
+          "calls": 6,
+          "inclusive_seconds": 0.002122670999980869,
+          "exclusive_instrumented_seconds": 0.001445077999974842
+        },
+        {
+          "name": "ResidentWorld.births",
+          "calls": 6,
+          "inclusive_seconds": 0.0009158679999927699,
+          "exclusive_instrumented_seconds": 0.0006332680000014079
+        },
+        {
+          "name": "world.C++_sync",
+          "calls": 6,
+          "inclusive_seconds": 0.0006775930000060271,
+          "exclusive_instrumented_seconds": 0.0006775930000060271
+        },
+        {
+          "name": "world.C++_reconcile",
+          "calls": 6,
+          "inclusive_seconds": 0.0006387920000037184,
+          "exclusive_instrumented_seconds": 0.0006387920000037184
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 6,
+          "inclusive_seconds": 0.0004799379999980147,
+          "exclusive_instrumented_seconds": 0.0004799379999980147
+        },
+        {
+          "name": "world.C++_births",
+          "calls": 6,
+          "inclusive_seconds": 0.000282599999991362,
+          "exclusive_instrumented_seconds": 0.000282599999991362
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. When the standalone encounter entry is present, protected entity/handler/manager methods are left untouched. Only its outer entry is wrapped and every human generation must return a non-None native result, ruling out observer-forced fallback. The entry span includes eligibility, packing, core execution and writeback. Separate eligibility and C ABI execution spans identify marshaling overhead without modifying any protected entity or handler method. Eligibility covers structural checks; batched finite-value checks are inside the remaining entry time, so compare the total entry span across revisions. Population, diversity and stagnation statistics may share batched path reads outside the encounter entry; their cost remains in the enclosing generation/evolution spans. Resident core sync/run/birth spans use the actual shared C binding table; the human case must use one persistent World for all generations. ResidentWorld spans include its Python adapter. All source identities and eligibility guards remain unchanged. Scalar C ABI conversion is included in its calling phase; no timer is subtracted."
+    },
+    {
+      "case": "human-1000-reincarnator",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "human-1000-reincarnator-w4-plain.json",
+      "boundary_file": "human-1000-reincarnator-w4-boundary.json",
+      "plain_median_seconds": 0.14897837800000957,
+      "boundary_seconds": 0.15129454299999168,
+      "boundary_to_plain_wall_ratio": 1.015546987630527,
+      "plain_median_process_cpu_over_wall": 1.0049223647377723,
+      "boundary_process_cpu_over_wall": 1.0055794411567673,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.14968599999999999,
+          "ru_stime": 0.000052999999999997494,
+          "ru_minflt": 541,
+          "ru_majflt": 0,
+          "ru_nvcsw": 28,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.1484350000000001,
+          "ru_stime": 0.000026999999999999247,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 29,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.1845699999999999,
+          "ru_stime": 0,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 26,
+          "ru_nivcsw": 2
+        }
+      ],
+      "optimizer_steps": [],
+      "guide_optimizer_steps": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonEvolution._run_one_generation",
+          "calls": 6,
+          "inclusive_seconds": 0.08819205800001839,
+          "exclusive_instrumented_seconds": 0.0076001969999737184
+        },
+        {
+          "name": "AeonEvolution._evolve_and_grow",
+          "calls": 6,
+          "inclusive_seconds": 0.0618810480000036,
+          "exclusive_instrumented_seconds": 0.03295890400001156
+        },
+        {
+          "name": "try_run_encounters",
+          "calls": 6,
+          "inclusive_seconds": 0.04799941000001695,
+          "exclusive_instrumented_seconds": 0.011972284999998806,
+          "successful_returns": 6
+        },
+        {
+          "name": "encounters.eligibility",
+          "calls": 6,
+          "inclusive_seconds": 0.0300996800000064,
+          "exclusive_instrumented_seconds": 0.028236518999989357
+        },
+        {
+          "name": "evaluate_entities",
+          "calls": 6,
+          "inclusive_seconds": 0.02332220600000312,
+          "exclusive_instrumented_seconds": 0.022135744000010504
+        },
+        {
+          "name": "AeonEvolution._train_hybrid_guide_network",
+          "calls": 6,
+          "inclusive_seconds": 0.018157789999989404,
+          "exclusive_instrumented_seconds": 0.018157789999989404
+        },
+        {
+          "name": "ResidentWorld.reconcile",
+          "calls": 6,
+          "inclusive_seconds": 0.009814153999997188,
+          "exclusive_instrumented_seconds": 0.008198585000002367
+        },
+        {
+          "name": "ParliamentManager.hold_election",
+          "calls": 6,
+          "inclusive_seconds": 0.009270245000024602,
+          "exclusive_instrumented_seconds": 0.009270245000024602
+        },
+        {
+          "name": "ResidentWorld.run_encounters",
+          "calls": 6,
+          "inclusive_seconds": 0.003616036000011036,
+          "exclusive_instrumented_seconds": 0.00008937500001593435
+        },
+        {
+          "name": "world.C++_run",
+          "calls": 6,
+          "inclusive_seconds": 0.0035266609999951015,
+          "exclusive_instrumented_seconds": 0.0035266609999951015
+        },
+        {
+          "name": "world.pack_sources",
+          "calls": 12,
+          "inclusive_seconds": 0.0026998960000241823,
+          "exclusive_instrumented_seconds": 0.0026998960000241823
+        },
+        {
+          "name": "ResidentWorld._sync_prepared",
+          "calls": 6,
+          "inclusive_seconds": 0.002311409000000708,
+          "exclusive_instrumented_seconds": 0.0015168460000012374
+        },
+        {
+          "name": "native.BatchEvaluator.concepts",
+          "calls": 6,
+          "inclusive_seconds": 0.0011864619999926163,
+          "exclusive_instrumented_seconds": 0.0011864619999926163
+        },
+        {
+          "name": "ResidentWorld.births",
+          "calls": 6,
+          "inclusive_seconds": 0.0009502000000054522,
+          "exclusive_instrumented_seconds": 0.0006662630000278114
+        },
+        {
+          "name": "world.C++_sync",
+          "calls": 6,
+          "inclusive_seconds": 0.0007945629999994708,
+          "exclusive_instrumented_seconds": 0.0007945629999994708
+        },
+        {
+          "name": "world.C++_reconcile",
+          "calls": 6,
+          "inclusive_seconds": 0.0007788339999876825,
+          "exclusive_instrumented_seconds": 0.0007788339999876825
+        },
+        {
+          "name": "world.C++_births",
+          "calls": 6,
+          "inclusive_seconds": 0.0002839369999776409,
+          "exclusive_instrumented_seconds": 0.0002839369999776409
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. When the standalone encounter entry is present, protected entity/handler/manager methods are left untouched. Only its outer entry is wrapped and every human generation must return a non-None native result, ruling out observer-forced fallback. The entry span includes eligibility, packing, core execution and writeback. Separate eligibility and C ABI execution spans identify marshaling overhead without modifying any protected entity or handler method. Eligibility covers structural checks; batched finite-value checks are inside the remaining entry time, so compare the total entry span across revisions. Population, diversity and stagnation statistics may share batched path reads outside the encounter entry; their cost remains in the enclosing generation/evolution spans. Resident core sync/run/birth spans use the actual shared C binding table; the human case must use one persistent World for all generations. ResidentWorld spans include its Python adapter. All source identities and eligibility guards remain unchanged. Scalar C ABI conversion is included in its calling phase; no timer is subtracted."
+    },
+    {
+      "case": "human-1000-reincarnator",
+      "same_checked_state_and_rng_digest": true
+    },
+    {
+      "case": "aeonic-200",
+      "workers_requested": 1,
+      "native_min_rows": 1,
+      "plain_file": "aeonic-200-w1-plain.json",
+      "boundary_file": "aeonic-200-w1-boundary.json",
+      "plain_median_seconds": 0.028885737999999606,
+      "boundary_seconds": 0.029713282000003005,
+      "boundary_to_plain_wall_ratio": 1.0286488785574186,
+      "plain_median_process_cpu_over_wall": 1.0001857071095863,
+      "boundary_process_cpu_over_wall": 1.0001180280252135,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.02856600000000009,
+          "ru_stime": 0.00004999999999999449,
+          "ru_minflt": 1,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.028901999999999983,
+          "ru_stime": 0,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.02920900000000004,
+          "ru_stime": 0,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        }
+      ],
+      "optimizer_steps": [
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15
+      ],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+          "calls": 2,
+          "inclusive_seconds": 0.029634276999999543,
+          "exclusive_instrumented_seconds": 0.0034337699999582583
+        },
+        {
+          "name": "AeonicCycleManager.aeonic_interaction",
+          "calls": 152,
+          "inclusive_seconds": 0.026200507000041284,
+          "exclusive_instrumented_seconds": 0.026200507000041284
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. When the standalone encounter entry is present, protected entity/handler/manager methods are left untouched. Only its outer entry is wrapped and every human generation must return a non-None native result, ruling out observer-forced fallback. The entry span includes eligibility, packing, core execution and writeback. Separate eligibility and C ABI execution spans identify marshaling overhead without modifying any protected entity or handler method. Eligibility covers structural checks; batched finite-value checks are inside the remaining entry time, so compare the total entry span across revisions. Population, diversity and stagnation statistics may share batched path reads outside the encounter entry; their cost remains in the enclosing generation/evolution spans. Resident core sync/run/birth spans use the actual shared C binding table; the human case must use one persistent World for all generations. ResidentWorld spans include its Python adapter. All source identities and eligibility guards remain unchanged. Scalar C ABI conversion is included in its calling phase; no timer is subtracted."
+    },
+    {
+      "case": "aeonic-200",
+      "workers_requested": 4,
+      "native_min_rows": 1,
+      "plain_file": "aeonic-200-w4-plain.json",
+      "boundary_file": "aeonic-200-w4-boundary.json",
+      "plain_median_seconds": 0.029296243999993976,
+      "boundary_seconds": 0.030299072000005367,
+      "boundary_to_plain_wall_ratio": 1.0342305996636154,
+      "plain_median_process_cpu_over_wall": 1.0001301619106555,
+      "boundary_process_cpu_over_wall": 1.0001398062618807,
+      "plain_resource_deltas": [
+        {
+          "ru_utime": 0.030073000000000016,
+          "ru_stime": 0.0000060000000000060005,
+          "ru_minflt": 3,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.029312000000000005,
+          "ru_stime": 0,
+          "ru_minflt": 1,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        },
+        {
+          "ru_utime": 0.028192999999999913,
+          "ru_stime": 0.0009389999999999954,
+          "ru_minflt": 0,
+          "ru_majflt": 0,
+          "ru_nvcsw": 0,
+          "ru_nivcsw": 0
+        }
+      ],
+      "optimizer_steps": [
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15
+      ],
+      "guide_optimizer_steps": [],
+      "boundary_integrity_valid": true,
+      "boundary_spans": [
+        {
+          "name": "AeonicCycleManager.run_aeonic_cycle_generation",
+          "calls": 2,
+          "inclusive_seconds": 0.030220134000003895,
+          "exclusive_instrumented_seconds": 0.003460418999949866
+        },
+        {
+          "name": "AeonicCycleManager.aeonic_interaction",
+          "calls": 152,
+          "inclusive_seconds": 0.02675971500005403,
+          "exclusive_instrumented_seconds": 0.02675971500005403
+        }
+      ],
+      "boundary_scope": "Explicit Python wrappers count calls and perf_counter spans without cProfile. Inclusive spans overlap. Exclusive instrumented time subtracts only wrapped descendants and still includes unwrapped Python/native work and observer overhead; it is not pure Python interpreter time. Native scoring span includes conversion, worker startup/wait and computation. Wrappers are restored before state capture. Results must match plain state/RNG digests and call-count integrity gates. When the standalone encounter entry is present, protected entity/handler/manager methods are left untouched. Only its outer entry is wrapped and every human generation must return a non-None native result, ruling out observer-forced fallback. The entry span includes eligibility, packing, core execution and writeback. Separate eligibility and C ABI execution spans identify marshaling overhead without modifying any protected entity or handler method. Eligibility covers structural checks; batched finite-value checks are inside the remaining entry time, so compare the total entry span across revisions. Population, diversity and stagnation statistics may share batched path reads outside the encounter entry; their cost remains in the enclosing generation/evolution spans. Resident core sync/run/birth spans use the actual shared C binding table; the human case must use one persistent World for all generations. ResidentWorld spans include its Python adapter. All source identities and eligibility guards remain unchanged. Scalar C ABI conversion is included in its calling phase; no timer is subtracted."
+    },
+    {
+      "case": "aeonic-200",
+      "same_checked_state_and_rng_digest": true
+    }
+  ]
+}
