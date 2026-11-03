@@ -15,6 +15,8 @@ def main():
     parser = argparse.ArgumentParser()
     for name in ('original', 'a2', 'candidate', 'output-dir'):
         parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--case', choices=('all', 'human', 'large', 'reincarnator'),
+                        default=os.environ.get('C1_CASE', 'all'))
     args = parser.parse_args()
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -42,8 +44,10 @@ def main():
         return json.loads(destination.read_text(encoding='utf-8'))
 
     all_cases = []
-    for population, generations, reincarnator in [(1000, 12, False), (10000, 4, False),
-                                                 (1000, 12, True)]:
+    cases = {'human': (1000, 12, False), 'large': (10000, 4, False),
+             'reincarnator': (1000, 12, True)}
+    selected = list(cases.values()) if args.case == 'all' else [cases[args.case]]
+    for population, generations, reincarnator in selected:
         tag = f'human-{population}-{generations}-reinc{int(reincarnator)}'
         samples = {name: [] for name, _, _ in configurations}
         seed_rows = []

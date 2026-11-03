@@ -4,15 +4,24 @@ on:
     branches: [codex/c1-batched-scoring]
     paths: ['*.py', 'cpp/**', 'benchmarks/**', '.github/workflows/c1-experiment.yml']
   workflow_dispatch:
+    inputs:
+      platform:
+        type: choice
+        default: all
+        options: [all, linux-windows, macos]
+      workload:
+        type: choice
+        default: all
+        options: [all, human, large, reincarnator]
 permissions:
   contents: read
 jobs:
   compare:
-    timeout-minutes: 45
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: ${{ fromJSON(inputs.platform == 'linux-windows' && '["ubuntu-latest","windows-latest"]' || inputs.platform == 'macos' && '["macos-latest"]' || '["ubuntu-latest","windows-latest","macos-latest"]') }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -39,6 +48,8 @@ jobs:
       - working-directory: candidate
         run: python setup.py build_ext --inplace
       - name: Compare original, frozen A2, experiment off and experiment on
+        env:
+          C1_CASE: ${{ inputs.workload || 'all' }}
         run: python candidate/benchmarks/compare_c1.py --original original --a2 a2 --candidate candidate --output-dir c1-evidence
       - uses: actions/upload-artifact@v4
         if: always()
