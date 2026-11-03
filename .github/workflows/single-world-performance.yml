@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: baseline
-          ref: f2073f0
+          ref: f2073f001af4bc3f03da6d96d5360aa9a2027e0a
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
