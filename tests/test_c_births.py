@@ -6,8 +6,12 @@ name call followed by one NumPy normal call for every entity.
 """
 import gc
 import importlib
+import os
+from pathlib import Path
 import pickle
 import random
+import subprocess
+import sys
 import weakref
 
 import numpy as np
@@ -277,7 +281,7 @@ def test_application_preserves_names_collision_rng_fields_and_array_ownership(na
 
 
 @pytest.mark.parametrize("case", ["flag_off", "no_factory", "custom_normalizer", "custom_rng",
-                                  "custom_purification", "custom_constructor",
+                                  "custom_purification",
                                   "custom_array", "custom_dot"])
 def test_birth_unsupported_or_disabled_routes_retain_scalar_calls(native, monkeypatch, case):
     evaluator = native.BatchEvaluator(1, 1)
@@ -308,11 +312,6 @@ def test_birth_unsupported_or_disabled_routes_retain_scalar_calls(native, monkey
             calls.append(1)
             return original(self, factor)
         monkeypatch.setattr(Pathstrider, "internal_purification", purify)
-    elif case == "custom_constructor":
-        def create(cls, *args, **kwargs):
-            calls.append(1)
-            return object.__new__(cls)
-        monkeypatch.setattr(Pathstrider, "__new__", staticmethod(create))
     elif case in ("custom_array", "custom_dot"):
         name = "array" if case == "custom_array" else "dot"
         original = getattr(np, name)
@@ -328,9 +327,49 @@ def test_birth_unsupported_or_disabled_routes_retain_scalar_calls(native, monkey
     finally:
         evaluator.close()
     assert len(population) == 3
-    if case in ("custom_normalizer", "custom_rng", "custom_purification", "custom_constructor",
+    if case in ("custom_normalizer", "custom_rng", "custom_purification",
                 "custom_array", "custom_dot"):
         assert calls == [1, 1, 1]
+
+
+def test_custom_constructor_falls_back_without_polluting_later_type_allocation(native, tmp_path):
+    # CPython can retain a changed tp_new slot after deleting/restoring a Python
+    # __new__ attribute. Exercise this hook in its own process instead of
+    # poisoning every later Pathstrider construction in the test runner.
+    source = r'''
+import sys
+from pathlib import Path
+sys.path[:0] = [sys.argv[1], str(Path(sys.argv[1]) / 'tests')]
+from test_c_births import make_manager
+from config import config
+from entities import Pathstrider
+from native_backend import configure_backend
+native = configure_backend('cpp')
+config['runtime']['experimental_c_newborns'] = True
+evaluator = native.BatchEvaluator(1, 1)
+manager = make_manager(lambda: evaluator)
+calls = []
+def create(cls, *args, **kwargs):
+    calls.append(1)
+    return object.__new__(cls)
+def forbidden(*args, **kwargs):
+    raise AssertionError('A custom constructor must retain scalar calls')
+Pathstrider.__new__ = staticmethod(create)
+native.BatchEvaluator.newborn_affinities = forbidden
+population = []
+try:
+    manager._add_new_entities(population, 3, manager.base_titan_affinities, None)
+finally:
+    evaluator.close()
+assert len(population) == 3
+assert calls == [1, 1, 1]
+'''
+    root = Path(__file__).resolve().parents[1]
+    result = subprocess.run([sys.executable, '-B', '-c', source, str(root)], cwd=tmp_path,
+                            capture_output=True, text=True, encoding='utf-8', timeout=60,
+                            env={**os.environ, 'OMP_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1',
+                                 'OPENBLAS_NUM_THREADS': '1', 'PYTHONDONTWRITEBYTECODE': '1'})
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 def test_zero_growth_keeps_distribution_read_but_initial_population_does_not(native):
