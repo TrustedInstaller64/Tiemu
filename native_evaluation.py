@@ -20,6 +20,13 @@ def _c_scoring_supported(entities, parliament, model):
     """Restrict C1 to ordinary built-ins; custom callbacks retain ordered calls."""
     if type(parliament) is not ParliamentManager:
         return False
+    plain_numbers = (int, float, np.int64, np.float64)
+    if (type(parliament.seats) is not dict
+            or any(type(key) is not str or type(value) not in plain_numbers
+                   for key, value in parliament.seats.items())
+            or type(parliament.total_seats) not in plain_numbers
+            or type(parliament.suppression_factor) not in plain_numbers):
+        return False
     for cls, methods in _C_METHODS.items():
         if (cls.__getattribute__ is not object.__getattribute__
                 or cls.__setattr__ is not object.__setattr__

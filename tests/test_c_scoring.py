@@ -276,3 +276,24 @@ def test_cli_scoring_experiment_is_explicit_and_defaults_off(native, monkeypatch
     monkeypatch.setattr(main, "run_simple", lambda args: seen.append(args.experimental_c_scoring) or 0)
     assert main.main(["--experimental-c-scoring", "--disable-llm"]) == 0
     assert seen == [True]
+
+
+def test_custom_seat_dictionary_preserves_per_entity_observation(native, monkeypatch):
+    from native_evaluation import evaluate_entities
+    calls = []
+    class ObservedSeats(dict):
+        def items(self):
+            calls.append(1)
+            return super().items()
+    actual, manager = entities(), parliament()
+    manager.seats = ObservedSeats(manager.seats)
+    def forbidden(*args):
+        raise AssertionError("Custom seat containers require original per-entity calls")
+    monkeypatch.setattr(native.BatchEvaluator, "concepts_zeitgeist", forbidden)
+    evaluator = native.BatchEvaluator(1, 1)
+    try:
+        with np.errstate(all="ignore"):
+            evaluate_entities(actual, manager, None, evaluator=evaluator)
+    finally:
+        evaluator.close()
+    assert len(calls) == len(actual)
