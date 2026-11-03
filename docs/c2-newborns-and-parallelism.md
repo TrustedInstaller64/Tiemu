@@ -30,6 +30,8 @@
 
 预打包冷池调用中，万人出生数值行可以受益于并行，千人调用则因调度启动反而更慢。数值核心的时间远小于完整出生入口，不能把其倍率当作整体倍率。当前证据支持批量 C++ 迁移；尚不足以给出跨平台稳定的默认多线程配置。
 
+进一步核对已有云端计时：Linux/macOS 全演化阶段在四线程预算下，进程 CPU 时间/墙钟时间的样本中位数仍仅约 **1.0006～1.0075**，即整个测量窗口的平均进程用量仍接近一个 CPU，未形成持续多核占用。这也限制了对 Mac 千人场景较好墙钟数字的因果解释，不能断言其约 23% 的 C2 四线程/单线程差值全由并行计算贡献。Windows 短出生样本出现零或量化的 CPU 时间，不能据此解释成没有 CPU 工作。[派生比值及原数据出处](performance/c2-cpu-time-ratios.json)单独保存；这不是新的性能实验，也不是 Python 解释器占比剖析，不能据此认定“95% 都耗在解释器”。
+
 **当前完成的偏差范围：** 15 组小人口原版轨迹（Linux/Windows 各两场景×三种子，macOS 无轮回者三种子），另有 Linux/Windows/macOS 各一组万人原生对照。孤立出生为另列的 4 个平台/规模样本，不加进轨迹组数。
 
 - C2 与 C1：这 18 组轨迹的所记录检查点未发现新增数值、离散、RNG 或网络变化；末态评分、亲和度、缓存路径、网络/Adam 的最大误差为 0。
@@ -86,7 +88,7 @@ python -m main --disable-llm --no-interactive --backend cpp --device cpu \
 
 - 先行测试 `03dc54c`，[云端 RED](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41649201365)：Linux 原有 390 通过，37 项因缺失 newborn API 而预期失败。随后开始实现；又补充自定义回调、关闭池和混合任务检查。
 - 首次[功能回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41651261617)发现测试污染：Linux 326 通过、113 失败。失败从替换 `Pathstrider.__new__` 的测试撤回后开始，均在后续实体构造处报同一 TypeError。将该覆盖移入独立子进程，保留自定义构造回退断言；生产代码没有变更。旧功能任务被修复提交替代，不称通过。
-- 修复后的[功能回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41652228003)：Linux 439 通过，Windows 427 通过、12 项 POSIX 跳过，独立 C 客户端、普通/C1/C2 四线程 CLI 及 Linux Docker 通过。macOS 完整回归首次因 hosted ARM 容量不足未分配运行器，已启动一次仅针对该 job 的重试；不能将未运行的套件记为通过。
+- 修复后的[功能回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41652228003)：Linux 439 通过，Windows 427 通过、12 项 POSIX 跳过，独立 C 客户端、普通/C1/C2 四线程 CLI 及 Linux Docker 通过。macOS 完整回归首次因 hosted ARM 容量不足未分配运行器；一次定向重试（job `125984186646`）在等待约 15 分钟后也因未取得 hosted runner 取消，没有执行测试。此项仍缺失，不能将整套三平台回归称为通过。已完成的 Mac 千人/万人性能对照证明那些实际场景运行成功，但不替代完整功能套件。精简日志与取消原因见[功能验证记录](performance/c2-verification.json)。
 - [速度/偏差对照](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41651261785)共 10 个任务成功，2 个取消。缺少 macOS 轮回者与孤立出生场景，两个 job 均没有执行步骤或测量日志；GitHub 官方注释明确是 hosted runner 分配失败及 macOS arm64 容量限制。取消任务不是项目运行失败，也不算该场景性能通过。
 
 [结构化总汇总](performance/c2-divergence-summary.json)分开统计原版轨迹、万人原生轨迹和孤立出生，包含各基线倍率、数值与分布误差、首次分歧、CPU 信息和缺失证据。各任务记录如下：

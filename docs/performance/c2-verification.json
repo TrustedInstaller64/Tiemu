@@ -1,0 +1,92 @@
+{
+  "runtime_commit": "d32edcee7a4a57d863bfdf3d78dbe471a4510e22",
+  "tested_commit": "893936305e880b749b714728ae6746a9151faea0",
+  "production_changed_after_runtime_commit": false,
+  "red": {
+    "run_id": 41649201365,
+    "commit": "03dc54c",
+    "linux_job": 125962571352,
+    "passed": 390,
+    "expected_missing_api_xfailed": 37
+  },
+  "initial_regression": {
+    "run_id": 41651261617,
+    "linux_job": 125969726994,
+    "passed": 326,
+    "failed": 113,
+    "cause": "In-process test replacement of Pathstrider.__new__ contaminated later constructor allocation. The constructor-hook contract was moved to a subprocess without dropping assertions or changing production code.",
+    "fix_commit": "8939363"
+  },
+  "final_regression": {
+    "run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41652228003",
+    "linux": {
+      "job_id": 125973104089,
+      "conclusion": "success",
+      "passed": 439,
+      "summary": "439 passed in 46.95s",
+      "standalone_c_client": true,
+      "default_cli": true,
+      "c1_four_worker_cli": true,
+      "c2_shared_four_worker_cli": true
+    },
+    "windows": {
+      "job_id": 125973103363,
+      "conclusion": "success",
+      "passed": 427,
+      "skipped": 12,
+      "skip_scope": "POSIX-specific tests",
+      "summary": "427 passed, 12 skipped in 72.87s (0:01:12)",
+      "standalone_c_client": true,
+      "default_cli": true,
+      "c1_four_worker_cli": true,
+      "c2_shared_four_worker_cli": true
+    },
+    "docker": {
+      "job_id": 125973104223,
+      "conclusion": "success",
+      "host": "GitHub ubuntu-latest",
+      "default_c1_c2_smoke": true
+    },
+    "macos": {
+      "conclusion": "missing_hosted_runner_capacity",
+      "suite_executed": false,
+      "attempts": [
+        {
+          "job_id": 125973104148,
+          "conclusion": "cancelled",
+          "steps": []
+        },
+        {
+          "job_id": 125984186646,
+          "conclusion": "cancelled",
+          "runner_name": "",
+          "started_at": "2026-11-03T14:36:39Z",
+          "completed_at": "2026-11-03T14:51:40Z",
+          "steps": []
+        }
+      ],
+      "annotations": [
+        {
+          "annotation_level": "failure",
+          "message": "The job was not acquired by Runner of type hosted even after multiple attempts"
+        },
+        {
+          "annotation_level": "notice",
+          "message": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times."
+        },
+        {
+          "annotation_level": "notice",
+          "message": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times."
+        },
+        {
+          "annotation_level": "notice",
+          "message": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times."
+        }
+      ],
+      "verified_by": "gh api check-runs/125973104148/annotations and check-runs/125984186646/annotations",
+      "scope": "Both attempts received no hosted runner. This is a full-suite evidence gap; successful macOS human/large performance cases do not substitute for this suite."
+    }
+  },
+  "performance_run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41651261785",
+  "scope": "All project builds/tests/runs/benchmarks were remote. Local work was limited to static reads/edits/Git and lightweight analysis of the archived cloud JSON. No local Docker installation or project execution."
+}

@@ -1,0 +1,126 @@
+{
+  "source": "Derived by lightweight JSON analysis of archived cloud samples; no local project execution or new benchmark.",
+  "scope": "Median of each sample's process CPU seconds / wall seconds. Full-phase and isolated-birth entries are separate. Linux/macOS ratios near one indicate about one CPU's average process time across the measured window; they do not identify individual worker occupancy. Windows short timings include zero/quantized CPU durations and cannot establish low utilization. Initialization and snapshots follow the source measurement exclusions.",
+  "records": [
+    {
+      "source": "c2-linux-births-5e4f944.json",
+      "platform": "linux",
+      "case": "births-existing1000-new1000",
+      "median_process_cpu_over_wall": {
+        "c2_1": 1.0007088032995153,
+        "c2_2": 1.0041850561044403,
+        "c2_4": 1.0139995269718858
+      }
+    },
+    {
+      "source": "c2-linux-births-5e4f944.json",
+      "platform": "linux",
+      "case": "births-existing1000-new10000",
+      "median_process_cpu_over_wall": {
+        "c2_1": 1.00009093418702,
+        "c2_2": 1.007595547164264,
+        "c2_4": 1.0181810951994097
+      }
+    },
+    {
+      "source": "c2-linux-human-5e4f944.json",
+      "platform": "linux",
+      "case": "human-1000-6-reinc0",
+      "median_process_cpu_over_wall": {
+        "c2_1": 1.0004309493255812,
+        "c2_2": 1.0006865767926914,
+        "c2_4": 1.0075300969252796
+      }
+    },
+    {
+      "source": "c2-linux-large-native-5e4f944.json",
+      "platform": "linux",
+      "case": "human-10000-6-reinc0",
+      "median_process_cpu_over_wall": {
+        "c2_1": 1.0000078047567356,
+        "c2_2": 1.0015855028011926,
+        "c2_4": 1.0047188728396543
+      }
+    },
+    {
+      "source": "c2-linux-reincarnator-5e4f944.json",
+      "platform": "linux",
+      "case": "human-1000-6-reinc1",
+      "median_process_cpu_over_wall": {
+        "c2_1": 1.000227275967393,
+        "c2_2": 1.0004943572183933,
+        "c2_4": 1.0072454412276355
+      }
+    },
+    {
+      "source": "c2-macos-human-5e4f944.json",
+      "platform": "macos",
+      "case": "human-1000-6-reinc0",
+      "median_process_cpu_over_wall": {
+        "c2_1": 0.9995987071533651,
+        "c2_2": 1.0016946422513946,
+        "c2_4": 1.0040487307340238
+      }
+    },
+    {
+      "source": "c2-macos-large-native-5e4f944.json",
+      "platform": "macos",
+      "case": "human-10000-6-reinc0",
+      "median_process_cpu_over_wall": {
+        "c2_1": 0.9976355878863741,
+        "c2_2": 1.000817575456095,
+        "c2_4": 1.0005897131558839
+      }
+    },
+    {
+      "source": "c2-windows-births-5e4f944.json",
+      "platform": "windows",
+      "case": "births-existing1000-new1000",
+      "median_process_cpu_over_wall": {
+        "c2_1": 0,
+        "c2_2": 0,
+        "c2_4": 0
+      }
+    },
+    {
+      "source": "c2-windows-births-5e4f944.json",
+      "platform": "windows",
+      "case": "births-existing1000-new10000",
+      "median_process_cpu_over_wall": {
+        "c2_1": 0.9151957640344288,
+        "c2_2": 0.9418835259294233,
+        "c2_4": 0.9373195659840569
+      }
+    },
+    {
+      "source": "c2-windows-human-5e4f944.json",
+      "platform": "windows",
+      "case": "human-1000-6-reinc0",
+      "median_process_cpu_over_wall": {
+        "c2_1": 0.9583714126236108,
+        "c2_2": 0.9610416769195691,
+        "c2_4": 0.8573023643717806
+      }
+    },
+    {
+      "source": "c2-windows-large-native-5e4f944.json",
+      "platform": "windows",
+      "case": "human-10000-6-reinc0",
+      "median_process_cpu_over_wall": {
+        "c2_1": 1.005523763009467,
+        "c2_2": 1.005684367233365,
+        "c2_4": 1.00883009885008
+      }
+    },
+    {
+      "source": "c2-windows-reincarnator-5e4f944.json",
+      "platform": "windows",
+      "case": "human-1000-6-reinc1",
+      "median_process_cpu_over_wall": {
+        "c2_1": 0.9985748339976106,
+        "c2_2": 0.9952556825107935,
+        "c2_4": 0.9543103679953093
+      }
+    }
+  ]
+}
