@@ -370,7 +370,7 @@ def _commit_resident(sim, world, result, events, numpy_state, python_state):
     # Event-time writes identify these operations independently of value changes.
     score_written = {events[i].first for i in range(result.event_count) if events[i].kind == 4}
     hp_written = set()
-    hp_numpy = [type(entity.hp) is np.float64 for entity in population]
+    hp_numpy = {}
     for i in range(result.event_count):
         event = events[i]
         if event.kind == 3:
@@ -378,17 +378,27 @@ def _commit_resident(sim, world, result, events, numpy_state, python_state):
             # NumPy scalar damage promotes even an unchanged Python-float HP.
             # Score multiplication keeps NumPy-ness (int(0) only becomes float),
             # so its initial scalar kind is valid throughout this ordered replay.
-            hp_numpy[event.second] |= type(population[event.first].score) is np.float64
-    for i, entity in enumerate(population):
+            hp_numpy[event.second] = (
+                hp_numpy.get(event.second, type(population[event.second].hp) is np.float64)
+                or type(population[event.first].score) is np.float64)
+    # The native engine only writes score/unlocked on battle defeat (kind 4),
+    # and HP on battle damage (kind 3). All other writes carry explicit flags.
+    # Preserve original population order and per-row alias-before-replacement
+    # ordering while avoiding untouched Python rows and scalar comparisons.
+    changed = old_mutated | titan_replaced | path_changed
+    for index in score_written | hp_written:
+        changed[index] = 1
+    for i in np.flatnonzero(changed):
+        entity = population[i]
         if old_mutated[i]:
             entity.titan_affinities[:] = original_titans[i]
         if titan_replaced[i]:
             entity.titan_affinities = titans[i].copy()
         if path_changed[i]:
             entity._path_affinities = paths[i].copy() if valid[i] else None
-        if i in score_written or scores[i] != entity.score:
+        if i in score_written:
             entity.score = np.float64(scores[i]) if isinstance(entity.score, np.generic) else float(scores[i])
-        if i in hp_written or hp[i] != entity.hp:
+        if i in hp_written:
             entity.hp = np.float64(hp[i]) if hp_numpy[i] else float(hp[i])
-        if bool(unlocked[i]) != entity.data_modification_unlocked:
+        if i in score_written and bool(unlocked[i]) != entity.data_modification_unlocked:
             entity.data_modification_unlocked = bool(unlocked[i])

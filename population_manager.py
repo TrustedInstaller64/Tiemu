@@ -31,10 +31,11 @@ def _native_births_supported(manager, population, count, blueprint, modifier):
             or threading.active_count() != 1
             or np.geterr() != {'divide': 'warn', 'over': 'warn', 'under': 'ignore', 'invalid': 'warn'}):
         return False
-    if any(name in manager.__dict__ or getattr(PopulationManager, name) is not original
-           for name, original in _BIRTH_MANAGER_METHODS.items()):
-        return False
-    if (Pathstrider.__init__ is not _BIRTH_ENTITY_INIT
+    # Reject class hooks before reading any instance fields. A getter may itself
+    # consume randomness, so discovering it by calling it would already change
+    # the reference loop's failure/callback prefix.
+    if (Pathstrider.__new__ is not _BIRTH_ENTITY_NEW
+            or Pathstrider.__init__ is not _BIRTH_ENTITY_INIT
             or Pathstrider.internal_purification is not _BIRTH_PURIFICATION
             or Pathstrider.__getattribute__ is not object.__getattribute__
             or Pathstrider.__setattr__ is not object.__setattr__
@@ -44,14 +45,27 @@ def _native_births_supported(manager, population, count, blueprint, modifier):
                 'hp', 'is_titan_boss', 'titan_aspect', 'data_modification_unlocked',
                 'activity', 'stability', 'is_titan_form', 'held_fire_seeds'))
             or PopulationManager.__getattribute__ is not object.__getattribute__
-            or PopulationManager.__setattr__ is not object.__setattr__):
+            or PopulationManager.__setattr__ is not object.__setattr__
+            or any(name in PopulationManager.__dict__ for name in (
+                'existing_names', 'name_to_entity_map', 'base_titan_affinities',
+                'mutation_rate', 'purity_factor', 'max_affinity_norm',
+                'cosmic_tide_vector', 'titan_to_path_model', '_native_world'))
+            or TitanToPathModel.__getattribute__ is not object.__getattribute__
+            or TitanToPathModel.__setattr__ is not object.__setattr__
+            or any(name in TitanToPathModel.__dict__ for name in (
+                'titan_to_path_matrix', 'path_to_titan_feedback_matrix'))
+            or any(getattr(random.Random, name) is not original
+                   for name, original in _BIRTH_RANDOM_METHODS.items())):
+        return False
+    if any(name in manager.__dict__ or getattr(PopulationManager, name) is not original
+           for name, original in _BIRTH_MANAGER_METHODS.items()):
         return False
     if any(getattr(owner, name) is not original for owner, name, original in _BIRTH_RNG):
         return False
     python_owner, numpy_owner = random._inst, np.random.mtrand._rand
     if (type(python_owner) is not random.Random or type(numpy_owner) is not np.random.RandomState
             or any(name in python_owner.__dict__ for name in ('sample', 'randint', 'random',
-                                                              'getrandbits', '_randbelow'))):
+                                                              'getrandbits', '_randbelow', 'randrange'))):
         return False
     if any(getattr(original, '__self__', None) is not
            (python_owner if owner is random else numpy_owner)
@@ -296,11 +310,12 @@ class PopulationManager:
                 population.append(entity)
                 self.name_to_entity_map[name] = entity
             # The numerical birth buffer does not create live IDs until these
-            # public objects exist. Sync also removes culls and preserves order.
+            # public objects exist. Reconcile removes culls and preserves order;
+            # older numerical rows require a full sync before another encounter.
             # An unsupported pre-existing entity cannot invalidate completed
             # births; discard only the unavailable resident mirror in that case.
             try:
-                world.sync(population)
+                world.reconcile(population)
             except (ValueError, AttributeError, TypeError):
                 self.close_native_world()
             return
@@ -322,6 +337,7 @@ class PopulationManager:
 
 
 _BIRTH_ENTITY_INIT = Pathstrider.__init__
+_BIRTH_ENTITY_NEW = Pathstrider.__new__
 _BIRTH_PURIFICATION = Pathstrider.internal_purification
 _BIRTH_ROOTS = tuple(GREEK_ROOTS)
 _BIRTH_MANAGER_METHODS = {name: getattr(PopulationManager, name) for name in (
@@ -329,3 +345,5 @@ _BIRTH_MANAGER_METHODS = {name: getattr(PopulationManager, name) for name in (
     'get_global_path_distribution', 'get_native_world')}
 _BIRTH_RNG = [(owner, name, getattr(owner, name)) for owner, names in (
     (random, ('sample', 'randint')), (np.random, ('normal',))) for name in names]
+_BIRTH_RANDOM_METHODS = {name: getattr(random.Random, name) for name in (
+    '__getattribute__', '_randbelow', 'getrandbits', 'random', 'randrange')}

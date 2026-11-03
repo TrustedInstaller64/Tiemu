@@ -8,6 +8,7 @@ from models import TitanToPathModel
 _PATH_PROPERTY = Pathstrider.path_affinities
 _DOMINANT_PROPERTY = Pathstrider.dominant_path_idx
 _MAP_PATHS = TitanToPathModel.get_path_affinities
+_PLAIN_ENTITY_FIELDS = ('_titan_to_path_model', '_path_affinities', 'titan_affinities', '__getattr__')
 
 
 def _native_dominant_paths(population, native):
@@ -18,7 +19,9 @@ def _native_dominant_paths(population, native):
             or TitanToPathModel.get_path_affinities is not _MAP_PATHS
             or Pathstrider.__getattribute__ is not object.__getattribute__
             or Pathstrider.__setattr__ is not object.__setattr__
-            or TitanToPathModel.__getattribute__ is not object.__getattribute__):
+            or TitanToPathModel.__getattribute__ is not object.__getattribute__
+            or any(name in base.__dict__ for base in Pathstrider.__mro__
+                   for name in _PLAIN_ENTITY_FIELDS)):
         return None
     matrix, missing, seen = None, [], set()
     paths = len(PATH_NAMES)
@@ -28,8 +31,14 @@ def _native_dominant_paths(population, native):
         if type(entity) is not Pathstrider or id(entity) in seen:
             return None
         seen.add(id(entity))
-        fields = entity.__dict__
-        model = fields.get('_titan_to_path_model')
+        # Reading __dict__ materializes CPython's managed instance dictionary
+        # and slows later attribute scans (including aeonic opponent selection).
+        # Class guards above exclude descriptors/custom lookup before these
+        # ordinary field reads; missing fields conservatively keep the old loop.
+        try:
+            model = entity._titan_to_path_model
+        except AttributeError:
+            return None
         if type(model) is not TitanToPathModel or 'get_path_affinities' in model.__dict__:
             return None
         current = model.__dict__.get('titan_to_path_matrix')
@@ -40,11 +49,15 @@ def _native_dominant_paths(population, native):
             matrix = current
         elif current is not matrix:
             return None
-        if '_path_affinities' not in fields:
+        try:
+            cached = entity._path_affinities
+        except AttributeError:
             return None
-        cached = fields['_path_affinities']
         if cached is None:
-            titans = fields.get('titan_affinities')
+            try:
+                titans = entity.titan_affinities
+            except AttributeError:
+                return None
             if (type(titans) is not np.ndarray or titans.dtype != np.float64
                     or titans.shape != (matrix.shape[0],)):
                 return None

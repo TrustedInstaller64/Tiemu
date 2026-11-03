@@ -2,10 +2,12 @@
 import ast
 import functools
 import importlib
+import os
 from pathlib import Path
 import pickle
 import random
 import subprocess
+import sys
 
 import numpy as np
 import pytest
@@ -143,8 +145,19 @@ def test_native_births_match_frozen_order_rng_types_and_lazy_caches(native, monk
                                   'large_finite', 'raise_on_overflow', 'custom_new',
                                   'model_getattribute', 'model_feedback_property',
                                   'manager_data_property', 'random_class_randbelow',
-                                  'random_class_getrandbits'])
+                                  'random_class_getrandbits', 'random_instance_randrange'])
 def test_unsupported_birth_path_preserves_ordered_reference_side_effects(native, monkeypatch, case):
+    if case == 'custom_new' and os.environ.get('TIEMU_BIRTH_NEW_CHILD') != '1':
+        # Changing __new__ updates a CPython type slot; restoring/deleting the
+        # attribute does not reliably restore its original inherited call path.
+        # Run this exact contract in a child so subsequent cases keep the real
+        # unmodified Pathstrider type. No assertion is removed in the child.
+        node = f'{Path(__file__).resolve()}::test_unsupported_birth_path_preserves_ordered_reference_side_effects[custom_new]'
+        result = subprocess.run([sys.executable, '-m', 'pytest', '-q', node], cwd=ROOT,
+                                env={**os.environ, 'TIEMU_BIRTH_NEW_CHILD': '1'},
+                                capture_output=True, text=True, encoding='utf-8', timeout=90)
+        assert result.returncode == 0, result.stdout + result.stderr
+        return
     cls = resident_type()
     native_calls = []
     original = cls.births
@@ -210,6 +223,12 @@ def test_unsupported_birth_path_preserves_ordered_reference_side_effects(native,
             active_manager[0].base_titan_affinities[:] += .01
             return original_random(owner, *args, **kwargs)
         monkeypatch.setattr(random.Random, name, generate)
+    elif case == 'random_instance_randrange':
+        original_random = random._inst.randrange
+        def generate(*args, **kwargs):
+            active_manager[0].base_titan_affinities[:] += .01
+            return original_random(*args, **kwargs)
+        monkeypatch.setattr(random._inst, 'randrange', generate)
     error_settings = np.seterr(over='raise') if case == 'raise_on_overflow' else None
     try:
         seed()

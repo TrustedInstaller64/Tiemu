@@ -88,7 +88,8 @@ TIEMU_API int tiemu_world_run_encounters(
  * scaled legacy modifier -> purification/tide/clip/normalization.
  * Blueprint/tide contain 12 doubles, noise contains rows*12 doubles. Modifier
  * is absent exactly when NULL/0, otherwise it contains 12 doubles. No RNG is
- * consumed and no live entity is appended until the caller's following sync.
+ * consumed and no live entity is appended until the caller's following sync
+ * or membership reconciliation.
  * The returned independent newborn buffer belongs to the world, not the caller.
  * births never changes existing population state, IDs, or encounter RNG state.
  * Constructor clipping uses +0 for values equal to either signed zero. Finite

@@ -60,6 +60,20 @@ int main(void) {
                                0.0, 100.0, &newborns, &newborn_count)) return 25;
         if (newborn_count != 24) return 26;
         for (i = 0; i < newborn_count; ++i) if (newborns[i] != 1.0) return 27;
+        {
+            uint64_t order[2], assigned[2];
+            order[0] = first_id; order[1] = 0;
+            sources[0].stable_id = 0;
+            if (tiemu_world_reconcile(world, order, 2, sources, 1, assigned, 2)) return 33;
+            if (assigned[0] != first_id || assigned[1] <= second_id) return 34;
+            if (tiemu_world_get_view(world, &view) != TIEMU_RUNTIME_ERROR) return 35;
+            if (tiemu_world_births(world, titans, 12, noise, 24, 2, NULL, 0, tide, 12,
+                                   0.0, 100.0, &newborns, &newborn_count)) return 36;
+            if (tiemu_world_get_view(world, &view) != TIEMU_RUNTIME_ERROR) return 37;
+            sources[0].stable_id = assigned[0]; sources[1].stable_id = assigned[1];
+            if (tiemu_world_sync(world, sources, 2)) return 38;
+            if (tiemu_world_get_view(world, &view) || view.stable_ids[1] != assigned[1]) return 39;
+        }
         if (tiemu_world_sync(world, NULL, 0)) return 28;
         sources[0].stable_id = 0;
         if (tiemu_world_sync(world, sources, 1)) return 29;

@@ -13,7 +13,7 @@
 #include <mutex>
 #include <stdexcept>
 #include <string>
-#include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 namespace {
@@ -47,18 +47,20 @@ void finite_array(const double *values, std::size_t count, const char *name) {
             throw std::invalid_argument(std::string(name) + " must be finite");
 }
 
-struct World {
-    std::mutex mutex;
-    std::size_t entities = 0;
-    std::uint64_t next_id = 1;
-    bool needs_sync = false;
-    std::vector<std::uint64_t> ids, next_ids;
-    std::unordered_set<std::uint64_t> live_ids, next_live_ids;
+void validate_source(const tiemu_world_source &row) {
+    if (!std::isfinite(row.score) || !std::isfinite(row.hit_points)
+            || row.trait < TIEMU_MORTAL || row.trait > TIEMU_REINCARNATOR
+            || row.aspect < -1 || row.aspect >= static_cast<std::int32_t>(width)
+            || row.boss > 1 || row.unlocked > 1)
+        throw std::invalid_argument("resident entity metadata is invalid");
+    finite_array(row.titans, width, "resident titans");
+    if (row.paths) finite_array(row.paths, width, "resident paths");
+}
+
+struct Rows {
     std::vector<double> titans, paths, scores, hp, original_titans;
     std::vector<std::int32_t> traits, aspects;
     std::vector<std::uint8_t> bosses, unlocked, valid, replaced, changed, old_mutated;
-    std::array<std::uint32_t, TIEMU_MT_STATE_WORDS> numpy_mt{}, python_mt{};
-    std::vector<double> newborns;
 
     void reserve(std::size_t count, std::size_t vectors) {
         // All potentially throwing allocations precede any live-value write.
@@ -76,6 +78,49 @@ struct World {
         replaced.resize(count); changed.resize(count); old_mutated.resize(count);
     }
 
+    void write(std::size_t i, const tiemu_world_source &row) {
+        std::copy_n(row.titans, width, titans.data() + i * width);
+        std::copy_n(row.titans, width, original_titans.data() + i * width);
+        if (row.paths) std::copy_n(row.paths, width, paths.data() + i * width);
+        else std::fill_n(paths.data() + i * width, width, 0.0);
+        scores[i] = row.score; hp[i] = row.hit_points;
+        traits[i] = row.trait; aspects[i] = row.aspect;
+        bosses[i] = row.boss; unlocked[i] = row.unlocked;
+        valid[i] = row.paths ? 1 : 0;
+        replaced[i] = changed[i] = old_mutated[i] = 0;
+    }
+
+    void copy(std::size_t target, const Rows &source, std::size_t index) {
+        std::copy_n(source.titans.data() + index * width, width, titans.data() + target * width);
+        std::copy_n(source.paths.data() + index * width, width, paths.data() + target * width);
+        std::copy_n(source.original_titans.data() + index * width, width, original_titans.data() + target * width);
+        scores[target] = source.scores[index]; hp[target] = source.hp[index];
+        traits[target] = source.traits[index]; aspects[target] = source.aspects[index];
+        bosses[target] = source.bosses[index]; unlocked[target] = source.unlocked[index];
+        valid[target] = source.valid[index]; replaced[target] = source.replaced[index];
+        changed[target] = source.changed[index]; old_mutated[target] = source.old_mutated[index];
+    }
+
+    void swap(Rows &other) noexcept {
+        titans.swap(other.titans); paths.swap(other.paths); original_titans.swap(other.original_titans);
+        scores.swap(other.scores); hp.swap(other.hp); traits.swap(other.traits); aspects.swap(other.aspects);
+        bosses.swap(other.bosses); unlocked.swap(other.unlocked); valid.swap(other.valid);
+        replaced.swap(other.replaced); changed.swap(other.changed); old_mutated.swap(other.old_mutated);
+    }
+};
+
+struct World : Rows {
+    std::mutex mutex;
+    std::size_t entities = 0;
+    std::uint64_t next_id = 1;
+    bool needs_sync = false;
+    bool membership_dirty = false;
+    std::vector<std::uint64_t> ids, next_ids;
+    std::unordered_map<std::uint64_t, std::size_t> live_ids, next_live_ids;
+    Rows scratch;
+    std::array<std::uint32_t, TIEMU_MT_STATE_WORDS> numpy_mt{}, python_mt{};
+    std::vector<double> newborns;
+
     tiemu_encounter_state state() {
         return {entities, entities * width, titans.data(), paths.data(), scores.data(), hp.data(),
                 traits.data(), aspects.data(), bosses.data(), unlocked.data(), valid.data(),
@@ -83,9 +128,15 @@ struct World {
                 numpy_mt.data(), python_mt.data(), TIEMU_MT_STATE_WORDS};
     }
 
-    void ready() const {
+    void nonfailed() const {
         if (needs_sync)
             throw std::runtime_error("resident world requires a complete sync after failed encounters");
+    }
+
+    void ready() const {
+        nonfailed();
+        if (membership_dirty)
+            throw std::runtime_error("resident world requires a complete sync after membership reconciliation");
     }
 };
 
@@ -112,40 +163,77 @@ void sync(World &world, const tiemu_world_source *sources, std::size_t count) {
             id = next_id;
             next_id = next_id == std::numeric_limits<std::uint64_t>::max() ? 0 : next_id + 1;
         }
-        if (!world.next_live_ids.insert(id).second)
+        if (!world.next_live_ids.emplace(id, i).second)
             throw std::invalid_argument("resident stable IDs must be unique");
         world.next_ids[i] = id;
-        if (!std::isfinite(row.score) || !std::isfinite(row.hit_points)
-                || row.trait < TIEMU_MORTAL || row.trait > TIEMU_REINCARNATOR
-                || row.aspect < -1 || row.aspect >= static_cast<std::int32_t>(width)
-                || row.boss > 1 || row.unlocked > 1)
-            throw std::invalid_argument("resident entity metadata is invalid");
-        finite_array(row.titans, width, "resident titans");
-        if (row.paths) finite_array(row.paths, width, "resident paths");
+        validate_source(row);
     }
     world.reserve(count, vectors);
     world.resize(count, vectors);
     // Validation/allocation are complete. No source pointer is retained.
-    for (std::size_t i = 0; i < count; ++i) {
-        const auto &row = sources[i];
-        std::copy_n(row.titans, width, world.titans.data() + i * width);
-        std::copy_n(row.titans, width, world.original_titans.data() + i * width);
-        if (row.paths) std::copy_n(row.paths, width, world.paths.data() + i * width);
-        else std::fill_n(world.paths.data() + i * width, width, 0.0);
-        world.scores[i] = row.score;
-        world.hp[i] = row.hit_points;
-        world.traits[i] = row.trait;
-        world.aspects[i] = row.aspect;
-        world.bosses[i] = row.boss;
-        world.unlocked[i] = row.unlocked;
-        world.valid[i] = row.paths ? 1 : 0;
-        world.replaced[i] = world.changed[i] = world.old_mutated[i] = 0;
-    }
+    for (std::size_t i = 0; i < count; ++i) world.write(i, sources[i]);
     world.ids.swap(world.next_ids);
     world.live_ids.swap(world.next_live_ids);
     world.entities = count;
     world.next_id = next_id;
     world.needs_sync = false;
+    world.membership_dirty = false;
+}
+
+void reconcile(World &world, const std::uint64_t *order, std::size_t count,
+               const tiemu_world_source *added, std::size_t added_count,
+               std::uint64_t *out_ids, std::size_t out_capacity) {
+    world.nonfailed();
+    const auto vectors = vector_size(count);
+    vector_size(added_count);
+    if (added_count > count || out_capacity < count)
+        throw std::invalid_argument("resident reconciliation count/capacity is invalid");
+    required(order, count, "resident membership order");
+    required(added, added_count, "resident added rows");
+    required(out_ids, count, "resident assigned IDs");
+    world.next_ids.resize(count);
+    world.next_live_ids.clear();
+    world.next_live_ids.reserve(count);
+    auto next_id = world.next_id;
+    std::size_t additions = 0;
+    for (std::size_t i = 0; i < count; ++i) {
+        auto id = order[i];
+        if (id) {
+            if (world.live_ids.find(id) == world.live_ids.end())
+                throw std::invalid_argument("resident reconciled ID is not live");
+        } else {
+            ++additions;
+            if (!next_id) throw std::invalid_argument("resident stable IDs exhausted");
+            id = next_id;
+            next_id = next_id == std::numeric_limits<std::uint64_t>::max() ? 0 : next_id + 1;
+        }
+        if (!world.next_live_ids.emplace(id, i).second)
+            throw std::invalid_argument("resident reconciled IDs must be unique");
+        world.next_ids[i] = id;
+    }
+    if (additions != added_count)
+        throw std::invalid_argument("resident membership zeros must match added rows");
+    for (std::size_t i = 0; i < added_count; ++i) {
+        if (added[i].stable_id)
+            throw std::invalid_argument("new resident sources must request a new ID");
+        validate_source(added[i]);
+    }
+    // Retained rows are already native, so Python only transfers newborn rows.
+    // Reusable scratch keeps reordering atomic without reallocating every step.
+    world.scratch.reserve(count, vectors);
+    world.scratch.resize(count, vectors);
+    additions = 0;
+    for (std::size_t i = 0; i < count; ++i) {
+        if (order[i]) world.scratch.copy(i, world, world.live_ids.find(order[i])->second);
+        else world.scratch.write(i, added[additions++]);
+    }
+    world.swap(world.scratch);
+    world.ids.swap(world.next_ids);
+    world.live_ids.swap(world.next_live_ids);
+    world.entities = count;
+    world.next_id = next_id;
+    world.membership_dirty = true;
+    if (count) std::copy(world.ids.begin(), world.ids.end(), out_ids);
 }
 } // namespace
 
@@ -165,6 +253,15 @@ int tiemu_world_sync(void *handle, const tiemu_world_source *sources, size_t cou
         auto &world = live(handle);
         std::lock_guard<std::mutex> lock(world.mutex);
         sync(world, sources, count);
+    });
+}
+
+int tiemu_world_reconcile(void *handle, const uint64_t *order, size_t count,
+        const tiemu_world_source *added, size_t added_count, uint64_t *out_ids, size_t out_capacity) {
+    return tiemu_detail::guarded([&] {
+        auto &world = live(handle);
+        std::lock_guard<std::mutex> lock(world.mutex);
+        reconcile(world, order, count, added, added_count, out_ids, out_capacity);
     });
 }
 
@@ -210,7 +307,7 @@ int tiemu_world_births(void *handle, const double *blueprint, size_t blueprint_c
     return tiemu_detail::guarded([&] {
         auto &world = live(handle);
         std::lock_guard<std::mutex> lock(world.mutex);
-        world.ready();
+        world.nonfailed();
         const auto count = vector_size(rows);
         if (blueprint_count != width || tide_count != width || noise_count != count
                 || (modifier ? modifier_count != width : modifier_count != 0)

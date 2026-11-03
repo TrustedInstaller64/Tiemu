@@ -19,7 +19,8 @@ configurations = [('baseline', args.baseline.resolve(), 1, 4096),
                   ('a-4', args.candidate.resolve(), 4, 4096),
                   ('a-4-forced', args.candidate.resolve(), 4, 1)]
 cases = [('human', 1000, 6, False), ('human', 10000, 3, False),
-         ('human', 1000, 6, True), ('aeonic', 200, 2, False)]
+         ('human', 1000, 6, True), ('aeonic', 200, 2, False),
+         ('aeonic', 200, 12, False)]
 summary = []
 for phase, population, generations, reincarnator in cases:
     results = {name: [] for name, _, _, _ in configurations}
@@ -28,7 +29,7 @@ for phase, population, generations, reincarnator in cases:
         order = configurations[repeat:] + configurations[:repeat]
         for name, root, workers, threshold in order:
             suffix = '-reincarnator' if reincarnator else ''
-            output = args.output_dir/f'{phase}-{population}{suffix}-{name}-{repeat}.json'
+            output = args.output_dir/f'{phase}-{population}-g{generations}{suffix}-{name}-{repeat}.json'
             command = [sys.executable, str(script), '--source-root', str(root), '--phase', phase,
                        '--population', str(population), '--generations', str(generations),
                        '--native-threads', str(workers), '--native-min-rows', str(threshold),

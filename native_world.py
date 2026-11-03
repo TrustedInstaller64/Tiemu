@@ -1,10 +1,12 @@
 """Lifetime and buffer adapter for the standalone resident C++ world.
 
 Python entities remain the public mirrors while their remaining writers migrate.
-Every native boundary imports their current contents; an unchanged ndarray
-address is never treated as proof that its values are unchanged. The C++ handle
-owns all numerical state and stable IDs between calls. Borrowed native views are
-read only while the handle lock is held and never become public entity arrays.
+Every numerical encounter entry imports their current contents; an unchanged
+ndarray address is never treated as proof that its values are unchanged. The
+C++ handle owns numerical state and stable IDs between calls. Membership-only
+reconciliation marks older numeric rows stale until an explicit full sync.
+Borrowed native views are read only while the handle lock is held and never
+become public entity arrays.
 """
 import ctypes as ct
 import functools
@@ -60,6 +62,7 @@ def _entry_points(library):
     # use their own equivalent ctypes Structure classes on this same library.
     return SimpleNamespace(
         create=bind('create', [_H]), sync=bind('sync', [_H, _H, _S]),
+        reconcile=bind('reconcile', [_H, _H, _S, _H, _S, _H, _S]),
         view=bind('get_view', [_H, _H]),
         run=bind('run_encounters', [_H, _H, _H, _H, _S, _H]),
         births=bind('births', [_H, _H, _S, _H, _S, _S, _H, _S, _H, _S,
@@ -127,6 +130,7 @@ class ResidentWorld:
         self._by_identity = {}
         self._ids = ()
         self.sync_count = self.encounter_count = self.birth_count = 0
+        self.reconcile_count = 0
         self._native = get_native()
         if self._native is None or getattr(self._native, '__binding__', None) != 'c-abi':
             raise RuntimeError('Resident world requires the standalone C++ backend')
@@ -179,6 +183,34 @@ class ResidentWorld:
             self._by_identity = {id(entity): stable_id for entity, stable_id in zip(owners, ids)}
             self._population, self._ids = owners, ids
             self.sync_count += 1
+
+    def reconcile(self, population):
+        """Update membership/IDs, importing only newly admitted entity rows.
+
+        Existing Python writers may have changed old rows. C++ consequently
+        marks numerical state dirty; snapshot/run reject it until the next
+        explicit full sync. Independent newborn arithmetic remains available.
+        """
+        with self._lock:
+            self._live()
+            if type(population) is not list:
+                raise ValueError('Resident population must be an ordered list')
+            owners = tuple(population)
+            identities = [id(entity) for entity in owners]
+            if len(set(identities)) != len(identities):
+                raise ValueError('Resident population must contain distinct entities')
+            order = np.fromiter((self._by_identity.get(identity, 0) for identity in identities),
+                                dtype=np.uint64, count=len(owners))
+            added = [entity for entity, stable_id in zip(owners, order) if not stable_id]
+            sources = _sources(added)
+            output = np.empty(len(owners), dtype=np.uint64)
+            self._native._check(self._api.reconcile(
+                self._live(), order.ctypes.data, len(owners), sources, len(added),
+                output.ctypes.data, output.size))
+            ids = tuple(output.tolist())
+            self._by_identity = dict(zip(identities, ids))
+            self._population, self._ids = owners, ids
+            self.reconcile_count += 1
 
     def stable_ids(self):
         with self._lock:

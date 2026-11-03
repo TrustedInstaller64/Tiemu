@@ -245,9 +245,13 @@ class BoundaryTimers:
                 api = native_world._entry_points(native._lib)
                 # Every World instance retains this shared binding table. Patch
                 # it in place so even a handle created during setup is observed.
-                for name in ('sync', 'run', 'births'):
+                for name in ('sync', 'run', 'births', 'reconcile'):
+                    if not hasattr(api, name):
+                        continue
                     self.replace(api, name, self.wrap(f'world.C++_{name}', getattr(api, name)))
-                for name in ('_sync_prepared', 'births'):
+                for name in ('_sync_prepared', 'births', 'reconcile'):
+                    if not hasattr(native_world.ResidentWorld, name):
+                        continue
                     self.replace(native_world.ResidentWorld, name, self.wrap(
                         f'ResidentWorld.{name}', getattr(native_world.ResidentWorld, name)))
                 original_resident_run = native_world.ResidentWorld.run_encounters
