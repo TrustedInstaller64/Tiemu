@@ -35,7 +35,7 @@ def candidate():
 
 
 @pytest.fixture
-def native():
+def cpp_backend():
     configure_backend('cpp')
     try:
         yield
@@ -43,10 +43,17 @@ def native():
         configure_backend('python')
 
 
+@pytest.fixture
+def native(cpp_backend, monkeypatch):
+    # Small fixtures deliberately force the C path; production has a measured
+    # population threshold, tested separately with the untouched default below.
+    monkeypatch.setattr(candidate(), 'MIN_INDEX_POPULATION', 0)
+
+
 @functools.lru_cache(maxsize=1)
 def frozen():
     source = subprocess.check_output(['git', '-C', str(ROOT), 'show',
-                                      f'{BASELINE}:aeonic_cycle_manager.py'], text=True)
+                                      f'{BASELINE}:aeonic_cycle_manager.py'], text=True, encoding='utf-8')
     cls = next(node for node in ast.parse(source).body
                if isinstance(node, ast.ClassDef) and node.name == 'AeonicCycleManager')
     names = ('select_aeonic_opponents', 'aeonic_interaction', 'run_aeonic_cycle_generation')
@@ -276,8 +283,8 @@ class SpyIndex:
         return self.target.close()
 
 
-def run_case(kind, hook=None, reference=False, random_seed=731, shared_seeds=False):
-    manager, population, reincarnator = make_case(kind)
+def run_case(kind, hook=None, reference=False, random_seed=731, shared_seeds=False, size=24):
+    manager, population, reincarnator = make_case(kind, size)
     if shared_seeds:
         population[-1].held_fire_seeds = population[-2].held_fire_seeds
     handle, fired = attach_hook(manager, population, hook)
@@ -398,3 +405,67 @@ def test_class_descriptor_is_rejected_without_executing_it(native, monkeypatch, 
     monkeypatch.setattr(owner, name, CallbackDescriptor())
     assert bridge.try_create_aeonic_index(manager, population, reincarnator) is None
     assert not visits and rng_state() == before
+
+
+@pytest.mark.parametrize('kind', ['ordinary', 'reincarnator-only'])
+def test_default_200_entity_generation_uses_original_selector_and_exact_frozen_results(cpp_backend, monkeypatch, kind):
+    bridge = candidate()
+    assert bridge.MIN_INDEX_POPULATION > 200
+
+    def forbidden(*arguments):
+        raise AssertionError('The default small-world path must not bind or allocate a candidate index')
+
+    monkeypatch.setattr(bridge, '_entry_points', forbidden)
+    monkeypatch.setattr(bridge, 'AeonicIndex', forbidden)
+    expected, _, _, _ = run_case(kind, reference=True, size=200)
+    spies, declines = spy_factory(monkeypatch)
+    actual, _, _, _ = run_case(kind, size=200)
+    assert_same(actual, expected)
+    assert declines == [True] and not spies
+
+
+@pytest.mark.parametrize('size', [0, 1, 200])
+def test_default_small_factory_reads_no_custom_fields_and_requires_no_backend(monkeypatch, size):
+    bridge = candidate()
+
+    class Unreadable:
+        def __getattribute__(self, name):
+            raise AssertionError('The population threshold must precede all metadata reads')
+
+    def forbidden(*arguments):
+        raise AssertionError('The population threshold must precede backend/C API access')
+
+    monkeypatch.setattr(bridge, 'get_native', forbidden)
+    monkeypatch.setattr(bridge, '_metadata', forbidden)
+    monkeypatch.setattr(bridge, '_entry_points', forbidden)
+    monkeypatch.setattr(bridge, 'AeonicIndex', forbidden)
+    population = [Unreadable() for _ in range(size)]
+    before = rng_state()
+    assert bridge.try_create_aeonic_index(Unreadable(), population, Unreadable()) is None
+    assert rng_state() == before
+
+
+@pytest.mark.parametrize('unsafe', [False, True])
+def test_default_threshold_admits_standard_population_but_retains_metadata_guards(cpp_backend, unsafe):
+    bridge = candidate()
+    manager, population, reincarnator = make_case('mixed', bridge.MIN_INDEX_POPULATION)
+    if unsafe:
+        population[-1].held_fire_seeds = population[-2].held_fire_seeds
+    before = rng_state()
+    index = bridge.try_create_aeonic_index(manager, population, reincarnator)
+    assert rng_state() == before
+    if unsafe:
+        assert index is None
+        return
+    assert index is not None
+    seed(731)
+    before_random = random.getstate()
+    expected = frozen()['select_aeonic_opponents'](manager, population, reincarnator)
+    expected_rng = rng_state()
+    random.setstate(before_random)
+    try:
+        assert index.select() == expected
+        assert rng_state() == expected_rng
+    finally:
+        index.close()
+        manager.population_manager.close_native_world()

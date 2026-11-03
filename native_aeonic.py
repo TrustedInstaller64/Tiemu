@@ -24,6 +24,9 @@ _CHOICE, _RANDOM, _ISFINITE = random.choice, random.random, np.isfinite
 _RANDOM_METHODS = {name: getattr(random.Random, name) for name in (
     '__getattribute__', 'choice', '_randbelow', 'getrandbits', 'random')}
 _H, _S = ct.c_void_p, ct.c_size_t
+# Cloud paired runs found index overhead regressed the 200-entity generation.
+# Keep that size on the original selector; larger-size calibration is ongoing.
+MIN_INDEX_POPULATION = 512
 
 
 def _class_attribute(cls, name):
@@ -210,9 +213,15 @@ class AeonicIndex:
 
 
 def try_create_aeonic_index(manager, population, reincarnator):
+    # This boundary precedes backend loading, metadata access and allocation.
+    # The original selector is faster for the measured small-world workload.
+    if type(population) is not list:
+        return None
+    count = len(population)
+    if count < 2 or count < MIN_INDEX_POPULATION:
+        return None
     native = get_native()
-    if (native is None or getattr(native, '__binding__', None) != 'c-abi'
-            or type(population) is not list or len(population) < 2):
+    if native is None or getattr(native, '__binding__', None) != 'c-abi':
         return None
     metadata = _metadata(manager, population, reincarnator)
     return None if metadata is None else AeonicIndex(native, manager, population, reincarnator, metadata)

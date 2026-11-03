@@ -20,7 +20,8 @@ configurations = [('baseline', args.baseline.resolve(), 1, 4096),
                   ('a-4-forced', args.candidate.resolve(), 4, 1)]
 cases = [('human', 1000, 6, False), ('human', 10000, 3, False),
          ('human', 1000, 6, True), ('aeonic', 200, 2, False),
-         ('aeonic', 200, 12, False)]
+         ('aeonic', 200, 12, False), ('aeonic', 512, 2, False),
+         ('aeonic', 1000, 2, False), ('aeonic', 1000, 12, False)]
 summary = []
 for phase, population, generations, reincarnator in cases:
     results = {name: [] for name, _, _, _ in configurations}

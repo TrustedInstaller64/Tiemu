@@ -312,7 +312,9 @@ class AeonicCycleManager:
                         if not index.refresh():
                             index.close()
                             index = None
-                    else:
+                    elif culled_entity is not None:
+                        # The guarded ordinary branch only changes candidate
+                        # flags when it transfers seeds and returns its loser.
                         index.update_pair(attacker, defender)
         finally:
             if index is not None:

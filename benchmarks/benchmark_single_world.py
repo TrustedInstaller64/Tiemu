@@ -173,6 +173,7 @@ class BoundaryTimers:
         self.resident_world_present = False
         self.resident_scoring_present = False
         self.aeonic_index_present = False
+        self.aeonic_index_decisions = []
         self.resident_worlds = set()
 
     def wrap(self, name, function):
@@ -288,8 +289,19 @@ class BoundaryTimers:
             'evaluate_entities', simulation_module.evaluate_entities))
         if self.aeonic_index_present:
             import native_aeonic
+            original_index = native_aeonic.try_create_aeonic_index
+
+            @functools.wraps(original_index)
+            def observed_index(manager, population, reincarnator):
+                result = original_index(manager, population, reincarnator)
+                self.aeonic_index_decisions.append({
+                    'population': len(population),
+                    'expected_index': len(population) >= getattr(native_aeonic, 'MIN_INDEX_POPULATION', 2),
+                    'actual_index': result is not None})
+                return result
+
             self.replace(native_aeonic, 'try_create_aeonic_index', self.wrap(
-                'aeonic.index_create', native_aeonic.try_create_aeonic_index))
+                'aeonic.index_create', observed_index))
             for name in ('select', 'update_pair', 'refresh'):
                 self.replace(native_aeonic.AeonicIndex, name, self.wrap(
                     f'AeonicIndex.{name}', getattr(native_aeonic.AeonicIndex, name)))
@@ -349,8 +361,11 @@ class BoundaryTimers:
         elif count('AeonicCycleManager.run_aeonic_cycle_generation') != generations:
             errors.append('Aeonic generation span count differs from generation count')
         if phase == 'aeonic' and self.aeonic_index_present and (
-                count('aeonic.index_create') != generations or count('AeonicIndex.select') == 0):
-            errors.append('The ordinary aeonic fixture must actually execute its native index')
+                count('aeonic.index_create') != generations
+                or any(row['expected_index'] != row['actual_index'] for row in self.aeonic_index_decisions)
+                or (any(row['actual_index'] for row in self.aeonic_index_decisions)
+                    and count('AeonicIndex.select') == 0)):
+            errors.append('The ordinary aeonic fixture must follow the measured population-size policy')
         if any(row['exclusive_instrumented_seconds'] < -1e-9 for row in self.rows.values()):
             errors.append('Negative exclusive instrumented time')
         if self.native_encounter_entry and 'try_run_encounters' in self.rows:
@@ -361,6 +376,7 @@ class BoundaryTimers:
                 'resident_world_present': self.resident_world_present,
                 'resident_scoring_present': self.resident_scoring_present,
                 'aeonic_index_present': self.aeonic_index_present,
+                'aeonic_index_decisions': self.aeonic_index_decisions,
                 'resident_encounter_handles': len(self.resident_worlds),
                 'spans': sorted(self.rows.values(), key=lambda row: row['inclusive_seconds'], reverse=True),
                 'scope': 'Explicit Python wrappers count calls and perf_counter spans without cProfile. '

@@ -96,7 +96,8 @@ def main():
     (output/'environment.json').write_text(json.dumps(environment, indent=2)+'\n', encoding='utf-8')
     print(json.dumps({'environment': environment}), flush=True)
     cases = [('human', 1000, 6, False), ('human', 10000, 3, False),
-             ('human', 1000, 6, True), ('aeonic', 200, 2, False)]
+             ('human', 1000, 6, True), ('aeonic', 200, 2, False),
+             ('aeonic', 1000, 2, False)]
     report = {
         'source_root': str(root), 'environment': environment, 'cases': [],
         'known_cprofile_issue': 'https://github.com/pybind/pybind11/issues/5600',
@@ -168,6 +169,7 @@ def main():
                 'optimizer_steps': boundary_run['optimizer_steps'],
                 'guide_optimizer_steps': boundary_run['guide_optimizer_steps'],
                 'boundary_integrity_valid': boundaries['valid'],
+                'aeonic_index_decisions': boundaries.get('aeonic_index_decisions', []),
                 'boundary_spans': boundaries['spans'],
                 'boundary_scope': boundaries['scope'],
             }
