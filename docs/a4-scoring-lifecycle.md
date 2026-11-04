@@ -15,6 +15,8 @@
 
 [最终功能回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41659474706)的 Linux 为 **579 通过**，Windows 为 **567 通过、12 项既有 POSIX 专属跳过**。这两个平台的独立纯 C 消费者、单线程/四线程 CLI 和 Linux CPU Docker 均通过。macOS 完整功能回归首次及唯一一次重试均未取得 hosted ARM64 runner，步骤没有执行，已停止重试。因此该工作流整体不是成功状态；Mac 的已完成证据仅为下面的独立成对性能构建与摘要检查，不能代替完整功能回归或该平台评分微核探针。详见 [功能验收证据](performance/a4-native-06353b7.json)。
 
+后续补验：2026-11-04 的 `0201f99` 默认构建保持 A4 生产分流，新增邻居实验宏未开启；其 Mac 完整回归 613 项及评分微核探针、独立 C/CLI 已通过。A4 当轮失败记录仍保留，新增成功证据见 [A5 默认回归](performance/a5-default-0201f99.json)。
+
 新增测试使用冻结 A3 方法，严格比较结果、实体顺序、缓存所有权、外部数组别名、异常前缀和随机数延续；永劫包含实际 Torch 前向回调修改第三方、重排/增删人口、令索引失效和抛异常的情况，并比较权重与完整 Adam 状态。C 层另测输入拷贝、失效 token、dirty/failed 边界、无效输入不覆盖输出、空输入及关闭。
 
 旧上游差分仍保留其原有数值容差；本轮冻结 A3 的新契约及性能摘要没有放宽比较标准。同平台有限场景通过，不是任意长期轨迹、跨平台二进制结果或真实外部 LLM 输出相同的证明。
@@ -60,6 +62,8 @@ macOS 短任务波动显著：200×2 默认/四线程预算为 0.908/1.552 倍�
 三次尝试均未取得 ARM64 hosted runner，GitHub 返回容量不足及未能获取 runner 的注释；诊断脚本没有启动，没有测量值或性能 artifact。第三次有限补跑的依据是最终成对性能任务已实际取得 ARM64 runner，资源条件发生变化；再次容量失败后已停止重试。各次状态保存在 [诊断证据](performance/a4-macos-diagnosis-9974dae.json)，`measurements` 明确为 null，没有用本机替代。
 
 静态比较显示冻结 A2→A3 的 `aeonic_cycle_manager.py`、`models.py`、`entities.py`、`parliament_manager.py` 未改训练或选择算法；该诊断 fixture 的初始人口路径也不调用新增出生 World。它们只能缩小嫌疑范围，不能证明旧的约 7.1% macOS 短场景回退已修复，更不能把原因确定为温控、调度或 GC。
+
+后续进展：2026-11-04 Mac runner 实际可用后，冻结诊断成功运行，旧回退未稳定复现且同代码波动显著。有限排除项与测量边界见 [A5 诊断结果](a5-measured-candidates.md)和[新证据](performance/a5-macos-frozen-0201f99.json)，不覆盖或改写上述三次未启动的历史记录。
 
 ## 后续提速途径：本轮仅讨论
 

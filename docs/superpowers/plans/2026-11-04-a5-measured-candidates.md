@@ -32,12 +32,14 @@
 ## Tasks
 
 - [x] Read-only A4 and Grok source/evidence review. Existing small-population/live-reincarnator selector fallback confirmed; old reference defect identified separately.
-- [x] Add `tests/test_inorganic_neighbors.py` with frozen algorithm and wrong-order/synchronous-update negative controls; implement opt-in `TIEMU_PRECOMPUTE_NEIGHBORS` in `cpp/tiemu_inorganic.cpp`. Static independent review completed; cloud proof pending.
-- [ ] Add `benchmarks/compare_aeonic_structures.py`: current/legacy/current-repeat; full-cycle and controlled-training cases; six balanced blocks, two fresh samples, separate observers and strict consistency gates.
-- [ ] Add `benchmarks/compare_inorganic_neighbors.py`: baseline/candidate/baseline-repeat; bounded kernel cases and actual headless 100-step chunk phase, complete output/MT and legacy/RNG checks.
-- [ ] Add `.github/workflows/a5-candidate-performance.yml`: frozen/default and macro builds, compile-flag verification, relevant full tests and same-runner comparisons on all three platforms. Preserve failures and artifacts.
-- [ ] Inspect cloud results and independent review. Promote only a repeatably beneficial, equivalent production change; otherwise retain A4 default and archive the rejected candidate evidence.
-- [ ] Record current bottlenecks, precise short/long-training limits, source-backed Grok assessment, per-platform results and any unexecuted checks; commit/push and verify clean tree.
+- [x] Add `tests/test_inorganic_neighbors.py` with frozen algorithm and wrong-order/synchronous-update negative controls; implement opt-in `TIEMU_PRECOMPUTE_NEIGHBORS` in `cpp/tiemu_inorganic.cpp`. Default 34 contracts and macro full suites passed on all three hosted platforms; independent review completed.
+- [x] Add `benchmarks/compare_aeonic_structures.py`: current/legacy/current-repeat; full-cycle and controlled-training cases; six balanced blocks, two fresh samples, separate observers and strict consistency gates. All 24 platform/case combinations agree; 864 raw timing samples archived.
+- [x] Add `benchmarks/compare_inorganic_neighbors.py`: baseline/candidate/baseline-repeat; bounded kernel cases and actual headless 100-step chunk phase, complete output/MT and legacy/RNG checks. All three platforms agree; 1,944 raw samples archived.
+- [x] Add `.github/workflows/a5-candidate-performance.yml`: frozen/default and macro builds, compile-flag verification, relevant full tests and same-runner comparisons on all three platforms. Run `41794212195` succeeded on all platforms. Default Native run `41794212208` and legacy paired run `41794212221` also succeeded.
+- [x] Inspect cloud results and independent review. Retain A4 default: no stable continuous-training benefit from the old loop; neighbor table has no cross-platform actual-phase benefit and regresses single-step calls. The opt-in experiment remains disabled.
+- [x] Record current bottlenecks, precise short/long-training limits, source-backed Grok assessment and per-platform evidence. Final docs/evidence prepared for commit/push; verify clean Git delivery after that documentation-only commit.
+
+Additional bounded diagnostic: with new actual Mac runner availability, dispatch `41794495133` successfully reran the frozen A2/A3 experiment. Prior short regression did not stably reproduce; same-code variation is large. Zero GC collections and zero World birth calls only bound this fixture/window, not the universal cause. No retry loop or local fallback.
 
 ## Falsifiable comparisons
 

@@ -29,7 +29,7 @@
 ## Tasks
 
 - [x] Frozen macOS diagnosis harness/workflow and capacity evidence archived. All three attempts failed to acquire a hosted ARM64 runner before script execution; no measurements exist. No local fallback or further retries.
-- [ ] Frozen A2/A3 macOS root-cause validation: uncompleted because the diagnostic could not acquire a cloud runner; do not claim a measured cause or completed acceptance.
+- [x] Frozen A2/A3 macOS repeatability validation completed later in A5 on 2026-11-04 (`41794495133`) when a runner became available. The prior regression did not stably reproduce and same-code variation was large; no thermal/scheduling root cause is claimed. Original three unacquired attempts remain archived.
 - [x] Scoring contracts: `tests/test_resident_scoring_core.py`, `tests/test_resident_scoring.py`; math probe before pytest. Observed cloud RED against A3 and recorded the expected failures.
 - [x] C++ scoring: `cpp/tiemu_world.h/.cpp`, C consumer. Source/View and `scoring_prepare(handle,sources,count,matrix,144,view)` / `scoring_finish(handle,token,evaluator,multipliers,count,distribution,distcount,view)`. Reuses core map/score and worker pool; transactional inputs/tokens/locks checked in cloud.
 - [x] Python scoring: `native_world.py`, `native_scoring.py`, `native_evaluation.py`, `simulation.py`, evaluator close state. Safe resident path and unchanged fallback; frozen A3 differential/ownership/error-prefix contracts pass on Linux/Windows.
@@ -37,7 +37,7 @@
 - [x] Golden lifecycle implementation: metadata-plan C API, original clear/shuffle/write order, cloud RED then strict C/Python state/RNG contracts. Default remains reference selection based on measured full-adapter costs; forced native contracts and paired ablation preserve access to the verified implementation.
 - [x] Aeonic index implementation: ordered-pool C ABI and adapter, per-selection and whole-generation contracts, callback refresh/fallback/close. Default gates exclude small populations and live reincarnators based on observed costs; no training algorithm changes.
 - [x] Linux/Windows full suites, independent C and CLI, Linux CPU Docker, all three-platform paired checks and Linux profile, independent review and evidence/report completed. Additional speed avenues are discussion only; none implemented.
-- [ ] macOS complete suite and scoring microkernel probe: neither attempt acquired a runner; both cancelled before execution. This acceptance remains uncompleted and is not replaced by successful macOS paired performance.
+- [x] macOS complete suite and scoring microkernel probe completed later in A5 on 2026-11-04 (`41794212208`, default macro-off `0201f99`): 613 tests and C/CLI/probe passed. Original A4 attempts had no execution; their cancellations remain archived separately.
 - [x] Final documentation and evidence prepared for a documentation-only `[skip ci]` delivery. No production changes after validated `06353b7`; verify Git delivery and the clean tree after committing/pushing.
 
 ## Execution ledger

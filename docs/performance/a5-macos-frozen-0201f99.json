@@ -1,0 +1,1004 @@
+{
+  "run": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41794495133",
+  "head_commit": "0201f995d715c1985f8ab63ef462110be444e675",
+  "job": 126455265071,
+  "conclusion": "success",
+  "source": "Parsed JSON summaries printed by the hosted diagnosis job; no local project execution.",
+  "source_commits": {
+    "A2": "eca7377c6ee53ab1f57c32fd8227c31e0d73b1cb",
+    "A3": "5714a60769b06d6435f9a4ff6fcf00ce8ad24d0b",
+    "A3-identical-repeat": "5714a60769b06d6435f9a4ff6fcf00ce8ad24d0b"
+  },
+  "hardware": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "machine": "arm64",
+    "logical_cpus": 3,
+    "processor": "arm",
+    "machdep.cpu.brand_string": "Apple M1 (Virtual)",
+    "hw.physicalcpu": "3",
+    "hw.logicalcpu": "3",
+    "hw.memsize": "7516192768",
+    "scope": "Read-only runner metadata; not sustained frequency, core placement or power evidence."
+  },
+  "runtime": {
+    "A2": {
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "binding": "c-abi",
+      "core_file": "/Users/runner/work/Tiemu/Tiemu/baseline/_tiemu_core.cpython-312-darwin.so"
+    },
+    "A3": {
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "binding": "c-abi",
+      "core_file": "/Users/runner/work/Tiemu/Tiemu/candidate/_tiemu_core.cpython-312-darwin.so"
+    },
+    "A3-identical-repeat": {
+      "python": "3.12.10",
+      "numpy": "2.2.2",
+      "torch": "2.12.0",
+      "binding": "c-abi",
+      "core_file": "/Users/runner/work/Tiemu/Tiemu/candidate/_tiemu_core.cpython-312-darwin.so"
+    }
+  },
+  "scope": "Frozen A2/A3, same hosted macOS runner, six counterbalanced process blocks, 15 fresh samples per process, separate observer processes and duplicate A3 controls. Hardware identifies Apple M1 (Virtual); this is not the user's local M1. Observer durations include instrumentation and must not be used as speedup estimates.",
+  "findings": [
+    "The previous approximately 7.1 percent short-case slowdown did not reproduce as a stable A3 regression. Both geometric mean A3/A2 time ratios are below one, but same-code repeat variability is large.",
+    "All pure timing windows reported zero cyclic-GC collections. This excludes a collection within these measured windows as their timing difference; it does not prove the absence of allocation/refcount overhead or explain the historical run.",
+    "World construction, births, reconcile and source packing were not called in the observed phase loops. The proposed new-birth fixed cost is absent in this fixture.",
+    "Both two- and twelve-generation cases perform 15 updates per optimizer; twelve generations do not mean twelve generations of continuing online training.",
+    "No sustained-frequency, core-placement, scheduler, thermal or power measurement establishes the underlying cause."
+  ],
+  "cases": [
+    {
+      "population": 200,
+      "generations": 2,
+      "blocks": 6,
+      "samples_per_process": 15,
+      "process_orders": [
+        [
+          "A2",
+          "A3",
+          "A3-identical-repeat"
+        ],
+        [
+          "A2",
+          "A3-identical-repeat",
+          "A3"
+        ],
+        [
+          "A3-identical-repeat",
+          "A2",
+          "A3"
+        ],
+        [
+          "A3-identical-repeat",
+          "A3",
+          "A2"
+        ],
+        [
+          "A3",
+          "A3-identical-repeat",
+          "A2"
+        ],
+        [
+          "A3",
+          "A2",
+          "A3-identical-repeat"
+        ]
+      ],
+      "same_checked_state_and_rng": true,
+      "optimizer_updates_per_optimizer": 15,
+      "process_medians_seconds": {
+        "A2": [
+          0.01794633399998702,
+          0.015676541999994242,
+          0.017351875000002792,
+          0.015256249999993088,
+          0.013825709000002462,
+          0.01959675000000516
+        ],
+        "A3": [
+          0.013865874999993366,
+          0.019085332999992488,
+          0.015223540999983243,
+          0.014022124999996777,
+          0.015004542000013998,
+          0.016858708000000888
+        ],
+        "A3-identical-repeat": [
+          0.015225624999999354,
+          0.01981095799999366,
+          0.015171541999990268,
+          0.016386874999994916,
+          0.012471833999995852,
+          0.017465791000006448
+        ]
+      },
+      "process_median_spread": {
+        "A2": {
+          "median": 0.016514208499998517,
+          "minimum": 0.013825709000002462,
+          "maximum": 0.01959675000000516,
+          "q1": 0.015361322999993376,
+          "q3": 0.017797719249990962
+        },
+        "A3": {
+          "median": 0.01511404149999862,
+          "minimum": 0.013865874999993366,
+          "maximum": 0.019085332999992488,
+          "q1": 0.014267729250001082,
+          "q3": 0.016449916249996477
+        },
+        "A3-identical-repeat": {
+          "median": 0.015806249999997135,
+          "minimum": 0.012471833999995852,
+          "maximum": 0.01981095799999366,
+          "q1": 0.01518506274999254,
+          "q3": 0.017196062000003565
+        }
+      },
+      "paired_time_ratios_to_A2": {
+        "A3": [
+          0.7726299421376753,
+          1.2174453396673512,
+          0.8773427079195069,
+          0.9191069233922576,
+          1.0852638371031336,
+          0.860280811869134
+        ],
+        "A3-identical-repeat": [
+          0.8483975055858409,
+          1.2637326522648258,
+          0.874345971256007,
+          1.0741089717330499,
+          0.9020755463603083,
+          0.8912595711024456
+        ]
+      },
+      "geometric_mean_paired_time_ratio": {
+        "A3": 0.9441086581102384,
+        "A3-identical-repeat": 0.9653961458925243
+      },
+      "identical_A3_repeat_over_A3": [
+        1.0980644928651555,
+        1.038020033499099,
+        0.9965843032187431,
+        1.1686441962255139,
+        0.8312039114545593,
+        1.0360100548633695
+      ],
+      "identical_A3_repeat_ratio_spread": {
+        "median": 1.0370150441812342,
+        "minimum": 0.8312039114545593,
+        "maximum": 1.1686441962255139,
+        "q1": 1.0064407411298997,
+        "q3": 1.0830533780236413
+      },
+      "pure_gc_collections": {
+        "A2": {
+          "sample_count": 90,
+          "distinct_counts": [
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "A3": {
+          "sample_count": 90,
+          "distinct_counts": [
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "A3-identical-repeat": {
+          "sample_count": 90,
+          "distinct_counts": [
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      },
+      "observations": {
+        "A2": {
+          "runs": 9,
+          "valid": true,
+          "spans": [
+            {
+              "name": "interaction.reincarnator",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.021715084000021534,
+              "median_exclusive_instrumented_seconds": 0.007587295000064387
+            },
+            {
+              "name": "autograd.backward",
+              "call_counts": [
+                30
+              ],
+              "median_inclusive_seconds": 0.004405874000099175,
+              "median_exclusive_instrumented_seconds": 0.004405874000099175
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "call_counts": [
+                195
+              ],
+              "median_inclusive_seconds": 0.00400558800026829,
+              "median_exclusive_instrumented_seconds": 0.00400558800026829
+            },
+            {
+              "name": "value.step",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.003119206999940616,
+              "median_exclusive_instrumented_seconds": 0.003104873999944857
+            },
+            {
+              "name": "actor.step",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.002957373000072039,
+              "median_exclusive_instrumented_seconds": 0.0029157060000386537
+            },
+            {
+              "name": "training.input.tensor",
+              "call_counts": [
+                42
+              ],
+              "median_inclusive_seconds": 0.0002382439998598329,
+              "median_exclusive_instrumented_seconds": 0.0002382439998598329
+            },
+            {
+              "name": "training.input.from_numpy",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.00011041599998407037,
+              "median_exclusive_instrumented_seconds": 0.00011041599998407037
+            },
+            {
+              "name": "training.input.concatenate",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.00007970900000486836,
+              "median_exclusive_instrumented_seconds": 0.00007970900000486836
+            },
+            {
+              "name": "ResidentWorld.__init__",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "ResidentWorld.births",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "ResidentWorld.reconcile",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "world.pack_sources",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "world.sources",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            }
+          ],
+          "gc_collection_counts": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ]
+          ]
+        },
+        "A3": {
+          "runs": 9,
+          "valid": true,
+          "spans": [
+            {
+              "name": "interaction.reincarnator",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.01473700200000394,
+              "median_exclusive_instrumented_seconds": 0.004953002999997125
+            },
+            {
+              "name": "autograd.backward",
+              "call_counts": [
+                30
+              ],
+              "median_inclusive_seconds": 0.002998374999947373,
+              "median_exclusive_instrumented_seconds": 0.002998374999947373
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "call_counts": [
+                195
+              ],
+              "median_inclusive_seconds": 0.0024536729999056206,
+              "median_exclusive_instrumented_seconds": 0.0024536729999056206
+            },
+            {
+              "name": "value.step",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.002290250000044125,
+              "median_exclusive_instrumented_seconds": 0.0022708340000576754
+            },
+            {
+              "name": "actor.step",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.0021505010000737457,
+              "median_exclusive_instrumented_seconds": 0.0021397920000367776
+            },
+            {
+              "name": "training.input.tensor",
+              "call_counts": [
+                42
+              ],
+              "median_inclusive_seconds": 0.00015058399992540217,
+              "median_exclusive_instrumented_seconds": 0.00015058399992540217
+            },
+            {
+              "name": "training.input.from_numpy",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.00006045700001777732,
+              "median_exclusive_instrumented_seconds": 0.00006045700001777732
+            },
+            {
+              "name": "training.input.concatenate",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.00005324900004666233,
+              "median_exclusive_instrumented_seconds": 0.00005324900004666233
+            },
+            {
+              "name": "ResidentWorld.__init__",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "ResidentWorld.births",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "ResidentWorld.reconcile",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "world.pack_sources",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "world.sources",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            }
+          ],
+          "gc_collection_counts": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "population": 200,
+      "generations": 12,
+      "blocks": 6,
+      "samples_per_process": 15,
+      "process_orders": [
+        [
+          "A2",
+          "A3",
+          "A3-identical-repeat"
+        ],
+        [
+          "A2",
+          "A3-identical-repeat",
+          "A3"
+        ],
+        [
+          "A3-identical-repeat",
+          "A2",
+          "A3"
+        ],
+        [
+          "A3-identical-repeat",
+          "A3",
+          "A2"
+        ],
+        [
+          "A3",
+          "A3-identical-repeat",
+          "A2"
+        ],
+        [
+          "A3",
+          "A2",
+          "A3-identical-repeat"
+        ]
+      ],
+      "same_checked_state_and_rng": true,
+      "optimizer_updates_per_optimizer": 15,
+      "process_medians_seconds": {
+        "A2": [
+          0.04536295799999834,
+          0.03541520800001763,
+          0.049702999999993835,
+          0.032261667000000216,
+          0.03256329199996344,
+          0.04013162500001499
+        ],
+        "A3": [
+          0.04100129200000424,
+          0.04586691700001211,
+          0.04333016699999348,
+          0.024390582999984645,
+          0.026915832999975464,
+          0.024852000000009866
+        ],
+        "A3-identical-repeat": [
+          0.032366082999999435,
+          0.0546960839999997,
+          0.029963541999990184,
+          0.02642770799999994,
+          0.02589749999998503,
+          0.024606082999980572
+        ]
+      },
+      "process_median_spread": {
+        "A2": {
+          "median": 0.03777341650001631,
+          "minimum": 0.032261667000000216,
+          "maximum": 0.049702999999993835,
+          "q1": 0.03327627099997699,
+          "q3": 0.044055124750002506
+        },
+        "A3": {
+          "median": 0.03395856249998985,
+          "minimum": 0.024390582999984645,
+          "maximum": 0.04586691700001211,
+          "q1": 0.025367958250001266,
+          "q3": 0.04274794824999617
+        },
+        "A3-identical-repeat": {
+          "median": 0.02819562499999506,
+          "minimum": 0.024606082999980572,
+          "maximum": 0.0546960839999997,
+          "q1": 0.026030051999988757,
+          "q3": 0.03176544774999712
+        }
+      },
+      "paired_time_ratios_to_A2": {
+        "A3": [
+          0.9038496122762925,
+          1.2951192323927414,
+          0.8717817234371941,
+          0.7560236425471902,
+          0.8265697767905555,
+          0.6192622401908864
+        ],
+        "A3-identical-repeat": [
+          0.71349145706064,
+          1.5444236272725682,
+          0.6028517795705269,
+          0.8191674658349106,
+          0.7952973550712903,
+          0.613134479353163
+        ]
+      },
+      "geometric_mean_paired_time_ratio": {
+        "A3": 0.856545684055995,
+        "A3-identical-repeat": 0.8016238362146928
+      },
+      "identical_A3_repeat_over_A3": [
+        0.7893917830685941,
+        1.1924953229358157,
+        0.6915168824526962,
+        1.0835209638087198,
+        0.9621660232476786,
+        0.9901047400599873
+      ],
+      "identical_A3_repeat_ratio_spread": {
+        "median": 0.976135381653833,
+        "minimum": 0.6915168824526962,
+        "maximum": 1.1924953229358157,
+        "q1": 0.8325853431133653,
+        "q3": 1.0601669078715366
+      },
+      "pure_gc_collections": {
+        "A2": {
+          "sample_count": 90,
+          "distinct_counts": [
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "A3": {
+          "sample_count": 90,
+          "distinct_counts": [
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        },
+        "A3-identical-repeat": {
+          "sample_count": 90,
+          "distinct_counts": [
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      },
+      "observations": {
+        "A2": {
+          "runs": 9,
+          "valid": true,
+          "spans": [
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "call_counts": [
+                1095
+              ],
+              "median_inclusive_seconds": 0.0177221970010919,
+              "median_exclusive_instrumented_seconds": 0.0177221970010919
+            },
+            {
+              "name": "interaction.reincarnator",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.016227669000045353,
+              "median_exclusive_instrumented_seconds": 0.004616714000292177
+            },
+            {
+              "name": "autograd.backward",
+              "call_counts": [
+                30
+              ],
+              "median_inclusive_seconds": 0.002820584000062354,
+              "median_exclusive_instrumented_seconds": 0.002820584000062354
+            },
+            {
+              "name": "value.step",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.0023138319999702617,
+              "median_exclusive_instrumented_seconds": 0.002298414999927445
+            },
+            {
+              "name": "actor.step",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.002004125999974349,
+              "median_exclusive_instrumented_seconds": 0.0019942089999744894
+            },
+            {
+              "name": "training.input.tensor",
+              "call_counts": [
+                42
+              ],
+              "median_inclusive_seconds": 0.0001571649999618785,
+              "median_exclusive_instrumented_seconds": 0.0001571649999618785
+            },
+            {
+              "name": "training.input.from_numpy",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.00006191699998225886,
+              "median_exclusive_instrumented_seconds": 0.00006191699998225886
+            },
+            {
+              "name": "training.input.concatenate",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.00005591699994056398,
+              "median_exclusive_instrumented_seconds": 0.00005591699994056398
+            },
+            {
+              "name": "ResidentWorld.__init__",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "ResidentWorld.births",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "ResidentWorld.reconcile",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "world.pack_sources",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "world.sources",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            }
+          ],
+          "gc_collection_counts": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ]
+          ]
+        },
+        "A3": {
+          "runs": 9,
+          "valid": true,
+          "spans": [
+            {
+              "name": "interaction.reincarnator",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.01338862400001517,
+              "median_exclusive_instrumented_seconds": 0.004334923000499202
+            },
+            {
+              "name": "AeonicCycleManager.select_aeonic_opponents",
+              "call_counts": [
+                1095
+              ],
+              "median_inclusive_seconds": 0.010765002999619355,
+              "median_exclusive_instrumented_seconds": 0.010765002999619355
+            },
+            {
+              "name": "autograd.backward",
+              "call_counts": [
+                30
+              ],
+              "median_inclusive_seconds": 0.0028977940000913804,
+              "median_exclusive_instrumented_seconds": 0.0028977940000913804
+            },
+            {
+              "name": "value.step",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.002270165000027191,
+              "median_exclusive_instrumented_seconds": 0.0022540400000252703
+            },
+            {
+              "name": "actor.step",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.002011414999913086,
+              "median_exclusive_instrumented_seconds": 0.0020004149999977017
+            },
+            {
+              "name": "training.input.tensor",
+              "call_counts": [
+                42
+              ],
+              "median_inclusive_seconds": 0.00015524999975013998,
+              "median_exclusive_instrumented_seconds": 0.00015524999975013998
+            },
+            {
+              "name": "training.input.from_numpy",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.000051456999983656715,
+              "median_exclusive_instrumented_seconds": 0.000051456999983656715
+            },
+            {
+              "name": "training.input.concatenate",
+              "call_counts": [
+                15
+              ],
+              "median_inclusive_seconds": 0.00004924999996092083,
+              "median_exclusive_instrumented_seconds": 0.00004924999996092083
+            },
+            {
+              "name": "ResidentWorld.__init__",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "ResidentWorld.births",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "ResidentWorld.reconcile",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "world.pack_sources",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            },
+            {
+              "name": "world.sources",
+              "call_counts": [
+                0
+              ],
+              "median_inclusive_seconds": 0,
+              "median_exclusive_instrumented_seconds": 0
+            }
+          ],
+          "gc_collection_counts": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        }
+      }
+    }
+  ]
+}

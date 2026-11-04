@@ -1,0 +1,1350 @@
+{
+  "schema_version": 1,
+  "source_commit": "0201f995d715c1985f8ab63ef462110be444e675",
+  "recorded_at_utc": "2026-11-04T07:52:38Z",
+  "execution_location": "GitHub hosted runners only",
+  "production_policy": "A4 defaults: the added TIEMU_PRECOMPUTE_NEIGHBORS macro is not enabled in these Native and legacy paired workflows. This file is not the A5 macro or same-checkout generation-structure experiment.",
+  "native": {
+    "run_id": 41794212208,
+    "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41794212208",
+    "status": "completed",
+    "conclusion": "success",
+    "results": {
+      "linux": {
+        "job_id": 126454358704,
+        "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41794212208/job/126454358704",
+        "status": "completed",
+        "conclusion": "success",
+        "pytest": {
+          "passed": 613,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 61.69
+        },
+        "scoring_math_probe": {
+          "python": "3.12.16",
+          "platform": "Linux-7.0.0-1019-azure-x86_64-with-glibc2.43",
+          "machine": "x86_64",
+          "numpy": "2.2.2",
+          "rows": 3089,
+          "cases": [
+            {
+              "denominator": 17,
+              "suppression": 0,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": 0.7,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": 1,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": -0.4,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": 10,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 0,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 0.7,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 1,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": -0.4,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 10,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            }
+          ],
+          "scope": "Raw float64 bit comparisons of the proposed batch expression. No timing and no project execution; not a proof for all inputs."
+        },
+        "checks": [
+          {
+            "name": "Build standalone C++ core without Python dependencies",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run cmake --build build/standalone --config Release --parallel 2",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run ctest --test-dir build/standalone -C Release --output-on-failure",
+            "conclusion": "success"
+          },
+          {
+            "name": "Verify the installed backend is the C ABI implementation",
+            "conclusion": "success"
+          },
+          {
+            "name": "Characterize exact scoring microkernels on this platform",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run python -m pytest -q",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run python -m main --disable-llm --no-interactive --device cpu --backend cpp --seed 42 --smoke-test --output-dir runs/ci",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run python -m main --disable-llm --no-interactive --compute-only --device cpu --backend cpp --native-threads 4 --native-min-rows 1 --seed 42 --smoke-test --output-dir runs/ci-parallel",
+            "conclusion": "success"
+          }
+        ]
+      },
+      "macos": {
+        "job_id": 126454358607,
+        "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41794212208/job/126454358607",
+        "status": "completed",
+        "conclusion": "success",
+        "pytest": {
+          "passed": 613,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 35.32
+        },
+        "scoring_math_probe": {
+          "python": "3.12.10",
+          "platform": "macOS-26.6.2-arm64-arm-64bit",
+          "machine": "arm64",
+          "numpy": "2.2.2",
+          "rows": 3089,
+          "cases": [
+            {
+              "denominator": 17,
+              "suppression": 0,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": 0.7,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": 1,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": -0.4,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": 10,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 0,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 0.7,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 1,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": -0.4,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 10,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            }
+          ],
+          "scope": "Raw float64 bit comparisons of the proposed batch expression. No timing and no project execution; not a proof for all inputs."
+        },
+        "checks": [
+          {
+            "name": "Build standalone C++ core without Python dependencies",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run cmake --build build/standalone --config Release --parallel 2",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run ctest --test-dir build/standalone -C Release --output-on-failure",
+            "conclusion": "success"
+          },
+          {
+            "name": "Verify the installed backend is the C ABI implementation",
+            "conclusion": "success"
+          },
+          {
+            "name": "Characterize exact scoring microkernels on this platform",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run python -m pytest -q",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run python -m main --disable-llm --no-interactive --device cpu --backend cpp --seed 42 --smoke-test --output-dir runs/ci",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run python -m main --disable-llm --no-interactive --compute-only --device cpu --backend cpp --native-threads 4 --native-min-rows 1 --seed 42 --smoke-test --output-dir runs/ci-parallel",
+            "conclusion": "success"
+          }
+        ]
+      },
+      "windows": {
+        "job_id": 126454358631,
+        "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41794212208/job/126454358631",
+        "status": "completed",
+        "conclusion": "success",
+        "pytest": {
+          "passed": 601,
+          "failed": 0,
+          "skipped": 12,
+          "duration_seconds": 58.8
+        },
+        "scoring_math_probe": {
+          "python": "3.12.10",
+          "platform": "Windows-2025Server-10.0.26100-SP0",
+          "machine": "AMD64",
+          "numpy": "2.2.2",
+          "rows": 3089,
+          "cases": [
+            {
+              "denominator": 17,
+              "suppression": 0,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": 0.7,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": 1,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": -0.4,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 17,
+              "suppression": 10,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 0,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 0.7,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 1,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": -0.4,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            },
+            {
+              "denominator": 100,
+              "suppression": 10,
+              "vecdot_scalar_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              },
+              "vecdot_vector_tanh": {
+                "mismatches": 0,
+                "max_absolute_difference": 0
+              }
+            }
+          ],
+          "scope": "Raw float64 bit comparisons of the proposed batch expression. No timing and no project execution; not a proof for all inputs."
+        },
+        "checks": [
+          {
+            "name": "Build standalone C++ core without Python dependencies",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run cmake --build build/standalone --config Release --parallel 2",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run ctest --test-dir build/standalone -C Release --output-on-failure",
+            "conclusion": "success"
+          },
+          {
+            "name": "Verify the installed backend is the C ABI implementation",
+            "conclusion": "success"
+          },
+          {
+            "name": "Characterize exact scoring microkernels on this platform",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run python -m pytest -q",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run python -m main --disable-llm --no-interactive --device cpu --backend cpp --seed 42 --smoke-test --output-dir runs/ci",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run python -m main --disable-llm --no-interactive --compute-only --device cpu --backend cpp --native-threads 4 --native-min-rows 1 --seed 42 --smoke-test --output-dir runs/ci-parallel",
+            "conclusion": "success"
+          }
+        ]
+      }
+    },
+    "docker": {
+      "job_id": 126454358390,
+      "conclusion": "success",
+      "checks": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run docker build -t tiemu:cpu .",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run docker run --rm tiemu:cpu --disable-llm --no-interactive --device cpu --llm-device cpu --backend cpp --seed 42 --smoke-test --output-dir /data",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  },
+  "paired_default_repeat": {
+    "run_id": 41794212221,
+    "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41794212221",
+    "baseline_commit": "f2073f001af4bc3f03da6d96d5360aa9a2027e0a",
+    "status": "completed",
+    "conclusion": "success",
+    "scope": "Same-runner frozen A3 versus default current policy, three rotated process repeats and fixed fixtures. Median seconds and ratios are copied from completed workflow log summaries; detailed samples remain in Actions artifacts. State/RNG checks include recorded entity fields/order, weights and Adam, not every private manager field. Full-cycle fixtures preserve the inherited reincarnator-reference defect and are not sustained-training throughput. The a-4/forced configurations do not turn aeonic into multicore training. Do not mix these numbers with the separate A5 same-checkout generation-loop comparison or macro-enabled neighbor candidate.",
+    "results": {
+      "linux": {
+        "job_id": 126454358681,
+        "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41794212221/job/126454358681",
+        "conclusion": "success",
+        "cases": [
+          {
+            "phase": "human",
+            "population": 1000,
+            "generations": 6,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.12064119600000822,
+              "a-1": 0.11794779699999935,
+              "a-4": 0.11815630399999577,
+              "a-4-forced": 0.11934516299999132,
+              "a-1-forced-golden": 0.12052103700000316
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0228355176486161,
+              "a-4": 1.0210305495000296,
+              "a-4-forced": 1.0108595352123069,
+              "a-1-forced-golden": 1.0009969960680396
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 1.0000550423836745,
+              "a-1": 0.9999643740696633,
+              "a-4": 0.9999828597173288,
+              "a-4-forced": 1.0057316020067326,
+              "a-1-forced-golden": 1.0000559913078504
+            }
+          },
+          {
+            "phase": "human",
+            "population": 10000,
+            "generations": 3,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.7276535009999918,
+              "a-1": 0.6844938420000091,
+              "a-4": 0.6861064829999748,
+              "a-4-forced": 0.6983976169999835,
+              "a-1-forced-golden": 0.7096762390000038
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0630533926702326,
+              "a-4": 1.0605547666862938,
+              "a-4-forced": 1.0418900112026142,
+              "a-1-forced-golden": 1.0253316385868008
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9999253066242343,
+              "a-1": 0.9999764652021056,
+              "a-4": 1.0051373520810607,
+              "a-4-forced": 1.0050123716902066,
+              "a-1-forced-golden": 0.9999222828707337
+            }
+          },
+          {
+            "phase": "human",
+            "population": 1000,
+            "generations": 6,
+            "initial_reincarnator": true,
+            "median_seconds": {
+              "baseline": 0.1399958300000037,
+              "a-1": 0.13272067299999435,
+              "a-4": 0.13913778300002377,
+              "a-4-forced": 0.14258636400001024,
+              "a-1-forced-golden": 0.1385952370000041
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0548155523594254,
+              "a-4": 1.006166887106285,
+              "a-4-forced": 0.9818318250964985,
+              "a-1-forced-golden": 1.0101056358812646
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9999664591424884,
+              "a-1": 0.9999630803560314,
+              "a-4": 0.9999781367294305,
+              "a-4-forced": 1.004092585527406,
+              "a-1-forced-golden": 1.0000464878890156
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 200,
+            "generations": 2,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.029086344000006648,
+              "a-1": 0.02888078399999472,
+              "a-4": 0.029131135000000086,
+              "a-4-forced": 0.02924127299999668,
+              "a-1-forced-golden": 0.02944145200001458
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0071175353138602,
+              "a-4": 0.9984624354666085,
+              "a-4-forced": 0.9947017012566433,
+              "a-1-forced-golden": 0.9879385024893557
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 1.0001593862292308,
+              "a-1": 1.0001463619832407,
+              "a-4": 1.0001679989468286,
+              "a-4-forced": 1.0001522017772373,
+              "a-1-forced-golden": 1.0001482263845336
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 200,
+            "generations": 12,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.041743300000007366,
+              "a-1": 0.04160974499995973,
+              "a-4": 0.041404589999984864,
+              "a-4-forced": 0.04150893799999267,
+              "a-1-forced-golden": 0.04312859099999855
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0032097048431265,
+              "a-4": 1.0081804939989172,
+              "a-4-forced": 1.0056460610968834,
+              "a-1-forced-golden": 0.9678799847648343
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9998802487806066,
+              "a-1": 1.0000956506712653,
+              "a-4": 1.0001315946872014,
+              "a-4-forced": 1.0001104026664502,
+              "a-1-forced-golden": 1.0001055912075019
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 512,
+            "generations": 2,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.07566918099996656,
+              "a-1": 0.07170785599998908,
+              "a-4": 0.07206450799998265,
+              "a-4-forced": 0.07202207000000271,
+              "a-1-forced-golden": 0.0721784479999883
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.055242552503286,
+              "a-4": 1.0500200875580081,
+              "a-4-forced": 1.0506387972459512,
+              "a-1-forced-golden": 1.0483625389115991
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9999483937857512,
+              "a-1": 0.9999756774138867,
+              "a-4": 0.9999721139364232,
+              "a-4-forced": 0.9999703563087983,
+              "a-1-forced-golden": 1.000071068458148
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 1000,
+            "generations": 2,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.1900390170000037,
+              "a-1": 0.16958671300000105,
+              "a-4": 0.17144955700001674,
+              "a-4-forced": 0.17185369800000672,
+              "a-1-forced-golden": 0.17491733199994997
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.1206008633471334,
+              "a-4": 1.1084252437000182,
+              "a-4-forced": 1.105818607406378,
+              "a-1-forced-golden": 1.0864504667842638
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9999957640277429,
+              "a-1": 0.9999764047938693,
+              "a-4": 1.0000468184352518,
+              "a-4-forced": 0.9999483764530914,
+              "a-1-forced-golden": 0.9999950706180056
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 1000,
+            "generations": 12,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.7659636220000152,
+              "a-1": 0.548029927000016,
+              "a-4": 0.5353226670000026,
+              "a-4-forced": 0.5358857039999521,
+              "a-1-forced-golden": 0.5428872079999678
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.397667507307485,
+              "a-4": 1.4308447394774924,
+              "a-4-forced": 1.429341399262414,
+              "a-1-forced-golden": 1.4109074789621137
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9999275657506158,
+              "a-1": 0.9999313246794618,
+              "a-4": 0.9999427620577092,
+              "a-4-forced": 0.9999317572258757,
+              "a-1-forced-golden": 0.999992122855499
+            }
+          },
+          {
+            "phase": "inorganic",
+            "grid": [
+              10,
+              10
+            ],
+            "generations": 10000,
+            "median_seconds": {
+              "baseline": 0.037624504000007164,
+              "candidate": 0.037546907999967516
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "candidate": 1.0020666415471473
+            },
+            "same_legacy": true,
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 1.000114458348496,
+              "candidate": 1.0001325975722326
+            }
+          }
+        ]
+      },
+      "macos": {
+        "job_id": 126454358403,
+        "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41794212221/job/126454358403",
+        "conclusion": "success",
+        "cases": [
+          {
+            "phase": "human",
+            "population": 1000,
+            "generations": 6,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.09431358300003012,
+              "a-1": 0.1306075410000176,
+              "a-4": 0.15978916699998535,
+              "a-4-forced": 0.14708054199996923,
+              "a-1-forced-golden": 0.12470825000002606
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 0.7221143762289914,
+              "a-4": 0.5902376535953703,
+              "a-4-forced": 0.6412376628313612,
+              "a-1-forced-golden": 0.7562738070657749
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9997181424012854,
+              "a-1": 0.9975120425446966,
+              "a-4": 0.9337303823607371,
+              "a-4-forced": 0.998922073594417,
+              "a-1-forced-golden": 0.9942720482174106
+            }
+          },
+          {
+            "phase": "human",
+            "population": 10000,
+            "generations": 3,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.5939393329999803,
+              "a-1": 0.5936269999999695,
+              "a-4": 0.6718850839999959,
+              "a-4-forced": 0.4831737910000129,
+              "a-1-forced-golden": 0.6070675000000278
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0005261435211181,
+              "a-4": 0.883989460614345,
+              "a-4-forced": 1.2292457580754093,
+              "a-1-forced-golden": 0.9783744525937446
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9981048542951341,
+              "a-1": 0.9997658462300911,
+              "a-4": 0.998665783564013,
+              "a-4-forced": 1.000207970353869,
+              "a-1-forced-golden": 0.9928050650680788
+            }
+          },
+          {
+            "phase": "human",
+            "population": 1000,
+            "generations": 6,
+            "initial_reincarnator": true,
+            "median_seconds": {
+              "baseline": 0.11787358300000506,
+              "a-1": 0.11238404099998434,
+              "a-4": 0.09597041699998954,
+              "a-4-forced": 0.10369674999998324,
+              "a-1-forced-golden": 0.0994254579999847
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0488462770263038,
+              "a-4": 1.2282283091467436,
+              "a-4-forced": 1.1367143425423083,
+              "a-1-forced-golden": 1.1855472971522363
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9967580859366921,
+              "a-1": 0.9983623920411948,
+              "a-4": 1.0000269145439926,
+              "a-4-forced": 1.0026061568951503,
+              "a-1-forced-golden": 0.999482446437565
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 200,
+            "generations": 2,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.0310926669999958,
+              "a-1": 0.01806908300000032,
+              "a-4": 0.025728917000037654,
+              "a-4-forced": 0.023112708000041948,
+              "a-1-forced-golden": 0.024254459000019324
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.7207661838730417,
+              "a-4": 1.2084716585603,
+              "a-4-forced": 1.345262831163677,
+              "a-1-forced-golden": 1.281936117394786
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 1.0001071956935694,
+              "a-1": 1.0002167791248435,
+              "a-4": 0.9903942399731211,
+              "a-4-forced": 1.0001518762161166,
+              "a-1-forced-golden": 0.9974345203284846
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 200,
+            "generations": 12,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.04198629200004689,
+              "a-1": 0.053571833999967566,
+              "a-4": 0.04070212499993886,
+              "a-4-forced": 0.04624637500000972,
+              "a-1-forced-golden": 0.034965124999985164
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 0.7837381860040914,
+              "a-4": 1.0315503674589461,
+              "a-4-forced": 0.9078828773074228,
+              "a-1-forced-golden": 1.2008048591293383
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9988902379616796,
+              "a-1": 1.0000753593439584,
+              "a-4": 1.0000513622680274,
+              "a-4-forced": 0.997727795554799,
+              "a-1-forced-golden": 0.9966182517086212
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 512,
+            "generations": 2,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.04660100000000966,
+              "a-1": 0.07519274999992831,
+              "a-4": 0.05649108299996897,
+              "a-4-forced": 0.05195808300004501,
+              "a-1-forced-golden": 0.07399379100002079
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 0.6197538991465812,
+              "a-4": 0.8249266525840062,
+              "a-4-forced": 0.8968960613879711,
+              "a-1-forced-golden": 0.6297960865391606
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 1.0000484437762842,
+              "a-1": 1.0000367033155633,
+              "a-4": 1.0000433968745446,
+              "a-4-forced": 0.9983432221692048,
+              "a-1-forced-golden": 0.9991808724117978
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 1000,
+            "generations": 2,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.1419789579999815,
+              "a-1": 0.1282960420001018,
+              "a-4": 0.11428474999991067,
+              "a-4-forced": 0.14089837500000613,
+              "a-1-forced-golden": 0.11260000000004311
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.1066511155493701,
+              "a-4": 1.2423263646295106,
+              "a-4-forced": 1.0076692367812996,
+              "a-1-forced-golden": 1.2609143694487313
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9980422591918076,
+              "a-1": 0.9994540595406554,
+              "a-4": 0.9998708464907081,
+              "a-4-forced": 0.9995358936539688,
+              "a-1-forced-golden": 0.9998117709371435
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 1000,
+            "generations": 12,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.7071283330000142,
+              "a-1": 0.3666520409999521,
+              "a-4": 0.39915637499996137,
+              "a-4-forced": 0.37113637499999186,
+              "a-1-forced-golden": 0.4520540000000892
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.9286087459693335,
+              "a-4": 1.7715571572672055,
+              "a-4-forced": 1.9053059215767512,
+              "a-1-forced-golden": 1.564256334419947
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9897226532404981,
+              "a-1": 0.9998958720651611,
+              "a-4": 0.9997835587167835,
+              "a-4-forced": 0.9981120737139255,
+              "a-1-forced-golden": 0.996646418348054
+            }
+          },
+          {
+            "phase": "inorganic",
+            "grid": [
+              10,
+              10
+            ],
+            "generations": 10000,
+            "median_seconds": {
+              "baseline": 0.02828262499997436,
+              "candidate": 0.02871466600004169
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "candidate": 0.9849539952835703
+            },
+            "same_legacy": true,
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 1.0002198717431399,
+              "candidate": 0.9950330394565288
+            }
+          }
+        ]
+      },
+      "windows": {
+        "job_id": 126454358688,
+        "url": "https://github.com/TrustedInstaller64/Tiemu/actions/runs/41794212221/job/126454358688",
+        "conclusion": "success",
+        "cases": [
+          {
+            "phase": "human",
+            "population": 1000,
+            "generations": 6,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.09593150000000605,
+              "a-1": 0.09272420000002057,
+              "a-4": 0.09225220000001855,
+              "a-4-forced": 0.09447700000004033,
+              "a-1-forced-golden": 0.09430859999997665
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0345896756184985,
+              "a-4": 1.0398830596992459,
+              "a-4-forced": 1.0153952813908687,
+              "a-1-forced-golden": 1.0172083988101808
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9924384132421422,
+              "a-1": 1.008479836319804,
+              "a-4": 1.0162359271646764,
+              "a-4-forced": 0.9995319525045859,
+              "a-1-forced-golden": 0.994076892245492
+            }
+          },
+          {
+            "phase": "human",
+            "population": 10000,
+            "generations": 3,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.5617672999999854,
+              "a-1": 0.5276301000000103,
+              "a-4": 0.5237240000000156,
+              "a-4-forced": 0.5244725000000017,
+              "a-1-forced-golden": 0.536034299999983
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0646991140194133,
+              "a-4": 1.0726399783091258,
+              "a-4-forced": 1.0711091620628033,
+              "a-1-forced-golden": 1.0480062563160664
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9920850134843723,
+              "a-1": 1.0065078233840679,
+              "a-4": 0.9794035121576169,
+              "a-4-forced": 0.9906018421303553,
+              "a-1-forced-golden": 0.9619253842524935
+            }
+          },
+          {
+            "phase": "human",
+            "population": 1000,
+            "generations": 6,
+            "initial_reincarnator": true,
+            "median_seconds": {
+              "baseline": 0.11039529999999331,
+              "a-1": 0.10985600000003615,
+              "a-4": 0.10770399999995561,
+              "a-4-forced": 0.10787289999996119,
+              "a-1-forced-golden": 0.10788400000001275
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0049091538009485,
+              "a-4": 1.0249879298822588,
+              "a-4-forced": 1.0233830739697647,
+              "a-1-forced-golden": 1.0232777798374204
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9907577587089905,
+              "a-1": 0.9763576392451565,
+              "a-4": 1.0155147441139147,
+              "a-4-forced": 1.016123263300674,
+              "a-1-forced-golden": 0.8699606081838558
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 200,
+            "generations": 2,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.02890300000001389,
+              "a-1": 0.029585299999951076,
+              "a-4": 0.02890530000001945,
+              "a-4-forced": 0.029099599999995007,
+              "a-1-forced-golden": 0.029387599999949998
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 0.976937871174593,
+              "a-4": 0.9999204298171768,
+              "a-4-forced": 0.9932438933874984,
+              "a-1-forced-golden": 0.9835100518607531
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 1.0812026433237028,
+              "a-1": 1.056267808677001,
+              "a-4": 0.5405583059158523,
+              "a-4-forced": 1.0738979229956893,
+              "a-1-forced-golden": 1.0633736678072783
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 200,
+            "generations": 12,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.0416046999999935,
+              "a-1": 0.04132210000000214,
+              "a-4": 0.04166910000003554,
+              "a-4-forced": 0.041604599999971015,
+              "a-1-forced-golden": 0.04269120000003568
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0068389554255797,
+              "a-4": 0.9984544902567614,
+              "a-4-forced": 1.0000024035809139,
+              "a-1-forced-golden": 0.9745497901197139
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.7511170612936732,
+              "a-1": 1.1250369012109829,
+              "a-4": 1.112978937095994,
+              "a-4-forced": 1.1136188157028792,
+              "a-1-forced-golden": 0.7349378889293223
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 512,
+            "generations": 2,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.0692592999999988,
+              "a-1": 0.06440390000000207,
+              "a-4": 0.06472719999999299,
+              "a-4-forced": 0.0647974999999974,
+              "a-1-forced-golden": 0.0643332999999302
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.0753898444037795,
+              "a-4": 1.0700184775489485,
+              "a-4-forced": 1.0688575948146393,
+              "a-1-forced-golden": 1.0765699878612467
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9056645331630985,
+              "a-1": 0.9704381256414284,
+              "a-4": 0.9655909725742311,
+              "a-4-forced": 0.9687083939745398,
+              "a-1-forced-golden": 0.9715030940441078
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 1000,
+            "generations": 2,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.18230930000004264,
+              "a-1": 0.15847059999998692,
+              "a-4": 0.15780530000006365,
+              "a-4-forced": 0.15891829999998208,
+              "a-1-forced-golden": 0.15911049999999705
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.1504297958110696,
+              "a-4": 1.1552799557427356,
+              "a-4-forced": 1.1471888385419626,
+              "a-1-forced-golden": 1.1458030739646097
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.944827567251339,
+              "a-1": 0.9859873061628649,
+              "a-4": 0.986899657096049,
+              "a-4-forced": 0.9832096114797202,
+              "a-1-forced-golden": 0.9820219281568652
+            }
+          },
+          {
+            "phase": "aeonic",
+            "population": 1000,
+            "generations": 12,
+            "initial_reincarnator": false,
+            "median_seconds": {
+              "baseline": 0.6956734000000324,
+              "a-1": 0.4352977999999439,
+              "a-4": 0.42498809999995046,
+              "a-4-forced": 0.4336602999999286,
+              "a-1-forced-golden": 0.432750800000008
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "a-1": 1.598155102093606,
+              "a-4": 1.6369244221193806,
+              "a-4-forced": 1.6041897309948523,
+              "a-1-forced-golden": 1.6075612107476627
+            },
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 1.0069674261549622,
+              "a-1": 1.0050590653112799,
+              "a-4": 0.996046506960732,
+              "a-4-forced": 1.0020083683160466,
+              "a-1-forced-golden": 0.9748682151482845
+            }
+          },
+          {
+            "phase": "inorganic",
+            "grid": [
+              10,
+              10
+            ],
+            "generations": 10000,
+            "median_seconds": {
+              "baseline": 0.031701399999974456,
+              "candidate": 0.03395750000004227
+            },
+            "speedup_over_baseline": {
+              "baseline": 1,
+              "candidate": 0.9335610689813735
+            },
+            "same_legacy": true,
+            "same_checked_state_and_rng_digest": true,
+            "mean_cpu_cores": {
+              "baseline": 0.9857608812237056,
+              "candidate": 0.9787524586271028
+            }
+          }
+        ]
+      }
+    }
+  },
+  "interpretation": {
+    "macos_functional": "The macOS ARM64 runner was acquired and all default-path native tests, independent C checks, scoring probe and CLI checks completed successfully. This supplies the previously missing default-path macOS functional evidence, at the current test commit.",
+    "macos_timing": "Large variation persists: default 200x2 aeonic is 1.7208x here versus 0.9078x previously; 200x12 is 0.7837x here, 512x2 is 0.6198x, and human1000x6 is 0.7221x. These adverse cases are retained. Neither repair nor a thermal/scheduling/GC cause is established.",
+    "long_aeonic": "The existing 1000x12 fixture becoming faster is not proof that training stays active or improves for 12 generations. Per-generation workload verification belongs to the separate controlled-training diagnosis.",
+    "platform_scope": "Cloud macOS is not the user's physical M1; Linux Docker smoke is not Hyper-V host validation.",
+    "local_project_execution": false
+  }
+}
+
