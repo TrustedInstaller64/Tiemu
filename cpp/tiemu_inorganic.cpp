@@ -6,6 +6,10 @@
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
+#ifdef TIEMU_PRECOMPUTE_NEIGHBORS
+#include <array>
+#include <vector>
+#endif
 
 extern "C" int tiemu_inorganic_run(
     const double *activity, std::size_t activity_count,
@@ -30,6 +34,34 @@ extern "C" int tiemu_inorganic_run(
         if (!mt || mt_count != 625 || !out_mt || out_mt_count < 625)
             throw std::invalid_argument("MT state must have 625 uint32 elements");
         tiemu_detail::Mt19937 rng(mt);
+#ifdef TIEMU_PRECOMPUTE_NEIGHBORS
+        // Optional measured candidate: amortize geometry over this call's
+        // generations. Keep construction inside the timed production segment.
+        // No table allocation or geometry work is needed for a zero-step copy.
+        struct NeighborRow {
+            std::array<std::size_t, 8> positions;
+            std::uint8_t count = 0;
+        };
+        std::vector<NeighborRow> neighbor_rows;
+        if (steps > 0) {
+            neighbor_rows.resize(count);
+            for (std::int64_t i = 0; i < grid; ++i) {
+                for (std::int64_t j = 0; j < grid; ++j) {
+                    auto &row = neighbor_rows[static_cast<std::size_t>(i) * side + j];
+                    // The order is part of the float64 contract, not just the
+                    // set of neighbors. Never sort or regroup these entries.
+                    for (int di = -1; di <= 1; ++di) {
+                        for (int dj = -1; dj <= 1; ++dj) {
+                            if ((di == 0 && dj == 0) || i + di < 0 || i + di >= grid
+                                || j + dj < 0 || j + dj >= grid) continue;
+                            row.positions[row.count++] = static_cast<std::size_t>(i + di) * side
+                                + static_cast<std::size_t>(j + dj);
+                        }
+                    }
+                }
+            }
+        }
+#endif
         std::copy_n(activity, count, out_activity);
         std::copy_n(stability, count, out_stability);
         for (std::int64_t step = 0; step < steps; ++step) {
@@ -38,6 +70,17 @@ extern "C" int tiemu_inorganic_run(
                     const std::size_t cell = static_cast<std::size_t>(i) * side + j;
                     double sum_a = 0.0, sum_s = 0.0;
                     int neighbors = 0;
+#ifdef TIEMU_PRECOMPUTE_NEIGHBORS
+                    const auto &row = neighbor_rows[cell];
+                    neighbors = row.count;
+                    for (int n = 0; n < neighbors; ++n) {
+                        const std::size_t neighbor = row.positions[n];
+                        // Read the same in-place grid: earlier cells in this
+                        // generation have already changed, exactly as before.
+                        sum_a += out_activity[neighbor];
+                        sum_s += out_stability[neighbor];
+                    }
+#else
                     for (int di = -1; di <= 1; ++di) {
                         for (int dj = -1; dj <= 1; ++dj) {
                             if ((di == 0 && dj == 0) || i + di < 0 || i + di >= grid
@@ -48,6 +91,7 @@ extern "C" int tiemu_inorganic_run(
                             ++neighbors;
                         }
                     }
+#endif
                     const double average_a = neighbors ? sum_a / neighbors : 0.0;
                     const double average_s = neighbors ? sum_s / neighbors : 0.0;
                     const double noise_a = -0.1 + (0.1 - (-0.1)) * rng.random53();

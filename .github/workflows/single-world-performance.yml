@@ -9,6 +9,8 @@ on:
       - '!benchmarks/diagnose_aeonic.py'
       - '!benchmarks/diagnose_macos_aeonic.py'
       - '!benchmarks/probe_scoring_math.py'
+      - '!benchmarks/compare_aeonic_structures.py'
+      - '!benchmarks/compare_inorganic_neighbors.py'
       - '.github/workflows/single-world-performance.yml'
   workflow_dispatch:
 permissions:
