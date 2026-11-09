@@ -1,4 +1,4 @@
-"""Remote-only diagnostic driver for one world's remaining CPU bottlenecks.
+"""Diagnostic driver for one world's remaining CPU bottlenecks.
 
 The cases run sequentially and produce profiling evidence, not product-level
 multi-world scheduling. Explicit boundary timers must preserve the checked

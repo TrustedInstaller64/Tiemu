@@ -1,8 +1,7 @@
-"""Remote-only contracts for an interpreter-free ordered encounter engine.
+"""Contracts for an interpreter-free ordered encounter engine.
 
 The oracle loads the frozen A1 loop and handler/manager definitions from Git.
 It deliberately retains fixed old buckets, lazy-cache timing and RNG consumption.
-Do not run these tests on the reserved development Mac.
 """
 import ast
 import copy

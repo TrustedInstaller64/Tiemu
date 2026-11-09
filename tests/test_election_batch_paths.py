@@ -1,4 +1,4 @@
-"""Remote-only equivalence checks for batched election path selection."""
+"""Equivalence checks for batched election path selection."""
 import copy
 import gc
 import platform

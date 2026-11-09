@@ -1,4 +1,4 @@
-"""Remote-only checks for shared batch path selection outside encounters."""
+"""Checks for shared batch path selection outside encounters."""
 import copy
 
 import numpy as np

@@ -1,4 +1,4 @@
-"""Console contracts; POSIX tests use isolated PTYs, never the user's terminal."""
+"""Console contracts; POSIX tests use isolated PTYs rather than the calling terminal."""
 
 import contextlib
 import io

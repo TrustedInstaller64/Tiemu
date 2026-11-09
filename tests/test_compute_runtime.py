@@ -1,4 +1,4 @@
-"""Runtime controls for one-world native workers; execute on remote CI only."""
+"""Runtime controls for one-world native workers."""
 import logging
 import pytest
 from config import config
