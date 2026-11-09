@@ -1,56 +1,24 @@
 # Tiemu
 
-Tiemu is an evolution simulator inspired by the Amphoreus setting of *Honkai: Star Rail*. A run moves through four phases: an inorganic 10×10 grid, an organic prototype network, a human/Pathstrider civilization with elections and Titans, and an aeonic recurrence with online reinforcement learning.
+Tiemu is an evolution simulator set in the Amphoreus universe of *Honkai: Star Rail*. A full run goes through an inorganic 10×10 grid, an organic prototype network, a human civilization with elections and Titans, and finally the aeonic recurrence, where a reincarnator collects the twelve Titan seeds and keeps training online.
 
-This repository is based on [YezQiu/Tiemu](https://github.com/YezQiu/Tiemu) at commit `691c6e0`. The original world rules are preserved; the main additions are a standalone C++17 numerical core, cross-platform packaging and differential validation.
+This repository starts from [YezQiu/Tiemu](https://github.com/YezQiu/Tiemu) at `691c6e0` and keeps its world rules. Most of the work is a standalone C++17 core for the measured hot paths, plus cross-platform builds and a differential test suite. v1.0.0 is the strict-equivalence A line: states, random streams and every optimizer update match the reference. The separate C experiments, which allow trajectories to diverge, are not included.
 
-[中文说明](readme/readme_zh-cn.md) · [Release notes](RELEASE_NOTES.md) · [Performance and equivalence](docs/performance.md) · [World parameter guide](readme/Guide.md) · [Logging](readme/clog_en.md)
-
-## v1.0.0 at a glance
-
-- Python 3.11–3.13 orchestration layer with an independent C++17 core.
-- The two layers communicate through a C ABI and a thin `ctypes` adapter; pybind11 is not used.
-- A resident C++ World owns continuous numeric state, stable entity IDs, population order, membership reconciliation and batched birth arithmetic.
-- Ordered semantics are preserved: encounter order, random-number consumption, old cache behavior and every online optimizer update.
-- Linux, Windows and macOS CI; standalone CMake/CTest; Linux CPU Docker image.
-- 196 test functions, including frozen-upstream replays and strict RNG/discrete comparisons.
-
-## Architecture
-
-Tiemu is a Python application with a native numerical core. It is not a pure C++ rewrite and does not embed Python.
-
-| Layer | Responsibilities |
-|---|---|
-| Python | CLI and configuration, phase orchestration, PyTorch model definitions and online training, lifecycle decisions, console control, snapshots, optional LLM backends |
-| C++17 core (`cpp/`) | Numerical kernels, ordered candidate indexing, histograms, the scoring worker pool, inorganic grid segments, ordered entity encounters, resident world state, batched birth arithmetic |
-| Bridge | C ABI shared library `_tiemu_core`, loaded by the thin adapter `_tiemu_ffi` through `ctypes`; no Python C API, NumPy headers or pybind11 |
-
-Backend selection:
-
-- `--backend auto` (default): use the native core when it is available; otherwise log a warning and fall back to Python.
-- `--backend cpp`: require the native core; fail clearly if it is missing.
-- `--backend python`: keep the reference path for comparison and unusual inputs.
-
-## Requirements
-
-- Python 3.11–3.13 (3.12 recommended).
-- A C++17 compiler: GCC on Linux, Xcode Command Line Tools on macOS, Visual Studio Build Tools with the C++ workload on Windows.
-- Pinned numerical dependencies: NumPy `2.2.2`, PyTorch `2.12.0`.
-- Optional LLM backends: MLX on Apple Silicon or `llama-cpp-python` with a local GGUF model. No model is downloaded automatically.
+[中文说明](readme/readme_zh-cn.md) · [Release notes](RELEASE_NOTES.md) · [Performance records](docs/performance.md) · [Parameter guide](readme/Guide.md) · [Logging](readme/clog_en.md)
 
 ## Install
 
+Python 3.11–3.13 (3.12 is what gets tested most) and a C++17 compiler. NumPy and PyTorch are pinned to 2.2.2 and 2.12.0.
+
 ```sh
 python -m venv .venv
-# macOS/Linux: source .venv/bin/activate
-# Windows PowerShell: .venv\Scripts\Activate.ps1
+source .venv/bin/activate          # Windows PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install ".[test]"
+python -m main --backend cpp --device cpu --disable-llm --smoke-test
 ```
 
-`pip install ".[test]"` compiles and installs the C++ shared core. Installing only `requirements.txt` does not build it; in that case use `--backend python` or build the core separately. After changing C++ sources, reinstall the project so the shared library is rebuilt.
-
-The core can also be built without Python:
+`pip install ".[test]"` is what compiles `_tiemu_core`. If you only install `requirements.txt`, you get the Python backend; either use `--backend python` or build the core separately:
 
 ```sh
 cmake -S . -B build/standalone -DCMAKE_BUILD_TYPE=Release
@@ -58,49 +26,41 @@ cmake --build build/standalone --config Release
 ctest --test-dir build/standalone -C Release --output-on-failure
 ```
 
-## Quick start
+After changing anything under `cpp/`, reinstall the project. The old shared library does not refresh itself.
 
-```sh
-# Short end-to-end check (24 entities, shortened phases)
-python -m main --backend cpp --device cpu --disable-llm --smoke-test
+Drop `--smoke-test` for the real phase lengths. Output goes to `runs/` unless `--output-dir` says otherwise.
 
-# Full simulation
-python -m main --backend cpp --device cpu --torch-threads 1 --disable-llm --fast-forward --output-dir runs/cpu
+## How it is put together
 
-# Test suite (requires full Git history for frozen-upstream replay)
-python -m pytest -q
-```
+Python runs the show: CLI and config, phase order, the four PyTorch networks and their online training, lifecycle decisions, the console and the snapshots. The C++ core does the work that showed up in profiles: path arithmetic, ordered candidate indexing, histograms, the scoring worker pool, inorganic grid segments, ordered encounters, the resident world state and batched births.
 
-Remove `--smoke-test` for the full phase lengths. Outputs go to `runs/` by default; change this with `--output-dir`.
+The boundary is a C ABI. `_tiemu_ffi.py` loads `_tiemu_core` with `ctypes`. There is no pybind11, and the core does not include Python or NumPy headers.
 
-## Backends and threading
+`--backend auto` uses the native core when it is there and falls back with a warning. `--backend cpp` refuses to start without it. `--backend python` keeps the reference path.
 
-- `--device {auto,cpu,cuda,mps}` selects the device for the small online networks. CPU with one PyTorch thread is the default because it was fastest for these single-sample workloads on the reference M1.
-- `--torch-threads N` sets PyTorch CPU threads.
-- `--native-threads N` sets the C++ budget for independent entity scoring. The budget includes the calling thread; workers start only when at least `--native-min-rows` entities are scored. Defaults are `1` and `4096`.
-- `--compute-only` suppresses INFO logging and display waits while preserving simulation work, random-number consumption and logging side effects.
+## Threads
 
-Only independent scoring runs in parallel. Ordered encounters, random draws, vote reduction and online optimizer updates remain sequential.
+`--device` picks the device for the small networks. CPU with one PyTorch thread is the default; on the reference M1 that was faster than MPS for these single-sample forwards.
 
-## Console, outputs and snapshots
+`--native-threads` is the budget for independent entity scoring. It includes the calling thread and only starts workers when at least `--native-min-rows` entities are being scored (default 4096). The default is one thread, and four threads did not produce a stable whole-phase gain. Encounters, random draws, vote reduction and optimizer updates stay in order.
 
-With a real terminal, press `p` at a safe point to pause. Commands include `c`, `n`, `status`, `top`, `p <name|baie>`, `zeitgeist`, `blueprint`, `set <parameter> <value>`, `save <path.json>`, `stop`, and `help`. Non-TTY input is disabled automatically; use `--no-interactive` to make this explicit.
+`--compute-only` cuts logging and display waits without skipping simulation work or changing random-number consumption.
 
-Normal completion, `stop`, Ctrl+C and SIGTERM write `world.json` and CPU-portable policy weights with atomic replacement. When organic training completed, `organic_prototype_model.pth` is also written.
+## Pausing and output
 
-`world.json` is an inspection snapshot, not a resumable checkpoint. It omits optimizer state, random-number state and phase-internal data. `load` and `--load-save` therefore refuse restoration instead of silently restarting a world or overwriting existing output.
+Press `p` at a safe point. The usual commands are `c`, `n`, `status`, `top`, `p <name|baie>`, `zeitgeist`, `blueprint`, `set <param> <value>`, `save <file.json>`, `stop` and `help`. Without a TTY, keyboard input turns itself off.
 
-## Optional LLM backends
+Normal completion, `stop`, Ctrl+C and SIGTERM write `world.json` and the three policy weights to the output directory, using atomic replacement. `organic_prototype_model.pth` is written if organic training finished.
 
-LLM narration is optional and disabled with `--disable-llm`.
+`world.json` is a snapshot to look at, not a checkpoint. It has no optimizer, RNG or phase-internal state, so `load` and `--load-save` refuse to restore it instead of restarting or overwriting a world.
 
-- Apple Silicon: MLX/Metal with a local model directory (`--llm-backend mlx --mlx-model /path/to/Qwen3-0.6B-MLX`).
-- Windows/Linux or CPU-only: `llama-cpp-python` with a local GGUF file (`--llm-backend llama_cpp --gguf-model /path/to/model.gguf`), optionally with CUDA.
-- `auto` prefers MLX on native Apple Silicon macOS, then GGUF; if nothing is available, the LLM is disabled with a logged reason.
+## LLM (optional)
 
-Models are never downloaded implicitly. Independently sampled or quantized LLMs do not produce identical long trajectories.
+No model is downloaded for you. `--disable-llm` turns narration off entirely.
 
-## Docker (CPU)
+On Apple Silicon, use `--llm-backend mlx --mlx-model` with a local MLX directory. Elsewhere, use `--llm-backend llama_cpp --gguf-model` with a local GGUF file; CUDA builds of llama.cpp work as well. `auto` tries MLX on macOS arm64 first, then GGUF, and disables the LLM with a logged reason if neither loads. Sampling and quantization change trajectories, so don't expect identical text across backends.
+
+## Docker
 
 ```sh
 docker compose build
@@ -109,22 +69,11 @@ docker compose logs -f
 docker compose stop
 ```
 
-The default image runs as a non-root user (UID 10001), disables the LLM, and persists output in the `tiemu-data` volume. It does not require GPU passthrough. To build an image with CPU GGUF support:
+The image is CPU-only, runs as UID 10001, starts with the LLM disabled, and keeps output in the `tiemu-data` volume. `docker build --build-arg WITH_LLM=1` adds CPU GGUF support. GPU passthrough is not configured.
 
-```sh
-docker build --build-arg WITH_LLM=1 -t tiemu:cpu-llm .
-```
+## Performance
 
-## Platform support
-
-- Linux, Windows and macOS are exercised by the `native` CI workflow: standalone CMake/CTest, pure C ABI consumer, `pip install`, pytest and CLI smoke tests.
-- Linux CPU Docker is built and smoke-tested in CI.
-- Historical M1 measurements cover macOS C++/CPU, POSIX console, MLX Metal and MPS forwards.
-- Windows console logic is tested against a simulated API. Windows/CUDA, Hyper-V GPU passthrough and ANE/Core ML are not validated on physical hardware. There is no Core ML backend.
-
-## Performance summary
-
-These are fixed-phase samples from paired runs, not whole-program or long-term throughput promises. Ratios from different versions or workloads must not be multiplied. Hosted macOS is a virtual M1, not physical hardware.
+Paired, fixed-phase samples. They are not whole-program numbers, and ratios from different versions or workloads should not be multiplied.
 
 | Workload | Comparison | Result |
 |---|---|---|
@@ -133,48 +82,35 @@ These are fixed-phase samples from paired runs, not whole-program or long-term t
 | Inorganic 10×10×10,000 | A2 vs A1 | 9.13–13.53× |
 | Aeonic 200×2 (real training) | A2 vs A1 | 0.944–0.958× (slower) |
 | Human 10,000×3 | A4 vs A3 | 1.068× Linux / 1.140× Windows / 1.041× hosted macOS |
-| Aeonic 1,000×12 (full cycle) | A4 vs A3 | 1.438× Linux / 1.610× Windows / 1.506× hosted macOS |
+| Aeonic 1,000×12 (full cycle) | A4 vs A3 | 1.438× / 1.610× / 1.506× |
 
-Important limits:
+Some cases are worse than the baseline: A2 aeonic 200×2 at 0.944–0.958×, A3 macOS aeonic 200×2 at 0.934×, A4 macOS aeonic 200×2/200×12 at 0.908/0.902×, and A4 macOS inorganic at 0.751×. The 1,000×12 aeonic sample only runs 44 optimizer updates per optimizer because the original loop loses the reincarnator reference after a host change; it is not a sustained-training result. Four scoring threads show no stable whole-phase gain, so the default stays at one.
 
-- The A4/A5 `1,000×12` full-cycle sample performs only 44 optimizer updates per optimizer because the original loop loses the reincarnator reference after a host change. It is not a sustained-training speedup.
-- Some workloads regress: A2 aeonic `200×2` at 0.944–0.958×; A3 macOS aeonic `200×2` at 0.934×; A4 macOS aeonic `200×2`/`200×12` at 0.908/0.902× and macOS inorganic at 0.751×.
-- Four scoring threads show no stable whole-phase gain; the default remains one thread.
-- The 2026-10-28 physical-M1 stage baselines (31.65× human and 6.23× inorganic versus the original Python loop) are historical stage measurements only.
+The 31.65× human and 6.23× inorganic numbers from 2026-10-28 are stage measurements on a physical M1 against the original Python loop, kept for reference.
 
-Full tables, raw evidence and platform limits are in [docs/performance.md](docs/performance.md).
+Full tables and raw evidence: [docs/performance.md](docs/performance.md).
 
-## Testing and equivalence
+## Tests
 
-- 196 test functions. The parametrized default suite passes 613 tests on Linux/macOS and 601 with 12 platform skips on Windows (A5 baseline).
-- Differential tests cover world arithmetic, ordered encounters, scoring, births, lifetimes, the resident World and the pure C ABI.
-- Frozen upstream commit `691c6e0` is replayed on the same platform; discrete decisions and all RNG states are compared exactly, with tight numeric tolerances (`1e-10` for world values, about `1e-6` for float32 network outputs).
-- The equivalence tests require complete Git history. If the clone is shallow, run `git fetch --unshallow` first.
+196 test functions. In the A5 baseline, the parametrized suite passed 613 tests on Linux/macOS and 601 with 12 platform skips on Windows. The differential tests cover arithmetic, ordered encounters, scoring, births, lifetimes, the resident world and the C ABI. Discrete decisions and RNG states are compared exactly; numeric tolerances are `1e-10` for world values and about `1e-6` for float32 networks.
 
-## Repository layout
+The equivalence tests replay upstream `691c6e0` from Git history, so a shallow clone needs `git fetch --unshallow` first.
+
+## Layout
 
 ```
-main.py, simulation.py        CLI and main simulation engine
-*_manager.py                  Parliament, diversity, population, stagnation, aeonic cycle
-entities.py, models.py        Entities and PyTorch networks
-native_*.py, _tiemu_ffi.py    Native adapters and the C ABI bridge
-cpp/                          Standalone C++17 core (CMake)
-tests/                        pytest suite, C ABI consumer and frozen fixtures
-benchmarks/                   Timing, profiling and comparison tools
-docs/                         Performance records and design documents
-readme/                       Chinese guide, parameter guide and logging docs
+main.py, simulation.py     CLI and main engine
+*_manager.py               parliament, diversity, population, stagnation, aeonic cycle
+entities.py, models.py     entities and networks
+native_*.py, _tiemu_ffi.py native adapters and the C ABI bridge
+cpp/                       C++17 core
+tests/                     pytest suite, C consumer, frozen fixtures
+benchmarks/                timing and comparison tools
+docs/                      performance records and design docs
 ```
 
-## Documentation
+## Thanks
 
-- [Release notes](RELEASE_NOTES.md)
-- [Performance and equivalence records](docs/performance.md)
-- [Design documents and migration log](docs/design/)
-- [World parameter guide (Chinese)](readme/Guide.md)
-- [Logging guide](readme/clog_en.md)
+Original project and contributors: YezQiu, HeyCrab3, AvalonRuFae, MoonofBridge24, Akanyi. Logging uses [pyclog](https://github.com/Akanyi/pyclog).
 
-## Acknowledgements and license
-
-Original project and contributions: YezQiu, HeyCrab3, AvalonRuFae, MoonofBridge24, Akanyi. Logging uses [pyclog](https://github.com/Akanyi/pyclog).
-
-Released under the MIT License; see [LICENSE](LICENSE). This is an unofficial fan project; game names and settings belong to their respective owners.
+MIT licensed. This is an unofficial fan project; the game setting belongs to its owners.
