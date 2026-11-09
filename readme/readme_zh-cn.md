@@ -2,7 +2,7 @@
 
 Tiemu 是一个以翁法罗斯为背景的演化模拟器。一次完整运行会依次走过无机网格、有机原型、人类文明（议会、泰坦、黄金裔）和永劫回归；最后阶段的白厄会在轮回里收集十二枚火种，并持续做在线训练。
 
-本仓库从 [YezQiu/Tiemu](https://github.com/YezQiu/Tiemu) 的 `691c6e0` 出发，世界规则不动。主要改动是把 profile 里最热的路径搬进独立 C++17 核心，同时补齐跨平台构建和差分测试。v1.0.0 是严格等价的 A 线：状态、随机流和每次 optimizer 更新都与参考实现一致；允许轨迹分歧的 C 线实验不在这个版本里。
+本仓库从 [YezQiu/Tiemu](https://github.com/YezQiu/Tiemu) 的 `691c6e0` 出发，世界规则不动。主要改动是把 profile 里最热的路径用 C++17 重写为独立核心，通过 C ABI 接入；Python 继续负责编排、模型和训练。同时补齐跨平台构建和差分测试。v1.0.0 是严格等价的 A 线：状态、随机流和每次 optimizer 更新都与参考实现一致；允许轨迹分歧的 C 线实验不在这个版本里。
 
 [English README](../README.md) · [发布说明](../RELEASE_NOTES.md) · [性能记录](../docs/performance.md) · [参数指南](Guide.md) · [日志说明](clog_zh-cn.md)
 

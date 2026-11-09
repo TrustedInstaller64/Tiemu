@@ -2,7 +2,7 @@
 
 Tiemu is an evolution simulator set in the Amphoreus universe of *Honkai: Star Rail*. A full run goes through an inorganic 10×10 grid, an organic prototype network, a human civilization with elections and Titans, and finally the aeonic recurrence, where a reincarnator collects the twelve Titan seeds and keeps training online.
 
-This repository starts from [YezQiu/Tiemu](https://github.com/YezQiu/Tiemu) at `691c6e0` and keeps its world rules. Most of the work is a standalone C++17 core for the measured hot paths, plus cross-platform builds and a differential test suite. v1.0.0 is the strict-equivalence A line: states, random streams and every optimizer update match the reference. The separate C experiments, which allow trajectories to diverge, are not included.
+This repository starts from [YezQiu/Tiemu](https://github.com/YezQiu/Tiemu) at `691c6e0` and keeps its world rules. The main change is a C++17 rewrite of the measured hot paths, exposed through a C ABI; Python stays as the orchestration, model and training layer. The release also adds cross-platform builds and a differential test suite. v1.0.0 is the strict-equivalence A line: states, random streams and every optimizer update match the reference. The separate C experiments, which allow trajectories to diverge, are not included.
 
 [中文说明](readme/readme_zh-cn.md) · [Release notes](RELEASE_NOTES.md) · [Performance records](docs/performance.md) · [Parameter guide](readme/Guide.md) · [Logging](readme/clog_en.md)
 
