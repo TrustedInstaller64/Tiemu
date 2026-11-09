@@ -25,7 +25,9 @@ Python 侧仍然负责编排、四个 PyTorch 网络的在线训练、生命周�
 | 人类 10,000×3 | A4 vs A3 | Linux 1.068× / Windows 1.140× / 托管 macOS 1.041× |
 | 永劫 1,000×12（full cycle） | A4 vs A3 | 1.438× / 1.610× / 1.506× |
 
-有些场景更慢：A2 永劫 200×2 是 0.944–0.958×；A3 macOS 永劫 200×2 是 0.934×；A4 macOS 永劫 200×2/200×12 是 0.908/0.902×，macOS 无机是 0.751×。1,000×12 的永劫样本每个 optimizer 只有 44 次更新（原循环在换宿主后丢了轮回者引用），不能当作持续训练提速。四线程没有稳定收益，默认还是 1。
+有些场景更慢：A2 永劫 200×2 是 0.944–0.958×；A3 macOS 永劫 200×2 是 0.934×；A4 macOS 永劫 200×2/200×12 是 0.908/0.902×，macOS 无机是 0.751×。
+
+1,000×12 的永劫样本每个 optimizer 只有 44 次更新（原循环在换宿主后丢了轮回者引用），不能当作持续训练提速。四线程没有稳定收益，默认还是 1。
 
 ### 升级时注意
 
@@ -53,7 +55,9 @@ v1.0.0 is the first formal release and corresponds to the strict-equivalence A l
 
 The release moves the measured heavy paths into a standalone C++17 library: numerical kernels, ordered candidate indexing, histograms, the scoring worker pool, inorganic grid segments, ordered encounters, the resident world state and batched births. Python still owns orchestration, the four PyTorch networks and their online training, lifecycle decisions, the console and snapshots. The boundary is a C ABI; pybind11 is gone since A2.
 
-In paired fixed-phase samples, human 1,000×6 ran 2.1–2.3× faster than A1, human 10,000×3 1.32–1.47×, and inorganic 10×10×10,000 9.1–13.5×. Aeonic 200×2 with real training was slower at 0.94–0.96×. Against A3, A4 ran human 10,000×3 at 1.068× (Linux), 1.140× (Windows) and 1.041× (hosted macOS), and aeonic 1,000×12 at 1.438×, 1.610× and 1.506×. Those aeonic samples only perform 44 optimizer updates per optimizer, so they are not sustained-training numbers. Some macOS cases regress (0.908/0.902× for aeonic 200×2/×12, 0.751× for inorganic), and four scoring threads show no stable whole-phase gain.
+In paired fixed-phase samples, human 1,000×6 ran 2.1–2.3× faster than A1, human 10,000×3 1.32–1.47×, and inorganic 10×10×10,000 9.1–13.5×. Aeonic 200×2 with real training was slower at 0.94–0.96×. Against A3, A4 ran human 10,000×3 at 1.068× (Linux), 1.140× (Windows) and 1.041× (hosted macOS), and aeonic 1,000×12 at 1.438×, 1.610× and 1.506×.
+
+Those aeonic samples only perform 44 optimizer updates per optimizer, so they are not sustained-training numbers. Some macOS cases regress (0.908/0.902× for aeonic 200×2/×12, 0.751× for inorganic), and four scoring threads show no stable whole-phase gain.
 
 Upgrade notes: `world.json` is still not resumable and `load` / `--load-save` will refuse it; reinstall after changing C++; dependencies are pinned to NumPy 2.2.2 and PyTorch 2.12.0; equivalence tests need a full clone.
 

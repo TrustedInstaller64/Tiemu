@@ -84,7 +84,9 @@ Paired, fixed-phase samples. They are not whole-program numbers, and ratios from
 | Human 10,000×3 | A4 vs A3 | 1.068× Linux / 1.140× Windows / 1.041× hosted macOS |
 | Aeonic 1,000×12 (full cycle) | A4 vs A3 | 1.438× / 1.610× / 1.506× |
 
-Some cases are worse than the baseline: A2 aeonic 200×2 at 0.944–0.958×, A3 macOS aeonic 200×2 at 0.934×, A4 macOS aeonic 200×2/200×12 at 0.908/0.902×, and A4 macOS inorganic at 0.751×. The 1,000×12 aeonic sample only runs 44 optimizer updates per optimizer because the original loop loses the reincarnator reference after a host change; it is not a sustained-training result. Four scoring threads show no stable whole-phase gain, so the default stays at one.
+Some cases are worse than the baseline: A2 aeonic 200×2 at 0.944–0.958×, A3 macOS aeonic 200×2 at 0.934×, A4 macOS aeonic 200×2/200×12 at 0.908/0.902×, and A4 macOS inorganic at 0.751×.
+
+The 1,000×12 aeonic sample only runs 44 optimizer updates per optimizer because the original loop loses the reincarnator reference after a host change, so it is not a sustained-training result. Four scoring threads show no stable whole-phase gain, and the default stays at one.
 
 The 31.65× human and 6.23× inorganic numbers from 2026-10-28 are stage measurements on a physical M1 against the original Python loop, kept for reference.
 
