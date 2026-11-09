@@ -1,7 +1,6 @@
 {
   "schema_version": 1,
   "repository": "TrustedInstaller64/Tiemu",
-  "branch": "codex/single-world-a",
   "candidate_commit": "0201f995d715c1985f8ab63ef462110be444e675",
   "baseline_commit": "e8b73873e9938fd068196d54e26881cc36539750",
   "workflow_name": "A5 equivalent candidate comparisons",
@@ -11,7 +10,7 @@
   "recorded_at_utc": "2026-11-04T08:02:50Z",
   "candidate_macro": "TIEMU_PRECOMPUTE_NEIGHBORS",
   "candidate_enabled_by_default_at_this_commit": false,
-  "provenance": "Test counts, macro compiler verification and concise outcome are read from completed GitHub job logs. Full distributions and raw samples are read from their artifacts. Summary arithmetic was independently recomputed from raw JSON using only local standard-library parsing; no project code was executed locally.",
+  "provenance": "Test counts, macro compiler verification and concise outcome are read from completed GitHub job logs. Full distributions and raw samples are read from their artifacts. Summary arithmetic was independently recomputed from the raw JSON using standard-library parsing only.",
   "methodology": {
     "balanced_blocks": 6,
     "samples_per_process_case": 3,
@@ -40,7 +39,7 @@
     "Actual phase includes initialization, real headless <=100-step segmentation, Python/native movement and final legacy reduction; excludes imports/setup/warm-up/hash/close.",
     "Kernel records hash every activity/stability/MT byte. Actual phase checks full legacy and Python/NumPy/Torch RNG plus generation, but its API does not expose final grid arrays.",
     "Memory table sizes are layout estimates, not measured RSS.",
-    "No local project imports/builds/tests/simulation/training/benchmarks, Docker installation or extra workflow dispatch/rerun were performed by this evidence task."
+    "Summaries were derived from CI logs and artifacts, not from a fresh local rerun."
   ],
   "platforms": {
     "Linux": {

@@ -1,6 +1,6 @@
 # Tiemu native compute and platform design
 
-User authorization: modify Tiemu directly and submit to git@github.com:TrustedInstaller64/Tiemu.git. AMPHOREUS is retained untouched. Baseline: 691c6e0023a83513ad3cd386cfee2198317104d3.
+Status: A1 design record. A2 later replaced pybind11 with a standalone C++17 library and C ABI; see [A2 CPU bottlenecks](../a2-cpu-bottlenecks.md). Target repository: `TrustedInstaller64/Tiemu`; upstream: `YezQiu/Tiemu`. AMPHOREUS is retained untouched. Baseline: `691c6e0023a83513ad3cd386cfee2198317104d3`.
 
 ## Goals and evidence
 
@@ -33,6 +33,6 @@ Stop exports a JSON world snapshot and CPU-portable policy weights to the config
 
 ## Packaging and validation
 
-Python 3.11/3.12, C++17, setuptools/pybind11 build; optional MLX and llama.cpp dependencies. Linux CPU multi-stage Docker image, mounted models/output, no embedded model files. Windows/MSVC, macOS/Clang, Linux/GCC CI builds run actual native tests. Unit differential tests, frozen original replay, PTY and non-TTY tests, backend capability/selection tests, short CLI runs, benchmark and fresh review precede submission.
+Python 3.11/3.12, C++17, setuptools build (A1 used pybind11; A2 uses the standalone C ABI); optional MLX and llama.cpp dependencies. Linux CPU multi-stage Docker image, mounted models/output, no embedded model files. Windows/MSVC, macOS/Clang, Linux/GCC CI builds run actual native tests. Unit differential tests, frozen original replay, PTY and non-TTY tests, backend capability/selection tests, short CLI runs, benchmark and fresh review precede submission.
 
-Local verification limits must be explicit: Docker CLI exists but daemon is unavailable; Windows/CUDA require their real hosts; MPS and MLX Metal were verified on this M1. CI results may extend validation but a mocked API is not real GPU acceptance.
+Local verification limits must be explicit: Docker CLI exists but daemon is unavailable; Windows/CUDA require their real hosts; MPS and MLX Metal were verified on the reference M1. CI results may extend validation but a mocked API is not real GPU acceptance.

@@ -1,10 +1,5 @@
 name: Frozen A1 A2 aeonic regression diagnosis
 on:
-  push:
-    branches: [codex/single-world-a]
-    paths:
-      - 'benchmarks/diagnose_aeonic.py'
-      - '.github/workflows/aeonic-diagnosis.yml'
   workflow_dispatch:
 permissions:
   contents: read

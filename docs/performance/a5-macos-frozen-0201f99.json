@@ -3,7 +3,7 @@
   "head_commit": "0201f995d715c1985f8ab63ef462110be444e675",
   "job": 126455265071,
   "conclusion": "success",
-  "source": "Parsed JSON summaries printed by the hosted diagnosis job; no local project execution.",
+  "source": "Parsed JSON summaries printed by the hosted diagnosis job.",
   "source_commits": {
     "A2": "eca7377c6ee53ab1f57c32fd8227c31e0d73b1cb",
     "A3": "5714a60769b06d6435f9a4ff6fcf00ce8ad24d0b",

@@ -1,7 +1,7 @@
-"""Cloud-only contracts for the standalone resident scoring preparation ABI.
+"""Contracts for the standalone resident scoring preparation ABI.
 
-These tests call the C exports directly. Do not execute them on the reserved Mac.
-The existing numerical core is the oracle; no tolerance is added for migration.
+These tests call the C exports directly and treat the existing numerical core
+as the oracle; no tolerance is added for migration.
 """
 import ctypes as ct
 

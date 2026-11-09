@@ -1,4 +1,4 @@
-"""Cloud-only application contracts for resident scoring preparation and caches."""
+"""Application contracts for resident scoring preparation and caches."""
 import functools
 import importlib
 import pickle

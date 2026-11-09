@@ -1,4 +1,4 @@
-"""Migration contracts: run only on the remote hosted CI while local load is forbidden."""
+"""Migration contracts for the pure C ABI engine."""
 import importlib
 import random
 import gc

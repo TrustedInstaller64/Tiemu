@@ -1,4 +1,4 @@
-"""Cloud-only ordered candidate pool contracts for the C ABI."""
+"""Ordered candidate pool contracts for the C ABI."""
 import ctypes as ct
 
 import numpy as np

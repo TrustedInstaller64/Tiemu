@@ -1,7 +1,7 @@
 name: Single-world CPU bottleneck profile
 on:
   push:
-    branches: [codex/single-world-a]
+    branches: [main]
     paths:
       - 'benchmarks/benchmark_single_world.py'
       - 'benchmarks/profile_single_world.py'

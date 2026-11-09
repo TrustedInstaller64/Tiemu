@@ -1,6 +1,6 @@
 """Ordered-grid contracts for the optional neighbor-table candidate.
 
-Run in hosted CI against both the default and macro-enabled native libraries.
+Run against both the default and macro-enabled native libraries.
 The oracle freezes the original shallow-list-copy loop, independently of either
 C++ implementation. It deliberately retains per-neighbor addition order.
 """

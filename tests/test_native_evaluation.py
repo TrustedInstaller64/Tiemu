@@ -1,7 +1,6 @@
 """Application contracts for ordered batch scoring and fused normalization.
 
-Run on remote CI: this file must not be executed on the development Mac while
-the user's local compute restriction is active.
+Run against the target CI or after building the native core locally.
 """
 import copy
 import importlib

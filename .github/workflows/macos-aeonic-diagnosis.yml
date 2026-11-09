@@ -1,10 +1,5 @@
 name: Frozen A2 A3 macOS aeonic diagnosis
 on:
-  push:
-    branches: [codex/single-world-a]
-    paths:
-      - 'benchmarks/diagnose_macos_aeonic.py'
-      - '.github/workflows/macos-aeonic-diagnosis.yml'
   workflow_dispatch:
 permissions:
   contents: read

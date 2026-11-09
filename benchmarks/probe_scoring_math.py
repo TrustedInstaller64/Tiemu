@@ -1,4 +1,4 @@
-"""Cloud-only characterization of NumPy batch primitives for A scoring.
+"""Characterization of NumPy batch primitives for A scoring.
 
 This reports exactness, not a performance promise or permission to widen test
 tolerances. No project model is imported. Production still needs differential

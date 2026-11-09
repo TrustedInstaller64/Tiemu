@@ -1,4 +1,4 @@
-"""Cloud-only comparison of the current and frozen original generation loops.
+"""Comparison of the current and frozen original generation loops.
 
 Both alternatives use the same checkout, C ABI and unchanged interaction and
 training methods. Full-cycle fixtures retain the existing reincarnator reference

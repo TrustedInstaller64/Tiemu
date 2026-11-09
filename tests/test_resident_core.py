@@ -1,4 +1,4 @@
-"""Cloud-only contracts for the interpreter-free resident world C ABI."""
+"""Contracts for the interpreter-free resident world C ABI."""
 import ctypes as ct
 
 import numpy as np

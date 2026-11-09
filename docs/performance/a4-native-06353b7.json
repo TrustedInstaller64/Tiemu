@@ -255,8 +255,8 @@
   },
   "not_executed": [
     "macOS stages of this Native workflow: standalone CMake/CTest, C-ABI installation check, scoring math probe, pytest and both CLI smoke commands.",
-    "Any local project import, build, test, model training, simulation or benchmark; the user's local-load restriction remained in effect.",
-    "Local Docker installation or execution.",
-    "Validation on the user's physical Apple M1 or Hyper-V deployment by this Native workflow."
+    "Project import, build, test, model training, simulation or benchmark on a development workstation was outside this validation run.",
+    "Docker validation ran on the Linux CI runner; no development-workstation Docker run was part of this validation.",
+    "Validation on physical Apple M1 or Hyper-V deployment by this Native workflow."
   ]
 }

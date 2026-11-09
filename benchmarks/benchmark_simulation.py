@@ -1,6 +1,6 @@
 """Bounded phase timing; includes native boundaries and actual phase methods.
 
-Use on hosted CI while local high-load execution is prohibited. Inorganic
+Use for bounded CI or local diagnostics. Inorganic
 results include the complete RNG-state hashes; the Python hash includes its
 cached Gaussian, even though this phase consumes only uniform random values.
 """

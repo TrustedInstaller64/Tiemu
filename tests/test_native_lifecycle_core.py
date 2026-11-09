@@ -1,4 +1,4 @@
-"""Cloud-only, independent ctypes contracts for resident golden metadata plans."""
+"""Independent ctypes contracts for resident golden metadata plans."""
 import ctypes as ct
 
 import numpy as np

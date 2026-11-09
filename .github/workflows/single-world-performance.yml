@@ -1,7 +1,7 @@
 name: Single-world paired CPU performance
 on:
   push:
-    branches: [codex/single-world-a]
+    branches: [main]
     paths:
       - '*.py'
       - 'cpp/**'

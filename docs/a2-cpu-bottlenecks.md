@@ -6,7 +6,7 @@
 
 以下是[最终同机对照](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40970269202)的单线程候选速度倍率，1 表示与基线相同，大于 1 表示更快。每项三次、轮换进程次序、取中位数；正式阶段包含数据准备、状态写回及首次线程池启动，不包含进程/模型启动、世界初始化、预热实例和最终状态抓取。固定 seed、依赖、线程预算，关闭 LLM、输出和显示。这些是有限阶段样本，不能当作完整世界或长期运行倍率，也不能与更早的原版 Python 倍率相乘。
 
-| 场景 | Linux | Windows | 云端 macOS |
+| 场景 | Linux | Windows | 托管 macOS |
 |---|---:|---:|---:|
 | 人类 1,000 × 6 | 2.179× | 2.101× | 2.301× |
 | 人类 10,000 × 3 | 1.467× | 1.403× | 1.325× |
@@ -16,11 +16,11 @@
 
 [完整日志汇总 JSON](performance/a2-paired-26c1c26.json)保留所有 1/4 线程配置、绝对秒数、CPU 时间比及一致性结果。**永劫训练没有达成提速，单线程实际耗时增加约 4.4～6.0%，绝对差约 1～2 ms/本样本。** 不将它归为已解决，也不把波动中的某个四线程数字当成并行训练收益。人类与无机阶段有明确改善；端到端收益取决于实际阶段比例和 LLM/IO。
 
-四线程仍没有跨平台、跨场景稳定的额外收益，默认继续为 1。永劫阶段不使用人类批评分线程池，线程预算标签不能解释该阶段差异。共享 runner 和 macOS 调度波动明显，之前不利结果保留在下文及 JSON 中，没有只保留有利样本。这里没有对用户 M1、双路 Xeon、Hyper-V NUMA、Metal/CUDA/ANE 做新的运行或能耗测量。
+四线程仍没有跨平台、跨场景稳定的额外收益，默认继续为 1。永劫阶段不使用人类批评分线程池，线程预算标签不能解释该阶段差异。共享 runner 和 macOS 调度波动明显，之前不利结果保留在下文及 JSON 中，没有只保留有利样本。这里没有对物理 M1、双路 Xeon、Hyper-V NUMA、Metal/CUDA/ANE 做新的运行或能耗测量。
 
 ### 验证与边界
 
-[最终回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40970269117)：Linux/macOS 各 346 通过；Windows 334 通过、12 个 POSIX 测试跳过；三平台独立 CMake/C 客户端测试、原生单线程/四线程烟测和 Linux CPU Docker 均通过。所有重型工作在 GitHub 托管 runner，本机未编译、测试、训练、跑分或安装 Docker。
+[最终回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40970269117)：Linux/macOS 各 346 通过；Windows 334 通过、12 个 POSIX 测试跳过；三平台独立 CMake/C 客户端测试、原生单线程/四线程烟测和 Linux CPU Docker 均通过。所有重型工作由 GitHub 托管 runner 执行；开发机未参与编译、测试、训练、跑分或 Docker 验证。
 
 - 完整交互差分比较冻结 A1 每次选人、淘汰、Python/NumPy MT 状态，以及缓存/旧数组别名、特殊实体、日志文本顺序、标量类型和管理器退出状态。
 - 无机段比较格子、遗物及 Python RNG 后续状态；保留顺序原地更新。无终端模式每 100 代返回控制点，交互/单步模式每代返回。
@@ -34,17 +34,17 @@
 
 [最终剖析](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40970269011)通过了全部观测完整性和状态比较，每代均确实进入原生交互引擎。10,000×3 未剖析阶段约 0.696 s；另一次观测运行中，交互 C++ 本体约 0.0095 s、完整交互入口 0.242 s、出生/演化 0.185 s、评分准备及执行 0.158 s，其中原生批评分仅 0.0023 s。后面这些时间包含嵌套关系，不能相加，也不能与未剖析时间相除当作纯解释器占比。[剖析 JSON](performance/a2-profile-26c1c26.json)。
 
-下一优先项是让世界状态长期驻留 C++，逐步迁移出生、实体生命周期与评分准备，减少每代完整验证/打包/写回；随后单独迁移永劫训练的调度边界并验证逐次 optimizer 更新。独立行计算可以继续探索多核，依赖前一步世界状态的交互和训练更新仍保持顺序。全部 Python 移除、完整 C++ 世界程序及永劫提速尚未完成，C 分支保持在 `240b277`，没有并入 A/main。
+下一优先项是让世界状态长期驻留 C++，逐步迁移出生、实体生命周期与评分准备，减少每代完整验证/打包/写回；随后单独迁移永劫训练的调度边界并验证逐次 optimizer 更新。独立行计算可以继续探索多核，依赖前一步世界状态的交互和训练更新仍保持顺序。全部 Python 移除、完整 C++ 世界程序及永劫提速尚未完成，C 线保持在 `240b277`，没有并入 A/main。
 
 ## 测量问题
 
-本轮以 `4a2311dfff44e5b92829dfdb84f735f37c171701` 为 A1 基线，先剖析剩余开销，再迁移有证据支持的边界。C 暂缓且保持独立。所有项目运行、编译、测试和计时均在 GitHub 托管 runner；本地只进行静态检查、源文件编辑和小型证据文件操作。
+本轮以 `4a2311dfff44e5b92829dfdb84f735f37c171701` 为 A1 基线，先剖析剩余开销，再迁移有证据支持的边界。C 线暂缓且保持独立。所有项目运行、编译、测试和计时均在 GitHub 托管 runner；开发机只用于静态检查、源文件编辑和小型证据文件整理。
 
 “当前主要使用一个核心”不能推出“只有提高 CPU 主频才能提高速度”。对固定工作量，可以用近似关系理解：
 
 `CPU 时间 ≈ 执行指令数 × 平均每指令周期数（CPI）÷ 有效频率`
 
-C++ 移植和取消重复计算可以减少指令数；减少对象跳转、分配和缓存失效可以降低等待；提高有效频率是另一条路径。IPC、缓存和实际睿频不同的 CPU 不能只比较标称 GHz。这里不根据云端数据给 6138、8259CL、8280 或 M1 排采购名次。[Intel CPU metrics](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2024-2/cpu-metrics-reference.html)
+C++ 移植和取消重复计算可以减少指令数；减少对象跳转、分配和缓存失效可以降低等待；提高有效频率是另一条路径。IPC、缓存和实际睿频不同的 CPU 不能只比较标称 GHz。这里不根据托管 runner 数据给 6138、8259CL、8280 或 M1 排采购名次。[Intel CPU metrics](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2024-2/cpu-metrics-reference.html)
 
 `process CPU time / wall time` 接近 1 表示平均约一个核心的 CPU 时间。它不能区分 Python、原生单线程算术和内存停顿，也不能排除短暂多核工作与等待交替。CPU 占用率不能直接代表执行单元饱和程度。[Intel PCM](https://www.intel.com/content/www/us/en/developer/articles/tool/performance-counter-monitor.html)
 
@@ -63,7 +63,7 @@ C++ 移植和取消重复计算可以减少指令数；减少对象跳转、分�
 
 ### 迁移前瓶颈
 
-`6badfd7` 的[云端边界计时](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40960718586)覆盖四个场景及 1/4 线程预算，所有调用完整性、状态和 RNG 比较均通过。[日志 JSON 记录](performance/a2-boundary-profile-6badfd7.json)。
+`6badfd7` 的[托管 CI 边界计时](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40960718586)覆盖四个场景及 1/4 线程预算，所有调用完整性、状态和 RNG 比较均通过。[日志 JSON 记录](performance/a2-boundary-profile-6badfd7.json)。
 
 | 场景 / 1 线程 | 未剖析阶段时间 | 重要调用数 | 原生批评分边界时间（剖析运行） |
 |---|---:|---|---:|
@@ -80,13 +80,13 @@ C++ 移植和取消重复计算可以减少指令数；减少对象跳转、分�
 
 生产核心改为 C++17 共享库，公开有效的 C 头文件，不使用 Python C API 或 NumPy/pybind11 头文件。`ctypes` 只转换缓冲区和管理生命周期。无机阶段一次处理有序网格段；实体交互阶段一次处理本代全部交互，保留旧桶、淘汰顺序、缓存刷新、数组别名及两套 MT19937 状态。Python 仍保留模型后端、出生/演化的外层编排、事件显示与存档，尚不是整个应用的 C++ 重写。
 
-中间提交 `534c984` 仅把小函数的接口换成 C ABI，人类循环还在 Python，云端同机对比出现约 1.7～2.8 倍耗时回退。这个版本不是最终提速成果。相同提交已移走完整无机循环，在 10×10、10,000 代场景分别取得 Linux 8.84、Windows 7.68、云端 macOS 11.46 倍速度，并且遗物和已检查 RNG 摘要相同。[中间版本对照](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40963299164)。这验证了“整段迁移”与“只更换绑定”的区别，后续人类阶段结果须使用完整迁移后的新证据。
+中间提交 `534c984` 仅把小函数的接口换成 C ABI，人类循环还在 Python，托管 runner 同机对比出现约 1.7～2.8 倍耗时回退。这个版本不是最终提速成果。相同提交已移走完整无机循环，在 10×10、10,000 代场景分别取得 Linux 8.84、Windows 7.68、托管 macOS 11.46 倍速度，并且遗物和已检查 RNG 摘要相同。[中间版本对照](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40963299164)。这验证了“整段迁移”与“只更换绑定”的区别，后续人类阶段结果须使用完整迁移后的新证据。
 
-实现和验收进度见[实施计划](superpowers/plans/2026-10-30-a2-profile-migration.md)。
+实现和验收进度见[迁移日志](design/migration-log.md)。
 
 ### 完整交互迁移后的第二个瓶颈
 
-`ef19ce1` 的[云端剖析](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40965514557)确认每个正常人类世代均成功进入 C++。10,000×3 的交互入口为 0.55155 s，其中资格检查 0.45725 s，C++ 执行为 0.00776 s，余下约 0.08655 s 为打包、写回等。1,000×6 对应为 0.08654 / 0.06939 / 0.00254 s。[已保存记录](performance/a2-encounter-bridge-ef19ce1.json)。这些是同一次剖析内的嵌套边界，可以定位入口成本，不能当作未剖析整阶段的加速倍率。
+`ef19ce1` 的[托管剖析](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40965514557)确认每个正常人类世代均成功进入 C++。10,000×3 的交互入口为 0.55155 s，其中资格检查 0.45725 s，C++ 执行为 0.00776 s，余下约 0.08655 s 为打包、写回等。1,000×6 对应为 0.08654 / 0.06939 / 0.00254 s。[已保存记录](performance/a2-encounter-bridge-ef19ce1.json)。这些是同一次剖析内的嵌套边界，可以定位入口成本，不能当作未剖析整阶段的加速倍率。
 
 因此下一项优化是合并相同的类级方法检查，以及在连续状态缓冲区上批量验证有限值，保留实例覆盖、布局、所有权、共享数组和异常值的回退条件。不能因为 C++ 循环快就忽略 Python 入口仍需逐对象检查的成本。
 

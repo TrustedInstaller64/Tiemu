@@ -1,4 +1,4 @@
-"""Cloud-only contracts for ordered aeonic candidates and callback refreshes."""
+"""Contracts for ordered aeonic candidates and callback refreshes."""
 import ast
 import copy
 import functools

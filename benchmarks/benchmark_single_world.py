@@ -1,4 +1,4 @@
-"""Bounded single-world timing; intended for remote CI while the Mac is reserved.
+"""Bounded single-world timing for CI or local diagnostics.
 
 Each process measures one source checkout and one configuration. This is not a
 multi-world product runner. Setup, warm-up, final state capture and process
@@ -49,7 +49,7 @@ parser.add_argument('--boundary-timers', action='store_true',
 parser.add_argument('--prematerialize-entity-dicts', action='store_true',
                     help='Diagnostic ablation: move instance dictionary materialization into setup.')
 parser.add_argument('--force-native-golden', action='store_true',
-                    help='Cloud-only ablation: include the new golden metadata adapter regardless of its default gate.')
+                    help='Diagnostic ablation: include the new golden metadata adapter regardless of its default gate.')
 args = parser.parse_args()
 if args.boundary_timers and args.profile_output_dir:
     parser.error('boundary timers and cProfile must run in separate samples')

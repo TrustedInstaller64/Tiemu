@@ -1,14 +1,5 @@
 name: A5 equivalent candidate comparisons
 on:
-  push:
-    branches: [codex/single-world-a]
-    paths:
-      - 'benchmarks/compare_aeonic_structures.py'
-      - 'benchmarks/compare_inorganic_neighbors.py'
-      - 'tests/test_inorganic_neighbors.py'
-      - 'cpp/tiemu_inorganic.cpp'
-      - 'setup.py'
-      - '.github/workflows/a5-candidate-performance.yml'
   workflow_dispatch:
 permissions:
   contents: read

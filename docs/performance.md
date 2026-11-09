@@ -1,34 +1,36 @@
 # 性能与等价性记录
 
+> 历史 GitHub Actions 运行链接属于归档记录；仓库重建后，旧 run ID 可能无法再解析，但提交 SHA、日期、平台与测试数字保持不变。
+
 ## 2026-11-04：A5 候选实测与 Mac 诊断
 
-测试提交 `0201f99`。三平台云端实测原永劫循环回退与默认关闭的 C++ 邻居预计算，**保留现有 A 默认方案**：恢复旧循环没有稳定的持续训练收益；邻居候选实际无机阶段为 Linux 0.998、Windows 1.023、Mac 0.986 倍，单步普遍更慢，Windows 小幅中位收益也未跨全部配对块稳定成立。测试没有通过减少训练、改精度或修复旧行为来换取倍率。
+测试提交 `0201f99`。三平台托管 runner 实测原永劫循环回退与默认关闭的 C++ 邻居预计算，**保留现有 A 默认方案**：恢复旧循环没有稳定的持续训练收益；邻居候选实际无机阶段为 Linux 0.998、Windows 1.023、Mac 0.986 倍，单步普遍更慢，Windows 小幅中位收益也未跨全部配对块稳定成立。测试没有通过减少训练、改精度或修复旧行为来换取倍率。
 
 本轮发现并明确限定既有 12 代永劫样本：旧主循环没有接回换宿主后的轮回者引用，许多后续世代不再持续训练。因此新增受控训练工作负载、每代真实更新硬断言、同代码噪声对照和原始样本归档；不把原有长样本倍率当训练吞吐收益。当前人类演算的重复兼容检查/状态同步仍有优化空间，未达到已证明的硬件上限。
 
-默认完整回归已补齐 Mac：Linux/macOS 各 613 通过，Windows 601 通过、12 项平台跳过，独立 C、单/四线程 CLI 与 Linux CPU Docker 通过；邻居宏构建完整测试也通过。冻结 A2/A3 Mac 诊断成功，但旧短场景回退未稳定复现，同代码波动显著，未确定温控/调度根因。本机没有运行项目或安装 Docker。
+默认完整回归已补齐 Mac：Linux/macOS 各 613 通过，Windows 601 通过、12 项平台跳过，独立 C、单/四线程 CLI 与 Linux CPU Docker 通过；邻居宏构建完整测试也通过。冻结 A2/A3 Mac 诊断成功，但旧短场景回退未稳定复现，同代码波动显著，未确定温控/调度根因。本轮验证在 GitHub 托管 runner 完成；开发机未参与验收。
 
-完整方法、Grok 源码与基线差异、退化、选型和原始计时见 [A5 报告](a5-measured-candidates.md)、[结构对照](performance/a5-aeonic-0201f99.json)、[邻居对照](performance/a5-inorganic-0201f99.json)、[默认回归与旧场景复测](performance/a5-default-0201f99.json)、[冻结 Mac 诊断](performance/a5-macos-frozen-0201f99.json)。
+完整方法、外部参考实现与基线差异、退化、选型和原始计时见 [A5 报告](a5-measured-candidates.md)、[结构对照](performance/a5-aeonic-0201f99.json)、[邻居对照](performance/a5-inorganic-0201f99.json)、[默认回归与旧场景复测](performance/a5-default-0201f99.json)、[冻结 Mac 诊断](performance/a5-macos-frozen-0201f99.json)。
 
 ## 2026-11-03：A4 驻留评分与有序候选索引
 
 生产代码 `06353b7`，同机对照为 A3 `f2073f0`/`5714a60`。C++ World 新增可复用评分准备/缓存工作区；生命周期稳定筛选和永劫有序索引也已实现并作契约差分。完整适配成本决定默认策略：驻留评分启用；候选索引只用于至少 512 人、当前轮回者不在原人口中的世代；黄金裔原生筛选暂不默认开启。独立 C++17/C ABI，不依赖 pybind11；Python 公开实体、缓存所有权和部分调度仍保留。
 
-[最终成对测试](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41659474466)三平台均完成，所有已检查的状态、权重、Adam 与 RNG 摘要一致。默认一线程、永劫 1,000×12 的速度相对 A3 为 Linux **1.438 倍**、Windows **1.610 倍**、云端 macOS **1.506 倍**；人类 10,000×3 分别为 1.068/1.140/1.041 倍。这些是固定阶段样本，不是完整程序或长期吞吐；永劫收益不能称作 Torch 训练算子或多核训练加速。
+[最终成对测试](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41659474466)三平台均完成，所有已检查的状态、权重、Adam 与 RNG 摘要一致。默认一线程、永劫 1,000×12 的速度相对 A3 为 Linux **1.438 倍**、Windows **1.610 倍**、托管 macOS **1.506 倍**；人类 10,000×3 分别为 1.068/1.140/1.041 倍。这些是固定阶段样本，不是完整程序或长期吞吐；永劫收益不能称作 Torch 训练算子或多核训练加速。
 
 不利结果同样保留：Windows 人类 1,000×6 为 0.976 倍，Mac 永劫 200×2/200×12 为 0.908/0.902 倍，Mac 未改算法的无机样本为 0.751 倍。Mac 不同配置间波动显著，但冻结 A2/A3 的独立诊断三次均未取得 hosted ARM64 runner，脚本未启动，仍不能确认旧短永劫回退根因。
 
 [功能回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41659474706)：Linux 579 通过，Windows 567 通过、12 项既有平台跳过；这两个平台的独立 C、单/四线程 CLI 及 Linux CPU Docker 通过。Mac 完整功能回归两次均因容量未取得 runner，没有执行；不能以已完成的 Mac 性能摘要比较代替完整功能验收。已停止重试，详见 [验收状态记录](performance/a4-native-06353b7.json)。
 
-所有构建、运行、测试和计时均在云端；本机没有运行项目、安装 Docker 或产生新的 M1 测速。完整启用边界、功能回归状态、中间退化证据和仅供讨论的后续路线见 [A4 报告](a4-scoring-lifecycle.md)，日志汇总见 [三平台成对证据](performance/a4-paired-06353b7.json)、[Linux 边界观测](performance/a4-profile-06353b7.json)和[冻结 Mac 诊断容量记录](performance/a4-macos-diagnosis-9974dae.json)。
+所有构建、运行、测试和计时均在 GitHub 托管 runner 完成；开发机未参与本轮验收，也未产生新的 M1 测速。完整启用边界、功能回归状态、中间退化证据和仅供讨论的后续路线见 [A4 报告](a4-scoring-lifecycle.md)，日志汇总见 [三平台成对证据](performance/a4-paired-06353b7.json)、[Linux 边界观测](performance/a4-profile-06353b7.json)和[冻结 Mac 诊断容量记录](performance/a4-macos-diagnosis-9974dae.json)。
 
 ## 2026-11-03：A3 常驻世界、出生与生命周期
 
 已验证的生产代码为 `5714a60`，对照 A2 `eca7377`/`26c1c26`。C++ World 长期持有数值列和稳定实体 ID，实际参与连续交互、出生数值批处理、成员删除/重排/新增。保留 Python 公开镜像及明确同步边界，生产核心继续是独立 C++17/C ABI，无 pybind11。
 
-[云端回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41641853629)：Linux/macOS 各 433 通过，Windows 421 通过、12 项 POSIX 跳过；独立纯 C 调用、单/四线程 CLI 与 Linux CPU Docker 通过。本机没有编译、测试、运行项目或安装 Docker。
+[托管回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41641853629)：Linux/macOS 各 433 通过，Windows 421 通过、12 项 POSIX 跳过；独立纯 C 调用、单/四线程 CLI 与 Linux CPU Docker 通过。开发机未参与本轮编译、测试或运行。
 
-[Linux 最终同机对照](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41641853654)：单线程人类 1,000×6 为 **1.147 倍**，10,000×3 为 **1.048 倍**，含轮回者的 1,000×6 为 **1.118 倍**；永劫 200×2/200×12 为 **1.060/1.211 倍**，无机约 0.998 倍（本轮未改其算法）。所有已检查状态/RNG 一致。四线程没有稳定额外收益，默认仍为 1；这些短场景不是全程序、任意长期或本机 M1 的新测速。
+[Linux 最终同机对照](https://github.com/TrustedInstaller64/Tiemu/actions/runs/41641853654)：单线程人类 1,000×6 为 **1.147 倍**，10,000×3 为 **1.048 倍**，含轮回者的 1,000×6 为 **1.118 倍**；永劫 200×2/200×12 为 **1.060/1.211 倍**，无机约 0.998 倍（本轮未改其算法）。所有已检查状态/RNG 一致。四线程没有稳定额外收益，默认仍为 1；这些短场景不是全程序、任意长期或物理 M1 的新测速。
 
 Windows/macOS 同轮对照也完成：单线程人类小人口为 1.123/1.185 倍，大人口为 1.030/1.125 倍，较长永劫为 1.065/1.429 倍；全部配置的已检查状态/RNG 一致。**macOS 短永劫单线程仍为 0.934 倍（耗时增加约 7.1%）**，保留此不利结果，不宣称所有场景都更快；其同轮候选配置间波动不能解释为并行训练收益。
 
@@ -40,13 +42,13 @@ Windows/macOS 同轮对照也完成：单线程人类小人口为 1.123/1.185 �
 
 [最终同机对照](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40970269202)中，单线程人类 1,000×6 为 **2.10～2.30 倍**，10,000×3 为 **1.32～1.47 倍**，无机 10×10×10,000 为 **9.13～13.53 倍**；永劫 200×2 真实训练为 **0.944～0.958 倍**，即耗时增加约 4.4～6.0%，尚未实现该阶段提速。三平台已检查状态/RNG 摘要完全一致；这些有限阶段倍率不能与历史原版 Python 数据相乘，也不是全程序加速承诺。
 
-[最终回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40970269117)：Linux/macOS 各346通过，Windows334通过、12项POSIX跳过；独立C构建/调用及Linux CPU Docker通过。本轮所有运行、构建和测试均在云端。四线程依旧没有稳定的整阶段额外收益，默认仍为1。
+[最终回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40970269117)：Linux/macOS 各346通过，Windows334通过、12项POSIX跳过；独立C构建/调用及Linux CPU Docker通过。本轮所有运行、构建和测试均在 GitHub 托管 runner 完成。四线程依旧没有稳定的整阶段额外收益，默认仍为1。
 
-完整架构、所有场景、剩余瓶颈、不利中间结果和验收边界见 [A2 记录](a2-cpu-bottlenecks.md)、[成对结果 JSON](performance/a2-paired-26c1c26.json)及[剖析 JSON](performance/a2-profile-26c1c26.json)。以下保留 A1 和历史 M1 的测量，不把云端 macOS 当作用户 M1 的新跑分。
+完整架构、所有场景、剩余瓶颈、不利中间结果和验收边界见 [A2 记录](a2-cpu-bottlenecks.md)、[成对结果 JSON](performance/a2-paired-26c1c26.json)及[剖析 JSON](performance/a2-profile-26c1c26.json)。以下保留 A1 和历史 M1 的测量，不把托管 macOS 当作物理 M1 的新跑分。
 
-## 2026-10-30：单世界 A 分支远端验证
+## 2026-10-30：单世界 A 线托管 CI 验证
 
-本轮基线是已经带有 C++ 加速的 `1ce39e00b8808564a331861ffcc799d4237ac324`，候选是 A 分支 `22b1620a7a0e4676831e14b209ba9e1227f0aac0`。这些倍率表示相对上一版的增益，不能与下方 2026-10-28 不同场景的倍率相乘。所有编译、测试和性能测量均在 GitHub 托管 runner 进行；本轮没有在用户的 Mac 上运行这些任务或安装 Docker。
+本轮基线是已经带有 C++ 加速的 `1ce39e00b8808564a331861ffcc799d4237ac324`，候选是 A 线 `22b1620a7a0e4676831e14b209ba9e1227f0aac0`。这些倍率表示相对上一版的增益，不能与下方 2026-10-28 不同场景的倍率相乘。所有编译、测试和性能测量均在 GitHub 托管 runner 进行；本轮测量未使用开发机环境。
 
 本轮增加的生产路径包括：有序 C++ 纯化/潮汐/裁剪/归一化融合；议会席位向量缓存与投票模板复用；固定全局分布后独立实体行的批评分和可关闭的 C++ 线程池；采样前向禁用梯度、共用状态 tensor 和移除多余计算图保留；保留日志参数副作用的 `--compute-only`。这是一轮实质迁移，尚未把整个 Python 引擎改写成 C++。
 
@@ -56,9 +58,9 @@ Windows/macOS 同轮对照也完成：单线程人类小人口为 1.123/1.185 �
 
 正式样本从新建世界开始计时实际阶段，排除世界初始化、预热实例、最终状态抓取和进程启动；**正式实例首次达到评分阈值时启动线程池的成本包含在计时中**。因此这些短阶段数据不代表充分预热的长期线程池吞吐，也不代表完整世界或 LLM 延迟。三次短样本及共享 runner 负载不足以给出稳定的长程加速承诺。
 
-已将 [Windows](performance/single-world-2026-10-30-windows.json)、[云端 macOS](performance/single-world-2026-10-30-macos.json) 的完整原始 JSON 保存到仓库，包含各次 wall/process CPU 时间、平台/架构/依赖版本、权重与 RNG 摘要及汇总，并核对了下载 ZIP 的 SHA-256。Linux 连接器返回的下载内容重试后仍不是有效 ZIP，未保存该内容；仓库改存由成功任务日志读取的 [Linux 汇总](performance/single-world-2026-10-30-ubuntu.json)，单次明细与机器元数据仍在 Actions artifact 中，受其保留期限限制。文件保留测量当时的原始 scope 字段；上述线程池启动边界是后续静态复核补充。
+已将 [Windows](performance/single-world-2026-10-30-windows.json)、[托管 macOS](performance/single-world-2026-10-30-macos.json) 的完整原始 JSON 保存到仓库，包含各次 wall/process CPU 时间、平台/架构/依赖版本、权重与 RNG 摘要及汇总，并核对了下载 ZIP 的 SHA-256。Linux 连接器返回的下载内容重试后仍不是有效 ZIP，未保存该内容；仓库改存由成功任务日志读取的 [Linux 汇总](performance/single-world-2026-10-30-ubuntu.json)，单次明细与机器元数据仍在 Actions artifact 中，受其保留期限限制。文件保留测量当时的原始 scope 字段；上述线程池启动边界是后续静态复核补充。
 
-| 云端平台 | 场景：初始人口 × 代数 | 基线秒 | A / 1 线程秒 | A / 1 线程速度倍率 | A / 强制 4 线程速度倍率 |
+| 托管平台 | 场景：初始人口 × 代数 | 基线秒 | A / 1 线程秒 | A / 1 线程速度倍率 | A / 强制 4 线程速度倍率 |
 |---|---|---:|---:|---:|---:|
 | Linux | 人类 1,000 × 6 | 0.39773 | 0.28963 | 1.373 | 1.364 |
 | Linux | 人类 10,000 × 3 | 1.41033 | 1.11083 | 1.270 | 1.334 |
@@ -74,26 +76,26 @@ Windows/macOS 同轮对照也完成：单线程人类小人口为 1.123/1.185 �
 
 多核结论：当前收益主要来自融合和缓存。Linux/Windows 的全阶段进程 CPU 时间与 wall 时间之比仍约为 1，独立评分占完整阶段的比例较小，强制并行没有跨场景、跨平台的稳定额外收益。因此默认仍是 `--native-threads 1`；四线程是可选探索配置，不把线程数当作速度倍率，也不默认占满双路 Xeon 或 M1 的核心。
 
-云端 macOS 波动显著：[上一轮](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40953921045) A 单线程人类 10,000 场景为 1.549 倍，本轮为 1.053 倍（[上一轮日志汇总存档](performance/single-world-2026-10-30-macos-earlier-summary.json)）。小人口默认 4096 阈值不会启用评分池，仍可见单/四线程预算配置间的耗时差异，也说明进程/宿主调度噪声不能归因于线程池。这里不报告这台 M1 的新倍率，不用云端短样本推断 Hyper-V、NUMA、Metal、CUDA 或 ANE 性能。
+托管 macOS 波动显著：[上一轮](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40953921045) A 单线程人类 10,000 场景为 1.549 倍，本轮为 1.053 倍（[上一轮日志汇总存档](performance/single-world-2026-10-30-macos-earlier-summary.json)）。小人口默认 4096 阈值不会启用评分池，仍可见单/四线程预算配置间的耗时差异，也说明进程/宿主调度噪声不能归因于线程池。这里不报告物理 M1 的新倍率，不用托管 runner 短样本推断 Hyper-V、NUMA、Metal、CUDA 或 ANE 性能。
 
 ### 正确性及验收边界
 
-- [远端 RED](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40952329166)：原有 131 项通过；新增契约得到 93 个预期失败和 18 个通过，失败原因限定为未实现接口、集成和梯度开销等预定项。
+- [CI RED](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40952329166)：原有 131 项通过；新增契约得到 93 个预期失败和 18 个通过，失败原因限定为未实现接口、集成和梯度开销等预定项。
 - [最终功能回归](https://github.com/TrustedInstaller64/Tiemu/actions/runs/40954826520)：Linux 245 通过；macOS 245 通过；Windows 233 通过、12 个 POSIX 项跳过；Linux CPU Docker 构建及烟测通过。原生 1 线程与强制 4 线程烟测均通过。
 - 新增差分覆盖 1/2/4 线程逐行结果、空输入/非有限值/只读和非连续数组、非法形状、并发调用及关闭；保留非正纯化因子的外部数组别名副作用、旧路径 multiplier 读取时点和席位字典直接修改语义。
 - 同平台冻结原版回放继续使用下方已有容差与严格离散/RNG 断言；新增真实训练差分比较动作、参数、完整 Adam 状态和 Python/NumPy/PyTorch RNG。外部 LLM 使用确定性桩，不能据此声称真实模型的跨后端输出相同。
 - 性能样本的所有配置均得到完全相同的**已检查状态摘要**：实体序列化内容及顺序、蓝图、席位、网络权重、Adam 状态、三种 RNG。摘要不包含每个管理器的全部内部字段，不是任意长轨迹逐位等价证明。
 - 独立静态审查发现 compute-only 会隐藏暂停后的 help/status 输出；现已临时恢复暂停命令的日志级别并在退出后恢复静默，真实命令解析测试及上述远端回归通过。
 
-### 分支和下一步
+### 版本线与下一步
 
-A 位于 `codex/single-world-a`，以保持原规则和顺序为先。C 位于独立的 `codex/experimental-c`，当前只提交[长期实验与差异登记](https://github.com/TrustedInstaller64/Tiemu/blob/codex/experimental-c/docs/experimental-c.md)，尚未实施降低精度、批训练或 GPU 世界计算，也没有合并到 A/main。
+v1.0.0 以保持原规则和顺序的单世界 A 线为发布内容，代码最终合并到 `main` 并由标签 `v1.0.0` 固定。独立的长期 C 实验未并入本版本；当前没有多世界、批量实验或参数搜索调度器。
 
 继续 C++ 迁移应先远端剖析剩余 Python 状态准备、实体操作和交互调度，再逐段建立稳定实体编号、连续状态数组及 C++ 事件循环。可以并行的只读行计算、快照序列化等需先明确状态生命周期；依赖上一交互结果的世界更新和每步在线训练保持顺序。完整移除 Python、跨 NUMA 并行和异步快照均尚未完成，不能由本轮线程池存在推断其收益。
 
 ## 2026-10-28：历史 M1 基线
 
-以下是本轮禁止本地高负荷运行之前留下的记录，未在 2026-10-30 本地重跑。
+以下是 2026-10-28 在 Apple M1 开发机测得的记录；2026-10-30 之后未在开发机重跑。
 
 原版基线为 `691c6e0023a83513ad3cd386cfee2198317104d3`，使用 `git archive` 独立提取。测试运行在 Apple M1、Python 3.12.1、NumPy 2.2.2、PyTorch 2.12.0、CPU 单线程；LLM、日志、显示及键盘输入在计算基准中关闭。每组预热后测 3 次，以下取中位数。所有计时包含实际 Python/C++ 调用、数据转换和返回开销。
 
@@ -157,7 +159,7 @@ python benchmarks/benchmark_networks.py --devices cpu mps --threads 1 --steps 10
 
 ## 平台验收范围
 
-本机验证了 macOS C++/CPU、POSIX 控制台、真实 MLX Metal、真实 MPS 前反向和更新。Windows 控制台逻辑使用模拟 API 测试；Windows/MSVC、Linux/GCC 及 CPU Docker 有 GitHub Actions 工作流。用户明确要求不在这台 Mac 安装 Docker，本次未安装；容器验收在 GitHub Linux runner 进行，首轮已通过镜像构建和非 root CPU 烟测。Windows/CUDA、Hyper-V 宿主、GPU 直通没有真机验收。CI 的具体结果应单独查阅，不能把配置文件存在视为通过。
+2026-10-28 在 Apple M1 开发机验证了 macOS C++/CPU、POSIX 控制台、真实 MLX Metal、真实 MPS 前反向和更新。Windows 控制台逻辑使用模拟 API 测试；Windows/MSVC、Linux/GCC 及 CPU Docker 有 GitHub Actions 工作流。开发机未安装 Docker；容器验收在 GitHub Linux runner 进行，首轮已通过镜像构建和非 root CPU 烟测。Windows/CUDA、Hyper-V 宿主、GPU 直通没有真机验收。CI 的具体结果应单独查阅，不能把配置文件存在视为通过。
 
 数值依赖固定为 NumPy 2.2.2、PyTorch 2.12.0，Docker 使用对应 CPU 构建；不同主机/数值库的速度与舍入仍需实测，不能把 M1 数字当作 Hyper-V Docker 的数据。JSON 仅是检查快照，`--load-save` 不支持恢复，详见[运行说明](../readme/readme_zh-cn.md)。
 

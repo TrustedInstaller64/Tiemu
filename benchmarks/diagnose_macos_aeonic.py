@@ -1,4 +1,4 @@
-"""Cloud-only, frozen A2/A3 diagnosis of the short macOS aeonic result.
+"""Frozen A2/A3 diagnosis of the short macOS aeonic result.
 
 This reuses the existing fresh-world fixture and raw state/RNG/Adam checks.
 Independent, counterbalanced process blocks are the timing units. The duplicate
